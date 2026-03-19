@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #6C63FF;
+  --secondary: #FF7F51;
+  --accent: #3ECFB2;
+  --calm: #A8DADC;
+  --warning: #FFD166;
+  --bg: #F9F7FF;
+  --surface: #FFFFFF;
+  --text: #2D2D2D;
+}
+
+@layer base {
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+  }
+  h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; }
+  [dir="rtl"] { direction: rtl; text-align: right; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-3xl p-6 border border-purple-50;
+    box-shadow: 0 4px 24px rgba(108, 99, 255, 0.10);
+  }
+
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+  }
+  .card-3d:hover {
+    transform: rotateY(-5deg) rotateX(3deg) translateZ(10px) scale(1.02);
+    box-shadow: 8px 16px 40px rgba(108, 99, 255, 0.18);
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-2xl border-2 border-purple-100
+           focus:border-purple-500 focus:outline-none text-gray-700
+           transition-colors duration-150;
+  }
+
+  /* Chalkboard */
+  .chalkboard {
+    background: linear-gradient(135deg, #1a3a1a 0%, #2d5a27 50%, #1e4a1e 100%);
+    border: 10px solid #5c3d1e;
+    border-radius: 6px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .chalkboard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 25% 35%, rgba(255,255,255,0.04) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  /* Classroom scene wrapper */
+  .classroom-scene {
+    perspective: 1400px;
+    perspective-origin: 50% 35%;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* XP progress bar shimmer */
+  .xp-bar {
+    position: relative;
+    overflow: hidden;
+  }
+  .xp-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; bottom: 0;
+    width: 60%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+  }
+}
+
+@layer utilities {
+  .font-700 { font-weight: 700; }
+  .font-800 { font-weight: 800; }
+}
+
+/* Animations */
+@keyframes shimmer {
+  to { left: 140%; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fade-in 0.35s ease-out forwards; }
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 0.4s ease-out forwards; }
+
+/* Stagger delays */
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 320ms; }
+
+/* Chalk text effect */
+.chalk-text {
+  color: #e8f5e8;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.1);
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════ GAME STYLES ═══════════════ */
+
+/* Dark dungeon background with tile grid */
+.game-world {
+  background:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(135deg, #0f0c29 0%, #1a1040 50%, #0d1b2a 100%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+}
+
+/* Boss float animation */
+@keyframes boss-float {
+  0%, 100% { transform: translateY(0px) rotate(-1deg) scale(1); }
+  50%       { transform: translateY(-14px) rotate(1deg) scale(1.03); }
+}
+.boss-float { animation: boss-float 3s ease-in-out infinite; }
+
+/* Screen shake on damage */
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  15%  { transform: translate(-6px, 2px) rotate(-0.5deg); }
+  30%  { transform: translate(6px, -2px) rotate(0.5deg); }
+  45%  { transform: translate(-4px, 4px); }
+  60%  { transform: translate(4px, -4px); }
+  75%  { transform: translate(-2px, 2px); }
+}
+.shake { animation: screen-shake 0.45s cubic-bezier(.36,.07,.19,.97) both; }
+
+/* Boss damage flash */
+@keyframes boss-hit {
+  0%   { filter: brightness(1); }
+  25%  { filter: brightness(3) saturate(0); }
+  50%  { filter: brightness(1.5) hue-rotate(0deg); }
+  75%  { filter: brightness(2) saturate(3); }
+  100% { filter: brightness(1); }
+}
+.boss-hit { animation: boss-hit 0.5s ease-out; }
+
+/* HP bar liquid depletion */
+.hp-bar-fill {
+  transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Floating XP number */
+@keyframes xp-float {
+  0%   { opacity: 1; transform: translateY(0) scale(0.6); }
+  40%  { opacity: 1; transform: translateY(-20px) scale(1.3); }
+  100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+}
+.xp-float { animation: xp-float 1.1s ease-out forwards; pointer-events: none; }
+
+/* Portal glow pulse */
+@keyframes portal-glow {
+  0%, 100% { box-shadow: 0 0 20px 4px var(--glow-color, #8B5CF6); }
+  50%       { box-shadow: 0 0 45px 12px var(--glow-color, #8B5CF6); }
+}
+.portal-glow { animation: portal-glow 2.5s ease-in-out infinite; }
+
+/* Portal spin for loading */
+@keyframes portal-spin {
+  from { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  to   { transform: rotate(360deg) scale(1); }
+}
+.portal-spin { animation: portal-spin 2s linear infinite; }
+
+/* Quest scroll parchment */
+.quest-scroll {
+  background: linear-gradient(135deg, #1a1040 0%, #0d1b3e 50%, #111827 100%);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.15), inset 0 0 60px rgba(0,0,0,0.3);
+}
+
+/* Ability card (answer button) */
+.ability-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 100%);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ability-card:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(139,92,246,0.25) 0%, rgba(20,184,166,0.15) 100%);
+  border-color: rgba(139,92,246,0.6);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(139,92,246,0.3);
+}
+.ability-card.correct {
+  background: linear-gradient(135deg, rgba(16,185,129,0.3) 0%, rgba(5,150,105,0.2) 100%);
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16,185,129,0.4);
+}
+.ability-card.wrong {
+  background: linear-gradient(135deg, rgba(239,68,68,0.3) 0%, rgba(185,28,28,0.2) 100%);
+  border-color: #ef4444;
+  box-shadow: 0 0 20px rgba(239,68,68,0.3);
+}
+.ability-card.dimmed {
+  opacity: 0.3;
+  border-color: rgba(255,255,255,0.05);
+}
+
+/* Neon game button */
+.btn-game-primary {
+  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  box-shadow: 0 4px 20px rgba(139,92,246,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: all 0.2s;
+}
+.btn-game-primary:hover {
+  box-shadow: 0 6px 30px rgba(139,92,246,0.7), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+
+/* Heart icon */
+@keyframes heart-break {
+  0%   { transform: scale(1); filter: none; }
+  30%  { transform: scale(1.4); filter: drop-shadow(0 0 6px #ef4444); }
+  60%  { transform: scale(0.8) rotate(15deg); filter: grayscale(1); }
+  100% { transform: scale(1); filter: grayscale(1); opacity: 0.4; }
+}
+.heart-break { animation: heart-break 0.5s ease-out forwards; }
+
+/* Realm card portal (dashboard) */
+.realm-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.realm-card:hover {
+  transform: rotateY(-6deg) rotateX(4deg) translateZ(16px) scale(1.02);
+}
+
+/* Victory treasure glow */
+@keyframes treasure-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px #fbbf24); }
+  50%       { filter: drop-shadow(0 0 24px #f59e0b) drop-shadow(0 0 40px #fde68a); }
+}
+.treasure-glow { animation: treasure-glow 1.5s ease-in-out infinite; }
+
+/* Game-specific global styles */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+  50%       { box-shadow: 0 0 40px rgba(255,215,0,0.8), 0 0 60px rgba(255,165,0,0.4); }
+}

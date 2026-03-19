@@ -1,0 +1,46 @@
+{
+  "name": "neuroquest-academy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "@types/gsap": "^1.20.2",
+    "@types/howler": "^2.2.12",
+    "@types/three": "^0.183.1",
+    "canvas-confetti": "^1.9.3",
+    "firebase": "^10.12.2",
+    "framer-motion": "^11.3.8",
+    "gsap": "^3.14.2",
+    "howler": "^2.2.4",
+    "lucide-react": "^0.400.0",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
+    "recharts": "^2.12.7",
+    "three": "^0.183.2",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}

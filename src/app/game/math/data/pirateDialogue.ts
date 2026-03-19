@@ -1,0 +1,56 @@
+export const MISSION_DIALOGUE = [
+  "Welcome, brave explorer! I am Zara the Wise 🧙‍♀️",
+  "Your kingdom needs YOU. Your castle is unfinished...",
+  "To complete it, you must collect 100 Gold Coins from Coin City! 💰",
+  "But the road is dangerous. Pirates guard the mountain pass!",
+  "They speak the ancient language of Numbers — both Positive and Negative.",
+  "Master their secrets... and you shall pass! ⚔️",
+  "Are you ready, brave one?",
+];
+
+export const PIRATE_PANELS = [
+  {
+    character: "Captain Plus",
+    color: "#C0392B",
+    emoji: "🏴‍☠️",
+    title: "ARRR! You dare walk through OUR mountain pass?!",
+    content: "We are the Keepers of the Number Line! ⚔️\nNo one passes without proving their mastery of numbers!",
+    visual: null,
+  },
+  {
+    character: "Navigator Minus",
+    color: "#2C3E50",
+    emoji: "🗺️",
+    title: "Behold! THE NUMBER LINE",
+    content: "Numbers to the RIGHT of zero are POSITIVE (+) ➕\nNumbers to the LEFT of zero are NEGATIVE (-) ➖",
+    visual: "numberline",
+  },
+  {
+    character: "Captain Plus",
+    color: "#C0392B",
+    emoji: "➕",
+    title: "When we ADD a POSITIVE number...",
+    content: "...we MOVE RIGHT on the number line! ➡️\n\nExample: 2 + 3 = 5\n(Start at 2, hop 3 steps RIGHT)",
+    visual: "example_pos",
+    exampleStart: 2,
+    exampleMove: 3,
+  },
+  {
+    character: "Navigator Minus",
+    color: "#2C3E50",
+    emoji: "➖",
+    title: "When we ADD a NEGATIVE number...",
+    content: "...we MOVE LEFT! It's like SUBTRACTING! ⬅️\n\nExample: 3 + (-5) = -2\n(Start at 3, hop 5 steps LEFT)",
+    visual: "example_neg",
+    exampleStart: 3,
+    exampleMove: -5,
+  },
+  {
+    character: "All Pirates",
+    color: "#8E44AD",
+    emoji: "🏴‍☠️",
+    title: "The SECRET RULES of the Number Seas!",
+    content: "➕ + ➕ = Move RIGHT → Bigger positive\n➕ + ➖ = Move LEFT  → Smaller / negative\n➖ + ➕ = Move RIGHT → Less negative\n➖ + ➖ = Move LEFT  → More negative\n\n\"Prove you understand... and we let you PASS! 🗝️\"",
+    visual: null,
+  },
+];
