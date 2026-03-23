@@ -236,7 +236,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Build prompt and generate
-  const prompt = buildLessonPrompt({ subject, grade: numGrade, language, studentName, emotion, difficulty, ibCtx, studentClass });
+  const prompt = buildLessonPrompt({ subject, grade: numGrade, language, studentName: studentName ?? 'Explorer', emotion: emotion ?? 'neutral', difficulty: difficulty ?? 'medium', ibCtx, studentClass });
 
   let lesson: object;
 

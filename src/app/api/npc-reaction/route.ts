@@ -20,6 +20,9 @@ const FALLBACKS: Record<string, { correct: string; incorrect: string }> = {
 };
 
 export async function POST(req: NextRequest) {
+  let npcName = 'Omar';
+  let wasCorrect = false;
+
   try {
     const body = await req.json();
     const parsed = NPCReactionSchema.safeParse(body);
@@ -28,7 +31,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.message }, { status: 400 });
     }
 
-    const { npcName, situation, studentChoice, wasCorrect, studentName, grade, language } = parsed.data;
+    const { npcName: parsedNpcName, situation, studentChoice, wasCorrect: parsedWasCorrect, studentName, grade, language } = parsed.data;
+    npcName = parsedNpcName;
+    wasCorrect = parsedWasCorrect;
     const numGrade = typeof grade === 'string' ? parseInt(grade, 10) : grade;
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });

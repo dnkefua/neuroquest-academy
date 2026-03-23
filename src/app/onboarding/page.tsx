@@ -11,7 +11,9 @@ import type { StudentClass } from '@/types';
 
 const STUDENT_STEPS = ['role', 'class', 'name', 'grade', 'language'] as const;
 const PARENT_STEPS = ['role', 'name', 'grade', 'language'] as const;
-type Step = string;
+type StudentStep = typeof STUDENT_STEPS[number];
+type ParentStep = typeof PARENT_STEPS[number];
+type Step = StudentStep | ParentStep;
 
 const CLASSES: Array<{
   val: StudentClass;
@@ -88,7 +90,7 @@ export default function OnboardingPage() {
   }
 
   function nextStep() {
-    const idx = steps.indexOf(step);
+    const idx = (steps as readonly string[]).indexOf(step);
     if (idx < steps.length - 1) {
       setStep(steps[idx + 1]);
     }
@@ -126,7 +128,7 @@ export default function OnboardingPage() {
     }
   }
 
-  const stepIndex = steps.indexOf(step);
+  const stepIndex = (steps as readonly string[]).indexOf(step);
   const progress = ((stepIndex + 1) / steps.length) * 100;
 
   return (
