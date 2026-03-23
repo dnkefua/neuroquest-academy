@@ -3,22 +3,33 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useScienceStore } from '../store/gameStore';
+import { useProgressStore } from '@/store/progressStore';
+import { useEconomyStore } from '@/store/economyStore';
+import { SCIENCE_QUESTS, getQuestById, getNextQuest } from '../data/questData';
 import VialCounter from '../components/ui/VialCounter';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS } from '../../shared/tts';
 
 export default function ScienceVictoryScene() {
-  const { score, vialsCollected, clueUsed, xpEarned, questions, reset } = useScienceStore();
+  const { score, vialsCollected, clueUsed, xpEarned, questions, reset, currentQuestId, setScene, loadQuest } = useScienceStore();
+  const { completeQuest, completedQuests } = useProgressStore();
+  const { earnCoins } = useEconomyStore();
   const router = useRouter();
   const cluesUsedCount = clueUsed.filter(Boolean).length;
   const pct = Math.round((score / questions.length) * 100);
+  const questPassed = pct >= 80;
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
+  const [hasRewarded, setHasRewarded] = useState(false);
+
+  const quest = getQuestById(currentQuestId);
+  const nextQuest = getNextQuest(currentQuestId);
+  const isAlreadyComplete = completedQuests.includes(currentQuestId);
 
   useEffect(() => {
     gameAudio.stopBackground();
     gameAudio.playVictory();
     const title = pct === 100 ? 'Perfect Expedition!' : 'Expedition Complete!';
-    gameTTS.speak(`${title} The Village Fountain is Restored! You collected ${vialsCollected} Crystal Vials and earned ${xpEarned} XP. Incredible work, Explorer!`);
+    gameTTS.speak(`${title} You scored ${pct} percent! Incredible work, Explorer!`);
     async function boom() {
       const confetti = (await import('canvas-confetti')).default;
       confetti({ particleCount: 180, spread: 120, origin: { y: 0.6 }, colors: ['#38BDF8','#0EA5E9','#14B8A6','#6EE7B7','#FFF'] });
@@ -26,7 +37,16 @@ export default function ScienceVictoryScene() {
       setTimeout(() => confetti({ particleCount: 90, angle: 120, spread: 80, origin: { x: 1, y: 0.6 } }), 900);
     }
     boom();
-  }, []);
+
+    // Award quest completion bonus
+    if (questPassed && !hasRewarded) {
+      if (!isAlreadyComplete) {
+        completeQuest(currentQuestId);
+        earnCoins(100, `quest-complete-${currentQuestId}`); // First-time bonus
+      }
+      setHasRewarded(true);
+    }
+  }, [questPassed, currentQuestId, isAlreadyComplete, completeQuest, earnCoins, hasRewarded, pct]);
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden"
@@ -78,13 +98,13 @@ export default function ScienceVictoryScene() {
           animate={{ rotate: [-5, 5, -3, 3, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 1, delay: 0.5 }}
           style={{ filter: 'drop-shadow(0 0 16px #38BDF8)' }}>
-          {pct === 100 ? '🏆' : pct >= 60 ? '🌊' : '💪'}
+          {pct === 100 ? '🏆' : pct >= 80 ? '🌊' : '💪'}
         </motion.div>
 
         <h1 className="font-black text-3xl text-sky-300 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-          {pct === 100 ? 'PERFECT EXPEDITION!' : 'EXPEDITION COMPLETE!'}
+          {pct === 100 ? 'PERFECT EXPEDITION!' : questPassed ? 'EXPEDITION COMPLETE!' : 'KEEP TRYING!'}
         </h1>
-        <p className="text-teal-400 text-sm mb-2">💧 The Village Fountain is Restored!</p>
+        <p className="text-teal-400 text-sm mb-2">{quest?.emoji} {quest?.title}</p>
         <div className="text-4xl mb-5">⛲</div>
 
         {/* Vials display */}
@@ -100,7 +120,8 @@ export default function ScienceVictoryScene() {
             ['💧', 'Crystal Vials',   `${vialsCollected}/4`],
             ['💡', 'Clues Used',      `${cluesUsedCount}/5`],
             ['⭐', 'XP Earned',       `+${xpEarned} XP`],
-            ['🎖️', 'Badge Earned',    '"Cloud Whisperer" ☁️'],
+            ...(questPassed ? [['🎖️', 'Quest Complete', questPassed ? '✅ Passed!' : '❌ Try Again']] : []),
+            ...(questPassed && !isAlreadyComplete ? [['💰', 'Bonus Coins', '+100 coins']] : []),
           ].map(([icon, label, value]) => (
             <div key={label} className="flex justify-between items-center">
               <span className="text-gray-400 text-sm">{icon} {label}</span>
@@ -114,26 +135,39 @@ export default function ScienceVictoryScene() {
           style={{ background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.25)' }}>
           <p className="text-sky-400 text-xs font-bold uppercase mb-2">📖 What you learned:</p>
           <p className="text-gray-300 text-xs leading-relaxed">
-            Water travels in an endless cycle: evaporation, condensation, precipitation, and collection.
-            Water is never created or destroyed — it just keeps moving around our planet! 🌍
+            {quest?.subtitle ?? 'Water travels in an endless cycle through our world.'}
           </p>
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-3">
-          <button onClick={() => reset()}
-            className="flex-1 py-3 rounded-2xl font-black text-sm border border-sky-500 text-sky-400 hover:bg-sky-500/20 transition-all">
-            🔄 Play Again
-          </button>
-          <button onClick={() => router.push('/game/math')}
-            className="flex-1 py-3 rounded-2xl font-black text-sm border border-teal-500 text-teal-300 hover:bg-teal-500/20 transition-all">
-            📚 More Quests
-          </button>
-          <button onClick={() => router.push('/dashboard')}
-            className="flex-1 py-3 rounded-2xl font-black text-sm text-black transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}>
-            🏠 Home
-          </button>
+        <div className="flex flex-col gap-3">
+          {questPassed && nextQuest && (
+            <button onClick={() => {
+              gameAudio.playClick();
+              loadQuest(nextQuest.id);
+            }}
+              className="w-full py-4 rounded-2xl font-black text-base text-black transition-all hover:scale-105"
+              style={{ background: `linear-gradient(135deg, ${quest?.color ?? '#38BDF8'}, #0EA5E9)`, boxShadow: '0 0 20px rgba(56,189,248,0.5)' }}>
+              {nextQuest.emoji} Next: {nextQuest.title} →
+            </button>
+          )}
+          <div className="flex gap-3">
+            <button onClick={() => { reset(); setScene('QUEST_MAP'); }}
+              className="flex-1 py-3 rounded-2xl font-black text-sm border border-sky-500 text-sky-400 hover:bg-sky-500/20 transition-all">
+              🗺️ Quest Map
+            </button>
+            <button onClick={() => router.push('/dashboard')}
+              className="flex-1 py-3 rounded-2xl font-black text-sm text-black transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}>
+              🏠 Home
+            </button>
+          </div>
+          {!questPassed && (
+            <button onClick={() => loadQuest(currentQuestId)}
+              className="w-full py-3 rounded-2xl font-bold text-sm border border-teal-500 text-teal-300 hover:bg-teal-500/20 transition-all">
+              🔄 Try Again (Need 80% to pass)
+            </button>
+          )}
         </div>
       </motion.div>
     </div>

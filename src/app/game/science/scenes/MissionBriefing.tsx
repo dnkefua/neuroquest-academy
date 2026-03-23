@@ -3,13 +3,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useScienceStore } from '../store/gameStore';
+import { SCIENCE_QUESTS, getQuestById } from '../data/questData';
 import { SCIENCE_MISSION_DIALOGUE } from '../data/scienceData';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS } from '../../shared/tts';
 
 export default function ScienceMissionBriefing() {
   const setScene = useScienceStore(s => s.setScene);
+  const currentQuestId = useScienceStore(s => s.currentQuestId);
   const router = useRouter();
+  const quest = getQuestById(currentQuestId);
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
   const [titleDone, setTitleDone] = useState(false);
@@ -23,12 +26,14 @@ export default function ScienceMissionBriefing() {
 
   // Title screen: wait for TTS to finish before showing dialogue
   useEffect(() => {
+    const questTitle = quest?.title ?? 'Science Quest';
+    const questSub = quest?.subtitle ?? 'A scientific adventure begins...';
     gameTTS.afterSpeak(
-      'The Water Cycle Expedition. A desert adventure begins...',
+      `${questTitle}. ${questSub}`,
       () => setTitleDone(true),
       2800,
     );
-  }, []);
+  }, [quest?.title]);
 
   // Dialogue: advance only after TTS fully finishes reading each line
   useEffect(() => {
@@ -117,11 +122,11 @@ export default function ScienceMissionBriefing() {
             className="text-center z-10">
             <motion.h1 className="font-black text-4xl md:text-5xl mb-3"
               style={{ color: '#FFF', textShadow: '0 0 30px rgba(56,189,248,0.6)', fontFamily: 'Georgia, serif' }}>
-              🔬 THE WATER CYCLE EXPEDITION
+              {quest?.emoji ?? '🔬'} {quest?.title ?? 'THE WATER CYCLE EXPEDITION'}
             </motion.h1>
             <motion.p className="text-sky-200 text-lg"
               animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              A desert adventure begins...
+              {quest?.subtitle ?? 'A desert adventure begins...'}
             </motion.p>
           </motion.div>
         )}
@@ -167,14 +172,14 @@ export default function ScienceMissionBriefing() {
               backdropFilter: 'blur(12px)',
             }}>
             <h2 className="text-center font-black text-2xl text-sky-300 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-              🔬 MISSION: THE WATER QUEST
+              {quest?.teacherEmoji ?? '🔬'} MISSION: {quest?.title?.toUpperCase() ?? 'THE WATER QUEST'}
             </h2>
             <div className="w-full h-px bg-sky-700/40 my-4" />
             {[
-              ['🎯 OBJECTIVE', 'Collect 4 Crystal Vials of pure water'],
-              ['📚 SUBJECT',   'Science — IB PYP Grade 4'],
-              ['📖 TOPIC',     'The Water Cycle'],
-              ['🏆 REWARD',    'Restore the Fountain + Water Badge'],
+              ['🎯 OBJECTIVE', quest?.briefingDescription ?? 'Complete the quest challenges'],
+              ['📚 SUBJECT',   'Science — IB MYP Grade 6'],
+              ['📖 TOPIC',     quest?.subtitle ?? 'The Water Cycle'],
+              ['🏆 REWARD',    `Earn coins + ${quest?.difficulty ?? 'Beginner'} Badge`],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between items-center py-2">
                 <span className="text-sky-600 text-sm font-bold">{label}</span>
@@ -188,9 +193,9 @@ export default function ScienceMissionBriefing() {
                 style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)', boxShadow: '0 0 20px rgba(56,189,248,0.5)' }}>
                 🧪 BEGIN EXPEDITION
               </button>
-              <button onClick={() => router.push('/game/math')}
+              <button onClick={() => setScene('QUEST_MAP')}
                 className="px-5 py-4 rounded-2xl font-bold text-gray-400 text-sm border border-gray-600 hover:bg-white/5 transition-all">
-                🏠 Return
+                🗺️ Quests
               </button>
             </div>
           </motion.div>

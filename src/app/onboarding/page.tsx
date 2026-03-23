@@ -7,33 +7,97 @@ import { auth } from '@/lib/firebase';
 import { createUserProfile } from '@/lib/firestore';
 import { useProgressStore } from '@/store/progressStore';
 import toast from 'react-hot-toast';
+import type { StudentClass } from '@/types';
 
-const STEPS = ['role', 'name', 'grade', 'language'] as const;
-type Step = typeof STEPS[number];
+const STUDENT_STEPS = ['role', 'class', 'name', 'grade', 'language'] as const;
+const PARENT_STEPS = ['role', 'name', 'grade', 'language'] as const;
+type Step = string;
+
+const CLASSES: Array<{
+  val: StudentClass;
+  emoji: string;
+  label: string;
+  desc: string;
+  realm: string;
+  color: string;
+}> = [
+  {
+    val: 'math',
+    emoji: '🐉',
+    label: 'Math Quester',
+    desc: 'Equation Dragons, Number Spells & Crystal Calculations',
+    realm: 'The Equation Realm',
+    color: '#8B5CF6',
+  },
+  {
+    val: 'science',
+    emoji: '🔬',
+    label: 'Science Explorer',
+    desc: 'Atom Golems, Discovery Lab & Element Alchemy',
+    realm: 'The Discovery Labyrinth',
+    color: '#14B8A6',
+  },
+  {
+    val: 'english',
+    emoji: '📜',
+    label: 'Language Bard',
+    desc: 'Grammar Sphinx, Word Magic & Story Scrolls',
+    realm: 'The Library of Words',
+    color: '#3B82F6',
+  },
+  {
+    val: 'arabic',
+    emoji: '🏛️',
+    label: 'History Keeper',
+    desc: 'Ancient Ruins, Memory Temples & Hieroglyph Puzzles',
+    realm: 'The Memory Temple',
+    color: '#F97316',
+  },
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
-  const [step, setStep] = useState<Step>('role');
   const [role, setRole] = useState<'student' | 'parent'>('student');
+  const [studentClass, setStudentClass] = useState<StudentClass>('math');
   const [name, setName] = useState('');
   const [grade, setGrade] = useState(5);
   const [language, setLanguage] = useState<'EN' | 'AR'>('EN');
   const [saving, setSaving] = useState(false);
 
+  const steps = role === 'student' ? STUDENT_STEPS : PARENT_STEPS;
+  const [step, setStep] = useState<Step>('role');
+
   useEffect(() => {
+    let redirected = false;
     const unsub = onAuthStateChanged(auth, (user) => {
-      if (!user) router.replace('/auth');
-      else setUid(user.uid);
+      if (!user && !redirected) {
+        redirected = true;
+        router.replace('/auth');
+      } else if (user) {
+        setUid(user.uid);
+      }
     });
     return () => unsub();
   }, [router]);
+
+  // Reset step when role changes
+  function handleRoleSelect(r: 'student' | 'parent') {
+    setRole(r);
+    setStep(r === 'student' ? 'class' : 'name');
+  }
+
+  function nextStep() {
+    const idx = steps.indexOf(step);
+    if (idx < steps.length - 1) {
+      setStep(steps[idx + 1]);
+    }
+  }
 
   async function finish() {
     if (!uid) return;
     setSaving(true);
     try {
-      console.log('Saving profile for uid:', uid);
       await createUserProfile(uid, {
         uid,
         name,
@@ -41,16 +105,17 @@ export default function OnboardingPage() {
         role,
         grade,
         language,
+        ...(role === 'student' ? { studentClass } : {}),
       });
-      // Sync selected grade to the progress store so World Map starts at the right grade
+
+      // Sync selected grade to the progress store
       const progressStore = useProgressStore.getState();
       if (progressStore.currentGrade < grade) {
-        // Mark all grades below as completed to unlock up to the selected grade
         for (let g = progressStore.currentGrade; g < grade; g++) {
           progressStore.completeGrade(g);
         }
       }
-      console.log('Profile saved successfully');
+
       toast.success(`Welcome to NeuroQuest, ${name}! 🎉`);
       router.push('/dashboard');
     } catch (err) {
@@ -61,8 +126,8 @@ export default function OnboardingPage() {
     }
   }
 
-  const stepIndex = STEPS.indexOf(step);
-  const progress = ((stepIndex + 1) / STEPS.length) * 100;
+  const stepIndex = steps.indexOf(step);
+  const progress = ((stepIndex + 1) / steps.length) * 100;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
@@ -70,7 +135,7 @@ export default function OnboardingPage() {
         <div className="text-center mb-6">
           <div className="text-6xl mb-3">🌟</div>
           <h1 className="font-nunito text-2xl font-black text-gray-800">Let&apos;s set up your space!</h1>
-          <p className="text-gray-500 font-dmsans text-sm mt-1">Step {stepIndex + 1} of {STEPS.length}</p>
+          <p className="text-gray-500 font-dmsans text-sm mt-1">Step {stepIndex + 1} of {steps.length}</p>
         </div>
 
         {/* Progress bar */}
@@ -82,10 +147,11 @@ export default function OnboardingPage() {
         </div>
 
         <div className="card">
+          {/* ── STEP 1: Role ── */}
           {step === 'role' && (
             <div>
               <h2 className="font-nunito text-xl font-bold text-gray-800 mb-2">Who are you? 👋</h2>
-              <p className="text-gray-500 font-dmsans text-sm mb-6">This helps us personalize your experience</p>
+              <p className="text-gray-500 font-dmsans text-sm mb-6">This helps us personalise your experience</p>
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { val: 'student', emoji: '🎒', label: 'Student', desc: "I'm here to learn!" },
@@ -93,7 +159,7 @@ export default function OnboardingPage() {
                 ].map((r) => (
                   <button
                     key={r.val}
-                    onClick={() => setRole(r.val as 'student' | 'parent')}
+                    onClick={() => handleRoleSelect(r.val as 'student' | 'parent')}
                     className={`p-5 rounded-2xl border-2 text-center transition-all ${
                       role === r.val
                         ? 'border-brand-purple bg-brand-purple-light'
@@ -106,12 +172,60 @@ export default function OnboardingPage() {
                   </button>
                 ))}
               </div>
-              <button onClick={() => setStep('name')} className="w-full mt-6 bg-brand-purple text-white font-nunito font-black py-3.5 rounded-2xl hover:bg-purple-600 active:scale-95 transition-all">
-                Next →
+            </div>
+          )}
+
+          {/* ── STEP 2: Class (students only) ── */}
+          {step === 'class' && (
+            <div>
+              <h2 className="font-nunito text-xl font-bold text-gray-800 mb-1">Choose your Class! ⚔️</h2>
+              <p className="text-gray-500 font-dmsans text-sm mb-4">
+                Your class unlocks a unique realm of quests. Choose wisely — you can change later!
+              </p>
+              <div className="space-y-3">
+                {CLASSES.map((c) => (
+                  <button
+                    key={c.val}
+                    onClick={() => { setStudentClass(c.val); }}
+                    className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
+                      studentClass === c.val
+                        ? 'border-2'
+                        : 'border-purple-100 hover:border-purple-200'
+                    }`}
+                    style={{
+                      borderColor: studentClass === c.val ? c.color : undefined,
+                      background: studentClass === c.val ? `${c.color}15` : undefined,
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-4xl flex-shrink-0">{c.emoji}</span>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-nunito font-black text-gray-800">{c.label}</span>
+                          {studentClass === c.val && (
+                            <span className="text-xs px-2 py-0.5 rounded-full font-bold"
+                              style={{ background: c.color, color: '#fff' }}>Selected</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">{c.desc}</p>
+                        <p className="text-xs mt-1 font-semibold" style={{ color: c.color }}>
+                          🏰 {c.realm}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={nextStep}
+                className="w-full mt-5 bg-gradient-to-r from-brand-purple to-brand-teal text-white font-nunito font-black py-3.5 rounded-2xl hover:opacity-90 active:scale-95 transition-all"
+              >
+                Choose {CLASSES.find(c => c.val === studentClass)?.label} ⚔️
               </button>
             </div>
           )}
 
+          {/* ── STEP 3: Name ── */}
           {step === 'name' && (
             <div>
               <h2 className="font-nunito text-xl font-bold text-gray-800 mb-2">What&apos;s your name? ✨</h2>
@@ -125,7 +239,7 @@ export default function OnboardingPage() {
                 autoFocus
               />
               <button
-                onClick={() => name.trim() && setStep('grade')}
+                onClick={() => name.trim() && nextStep()}
                 disabled={!name.trim()}
                 className="w-full mt-6 bg-brand-purple text-white font-nunito font-black py-3.5 rounded-2xl hover:bg-purple-600 active:scale-95 transition-all disabled:opacity-50"
               >
@@ -134,6 +248,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
+          {/* ── STEP 4: Grade ── */}
           {step === 'grade' && (
             <div>
               <h2 className="font-nunito text-xl font-bold text-gray-800 mb-2">What grade are you in? 📚</h2>
@@ -153,24 +268,25 @@ export default function OnboardingPage() {
                   </button>
                 ))}
               </div>
-              <button onClick={() => setStep('language')} className="w-full mt-6 bg-brand-purple text-white font-nunito font-black py-3.5 rounded-2xl hover:bg-purple-600 active:scale-95 transition-all">
+              <button onClick={nextStep} className="w-full mt-6 bg-brand-purple text-white font-nunito font-black py-3.5 rounded-2xl hover:bg-purple-600 active:scale-95 transition-all">
                 Next →
               </button>
             </div>
           )}
 
+          {/* ── STEP 5: Language ── */}
           {step === 'language' && (
             <div>
               <h2 className="font-nunito text-xl font-bold text-gray-800 mb-2">Preferred language? 🌍</h2>
               <p className="text-gray-500 font-dmsans text-sm mb-6">Lessons will be delivered in this language</p>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { val: 'EN', flag: '🇬🇧', label: 'English' },
-                  { val: 'AR', flag: '🇦🇪', label: 'العربية' },
+                  { val: 'EN' as const, flag: '🇬🇧', label: 'English' },
+                  { val: 'AR' as const, flag: '🇦🇪', label: 'العربية' },
                 ].map((l) => (
                   <button
                     key={l.val}
-                    onClick={() => setLanguage(l.val as 'EN' | 'AR')}
+                    onClick={() => setLanguage(l.val)}
                     className={`p-5 rounded-2xl border-2 text-center transition-all ${
                       language === l.val
                         ? 'border-brand-purple bg-brand-purple-light'

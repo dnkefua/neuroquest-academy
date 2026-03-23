@@ -1,6 +1,6 @@
 import {
   doc, setDoc, getDoc, updateDoc, addDoc, collection,
-  query, orderBy, limit, getDocs, where,
+  query, orderBy, limit, getDocs, where, arrayUnion, arrayRemove,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { UserProfile } from '@/types';
@@ -12,6 +12,8 @@ export async function createUserProfile(uid: string, data: Partial<UserProfile>)
     ...data,
     createdAt: new Date().toISOString(),
     xp: 0, streak: 0, currentEmotion: 'happy',
+    approvedQuestIds: [],
+    pendingApprovals: [],
   }, { merge: true });
 }
 
@@ -216,4 +218,41 @@ export async function logSocialSkillScore(uid: string, score: number, total: num
 
 export async function linkChildToParent(parentUid: string, childUid: string) {
   await updateDoc(doc(db, 'users', parentUid), { childUid });
+}
+
+/* ── Class & Quest Approval System ── */
+
+// Request approval for a quest (student side)
+export async function requestQuestApproval(uid: string, questId: string) {
+  await updateDoc(doc(db, 'users', uid), {
+    pendingApprovals: arrayUnion(questId),
+  });
+}
+
+// Approve a quest (parent side) — also removes from pending
+export async function approveQuest(childUid: string, questId: string) {
+  const updates: Record<string, unknown> = {
+    approvedQuestIds: arrayUnion(questId),
+    pendingApprovals: arrayRemove(questId),
+  };
+  await updateDoc(doc(db, 'users', childUid), updates);
+}
+
+// Remove pending approval request
+export async function dismissApprovalRequest(childUid: string, questId: string) {
+  await updateDoc(doc(db, 'users', childUid), {
+    pendingApprovals: arrayRemove(questId),
+  });
+}
+
+// Get pending approvals for a child
+export async function getPendingApprovals(uid: string): Promise<string[]> {
+  const profile = await getUserProfile(uid);
+  return profile?.pendingApprovals ?? [];
+}
+
+// Check if a quest is approved
+export async function isQuestApproved(uid: string, questId: string): Promise<boolean> {
+  const profile = await getUserProfile(uid);
+  return profile?.approvedQuestIds?.includes(questId) ?? false;
 }

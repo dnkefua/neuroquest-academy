@@ -42,8 +42,17 @@ export default function AuthPage() {
       router.push(profile?.name ? '/dashboard' : '/onboarding');
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? 'unknown';
-      console.error('Sign in error code:', code, err);
-      toast.error(`Error: ${code}`, { duration: 8000 });
+      console.error('Sign in error:', code, err);
+      const friendlyMessages: Record<string, string> = {
+        'auth/user-not-found': 'No account found with this email.',
+        'auth/wrong-password': 'Incorrect password.',
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/network-request-failed': 'Network error. Please check your connection.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+        'auth/invalid-credential': 'Invalid email or password.',
+      };
+      const friendly = friendlyMessages[code] ?? `Error: ${code}`;
+      toast.error(friendly, { duration: 10000 });
       setLoading(false);
     }
   }
@@ -56,11 +65,25 @@ export default function AuthPage() {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       console.log('Sign up success, uid:', cred.user.uid);
       gameAudio.playSignIn();
+      // Wait for Firebase Auth to persist the session before navigating
+      // On static exports, auth state may not be available immediately
+      await new Promise((resolve) => setTimeout(resolve, 500));
       router.push('/onboarding');
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? 'unknown';
-      console.error('Sign up error code:', code, err);
-      toast.error(`Error: ${code}`, { duration: 8000 });
+      const message = (err as { message?: string }).message ?? '';
+      console.error('Sign up error:', code, message, err);
+      // Show user-friendly messages for common errors
+      const friendlyMessages: Record<string, string> = {
+        'auth/operation-not-allowed': 'Email/password sign-up is disabled. Please enable it in Firebase Console > Authentication > Sign-in method.',
+        'auth/email-already-in-use': 'An account with this email already exists. Try signing in instead.',
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/weak-password': 'Password must be at least 6 characters.',
+        'auth/network-request-failed': 'Network error. Please check your connection.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+      };
+      const friendly = friendlyMessages[code] ?? `Error: ${code}`;
+      toast.error(friendly, { duration: 10000 });
       setLoading(false);
     }
   }

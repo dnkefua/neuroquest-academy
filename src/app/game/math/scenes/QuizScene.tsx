@@ -210,10 +210,6 @@ export default function QuizScene() {
           </div>
         </motion.div>
       </AnimatePresence>
-
-      <style jsx>{`
-        @keyframes flicker { 0%{transform:scale(1) rotate(-3deg)} 100%{transform:scale(1.1) rotate(3deg)} }
-      `}</style>
     </div>
   );
 }

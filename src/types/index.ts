@@ -1,3 +1,5 @@
+export type StudentClass = 'math' | 'science' | 'english' | 'arabic';
+
 export interface UserProfile {
   uid: string;
   name: string;
@@ -11,6 +13,10 @@ export interface UserProfile {
   createdAt: string;
   lastActiveDate?: string;
   childUid?: string;
+  // Class system
+  studentClass?: StudentClass;
+  approvedQuestIds: string[];
+  pendingApprovals: string[];
 }
 
 export type EmotionKey = 'happy' | 'neutral' | 'frustrated' | 'anxious';
@@ -32,9 +38,18 @@ export interface Subject {
   description: string;
 }
 
+export interface NarratorProfile {
+  name: string;
+  class: StudentClass;
+  gender: 'male' | 'female';
+  tagline: string; // e.g. "Equation Wizard Extraordinaire"
+}
+
 export interface LessonContent {
   title: string;
   intro: string;
+  ibTopicKey: string;
+  narrator: NarratorProfile;
   sections: LessonSection[];
   quiz: QuizQuestion[];
   encouragement: string;
@@ -42,9 +57,15 @@ export interface LessonContent {
 }
 
 export interface LessonSection {
+  type: 'slide' | 'demonstration' | 'interactive' | 'narrated';
   heading: string;
-  content: string;
-  activity?: string;
+  content: string;             // Concise slide content (OpenMAIC: "slides are visual aids not scripts")
+  visualType?: 'number-line' | 'diagram' | 'chart' | 'animation' | 'interactive-html' | 'real-world';
+  keyPoints?: string[];        // 3-4 bullet takeaways per section
+  workedExample?: string;       // Math: step-by-step worked problem
+  realWorldExample?: string;    // UAE/Dubai context (souq prices, Burj Khalifa, desert temps)
+  activity?: string;            // Hands-on student activity
+  narrationScript?: string;    // OpenMAIC: exact words narrator should say aloud
 }
 
 export interface QuizQuestion {
@@ -52,6 +73,8 @@ export interface QuizQuestion {
   options: string[];
   correct: number;
   explanation: string;
+  workedExample?: string;      // Shown after wrong answer
+  difficulty: 'easy' | 'medium' | 'hard';
 }
 
 // ── Curriculum Engine ─────────────────────────────────────────────────────────

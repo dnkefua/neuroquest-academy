@@ -1,12 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useScienceStore } from './store/gameStore';
+import QuestMapScene         from './scenes/QuestMapScene';
 import ScienceMissionBriefing from './scenes/MissionBriefing';
 import CloudSpiritTeaching    from './scenes/CloudSpiritTeaching';
 import ScienceQuizScene       from './scenes/QuizScene';
 import ScienceVictoryScene    from './scenes/VictoryScene';
 
 const SCENES = {
+  QUEST_MAP:        QuestMapScene,
   MISSION_BRIEFING: ScienceMissionBriefing,
   CLOUD_TEACHING:   CloudSpiritTeaching,
   QUIZ:             ScienceQuizScene,

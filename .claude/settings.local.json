@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find 'C:\\\\Users\\\\A2Z\\\\OneDrive\\\\Documents\\\\NDN Analytics\\\\NeuroQuest\\\\src' -type f -name *.ts -o -name *.tsx -o -name *.css)",
+      "Bash(npm test:*)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(lsof -ti:3000)",
+      "Bash(curl -s http://localhost:3001)"
+    ]
+  }
+}

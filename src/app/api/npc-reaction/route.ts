@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NPCReactionSchema } from '@/lib/schemas';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -19,15 +20,23 @@ const FALLBACKS: Record<string, { correct: string; incorrect: string }> = {
 };
 
 export async function POST(req: NextRequest) {
-  const { npcName, situation, studentChoice, wasCorrect, studentName, grade, language } = await req.json();
-
   try {
+    const body = await req.json();
+    const parsed = NPCReactionSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+    }
+
+    const { npcName, situation, studentChoice, wasCorrect, studentName, grade, language } = parsed.data;
+    const numGrade = typeof grade === 'string' ? parseInt(grade, 10) : grade;
+
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const prompt = `You are ${npcName}, a child character in a social skills learning scenario for grade ${grade} students.
+    const prompt = `You are ${npcName}, a child character in a social skills learning scenario for grade ${numGrade} students.
 
 Situation: ${situation}
-The student named ${studentName} chose to respond by: "${studentChoice}"
+The student named ${studentName ?? 'the student'} chose to respond by: "${studentChoice}"
 This response was ${wasCorrect ? 'KIND and CORRECT' : 'NOT the best choice'}.
 
 Write ${npcName}'s reaction in 1-2 sentences:
@@ -36,8 +45,8 @@ Write ${npcName}'s reaction in 1-2 sentences:
 
 Rules:
 - Speak ONLY as ${npcName} — no narration, no quotation marks
-- Age-appropriate for grade ${grade} (ages ${grade + 5}-${grade + 6})
-- ${language === 'AR' ? 'Write in Arabic.' : 'Write in English.'}
+- Age-appropriate for grade ${numGrade} (ages ${numGrade + 5}-${numGrade + 6})
+- ${language === 'AR' || language === 'ar' ? 'Write in Arabic.' : 'Write in English.'}
 - Maximum 2 sentences. Warm and child-friendly.`;
 
     const result = await model.generateContent(prompt);
