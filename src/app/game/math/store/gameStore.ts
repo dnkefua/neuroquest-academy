@@ -25,6 +25,7 @@ export interface Question {
 
 interface GameState {
   scene: Scene;
+  currentGrade: number;
   currentQuestId: string;
   studentName: string;
   goldCoins: number;
@@ -37,6 +38,7 @@ interface GameState {
   xpEarned: number;
 
   setScene: (scene: Scene) => void;
+  setGrade: (grade: number) => void;
   loadQuest: (questId: string) => void;
   addGold: (amount: number) => void;
   answerQuestion: (correct: boolean) => void;
@@ -46,10 +48,19 @@ interface GameState {
   reset: () => void;
 }
 
+// Currently only Grade 6 has quest data
+// TODO: Add quest data for other grades
+const GRADE_QUESTS: Record<number, typeof MATH_QUESTS> = {
+  6: MATH_QUESTS,
+  // Grades 1-5, 7-12 coming soon
+};
+
 const FIRST_QUEST = MATH_QUESTS[0];
+const DEFAULT_GRADE = 6;
 
 export const useGameStore = create<GameState>((set, get) => ({
   scene: 'QUEST_MAP',
+  currentGrade: DEFAULT_GRADE,
   currentQuestId: FIRST_QUEST.id,
   studentName: 'Explorer',
   goldCoins: 0,
@@ -63,8 +74,31 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   setScene: (scene) => set({ scene }),
 
+  setGrade: (grade) => {
+    const quests = GRADE_QUESTS[grade];
+    if (!quests || quests.length === 0) {
+      // Grade not available yet, stay on current grade
+      return;
+    }
+    const firstQuest = quests[0];
+    set({
+      currentGrade: grade,
+      currentQuestId: firstQuest.id,
+      questions: firstQuest.questions,
+      currentQuestion: 0,
+      score: 0,
+      goldCoins: 0,
+      clueUsed: new Array(firstQuest.questions.length).fill(false),
+      lessonComplete: false,
+      xpEarned: 0,
+      scene: 'QUEST_MAP',
+    });
+  },
+
   loadQuest: (questId) => {
-    const quest = MATH_QUESTS.find(q => q.id === questId);
+    const { currentGrade } = get();
+    const quests = GRADE_QUESTS[currentGrade] || MATH_QUESTS;
+    const quest = quests.find(q => q.id === questId);
     if (!quest) return;
     set({
       currentQuestId: questId,
@@ -108,3 +142,16 @@ export const useGameStore = create<GameState>((set, get) => ({
     xpEarned: 0,
   })),
 }));
+
+// Export for QuestMapScene
+export { MATH_QUESTS, GRADE_QUESTS };
+export const getQuestById = (id: string) => MATH_QUESTS.find(q => q.id === id);
+export const getNextQuest = (currentId: string) => {
+  const idx = MATH_QUESTS.findIndex(q => q.id === currentId);
+  return idx >= 0 && idx < MATH_QUESTS.length - 1 ? MATH_QUESTS[idx + 1] : null;
+};
+
+// Check if a grade has quests available
+export function hasQuestsForGrade(grade: number): boolean {
+  return !!GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0;
+}

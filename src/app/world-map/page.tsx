@@ -11,11 +11,11 @@ import WalletHUD from '@/components/ui/WalletHUD';
 import type { GradeRank } from '@/types';
 
 const SUBJECTS = [
-  { id: 'math',        label: 'Mathematics',   emoji: '🔢', route: (g: number) => g === 6 ? '/game/math' : `/lesson/math?grade=${g}`       },
-  { id: 'science',     label: 'Science',        emoji: '🔬', route: (g: number) => g === 6 ? '/game/science' : `/lesson/science?grade=${g}` },
-  { id: 'english',     label: 'English',        emoji: '📖', route: (g: number) => `/lesson/english?grade=${g}`                             },
-  { id: 'social',      label: 'Social Studies', emoji: '🌍', route: (g: number) => `/lesson/social?grade=${g}`                              },
-  { id: 'socialSkills',label: 'Social Skills',  emoji: '💜', route: (g: number) => `/social-skills?grade=${g}`                             },
+  { id: 'math',        label: 'Mathematics',   emoji: '🔢', route: (g: number) => `/game/math?grade=${g}` },
+  { id: 'science',     label: 'Science',        emoji: '🔬', route: (g: number) => `/game/science?grade=${g}` },
+  { id: 'english',     label: 'English',        emoji: '📖', route: (g: number) => `/lesson/english?grade=${g}` },
+  { id: 'social',      label: 'Social Studies', emoji: '🌍', route: (g: number) => `/lesson/social?grade=${g}` },
+  { id: 'socialSkills',label: 'Social Skills',  emoji: '💜', route: (g: number) => `/social-skills?grade=${g}` },
 ];
 
 const PROGRAMME_LABELS = { PYP: 'Primary Years', MYP: 'Middle Years', DP: 'Diploma' };
