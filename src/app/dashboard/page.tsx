@@ -6,6 +6,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { auth } from '@/lib/firebase';
 import { getUserProfile, updateEmotion, logIntervention } from '@/lib/firestore';
+import { useProgressStore } from '@/store/progressStore';
 import type { UserProfile, EmotionKey } from '@/types';
 import { EMOTIONS, SUBJECTS } from '@/lib/constants';
 import BrainBreakModal from '@/components/BrainBreakModal';
@@ -22,16 +23,22 @@ export default function DashboardPage() {
   const [showBrainBreak, setShowBrainBreak] = useState(false);
   const [updatingEmotion, setUpdatingEmotion] = useState(false);
 
+  const setCurrentGrade = useProgressStore(s => s.setCurrentGrade);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) { router.replace('/auth'); return; }
       const p = await getUserProfile(user.uid);
       if (!p?.name) { router.replace('/onboarding'); return; }
       setProfile(p);
+      // Sync user's grade from profile to progress store
+      if (p.grade && p.grade !== useProgressStore.getState().currentGrade) {
+        setCurrentGrade(p.grade);
+      }
       setLoading(false);
     });
     return () => unsub();
-  }, [router]);
+  }, [router, setCurrentGrade]);
 
   async function handleEmotionChange(emotion: EmotionKey) {
     if (!profile || updatingEmotion) return;

@@ -7,22 +7,22 @@ import { useGameStore } from '../../store/gameStore';
 import { useEconomyStore } from '@/store/economyStore';
 import { gameTTS } from '../../../shared/tts';
 
-const QUEST_ID = 'g6-math';
-const CLUE_COST = 10;  // MYP grade 6
+const CLUE_COST = 10;
 
 interface ClueBoxProps {
   question: Question;
   questionIndex: number;
+  questId: string;
 }
 
-export default function ClueBox({ question, questionIndex }: ClueBoxProps) {
+export default function ClueBox({ question, questionIndex, questId }: ClueBoxProps) {
   const [open, setOpen] = useState(false);
   const [showInsufficient, setShowInsufficient] = useState(false);
 
   const { clueUsed, openClue } = useGameStore();
   const { walletCoins, buyClue, hasClue } = useEconomyStore();
 
-  const alreadyPurchased = hasClue(QUEST_ID, questionIndex) || clueUsed[questionIndex];
+  const alreadyPurchased = hasClue(questId, questionIndex) || clueUsed[questionIndex];
   const canAfford = walletCoins >= CLUE_COST;
 
   function handleOpen() {
@@ -31,7 +31,7 @@ export default function ClueBox({ question, questionIndex }: ClueBoxProps) {
       gameTTS.speak(`${question.clue.title}. ${question.clue.example}`);
       return;
     }
-    const bought = buyClue(QUEST_ID, questionIndex, CLUE_COST);
+    const bought = buyClue(questId, questionIndex, CLUE_COST);
     if (bought) {
       openClue(questionIndex);
       setOpen(true);

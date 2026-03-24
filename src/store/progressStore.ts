@@ -42,6 +42,7 @@ interface ProgressState {
   graduationDate: number | null;
 
   // Actions
+  setCurrentGrade: (grade: number) => void;
   completeQuest: (questId: string) => void;
   defeatBoss: (bossId: string) => void;
   completeGrade: (grade: number) => void;
@@ -68,6 +69,13 @@ export const useProgressStore = create<ProgressState>()(
   persist(
     (set, get) => ({
       ...DEFAULT_STATE,
+
+      setCurrentGrade: (grade) => {
+        set({
+          currentGrade: grade,
+          currentProgramme: getProgramme(grade),
+        });
+      },
 
       completeQuest: (questId) => {
         const { completedQuests } = get();
