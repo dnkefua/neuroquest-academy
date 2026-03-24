@@ -6,7 +6,8 @@
       "Bash(curl -s http://localhost:3000)",
       "Bash(lsof -ti:3000)",
       "Bash(curl -s http://localhost:3001)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(wc -l src/curriculum/data/*.ts)"
     ]
   }
 }

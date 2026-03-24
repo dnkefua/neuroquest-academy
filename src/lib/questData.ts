@@ -289,7 +289,7 @@ export function getRouteForSubject(subject: CurriculumSubject, grade: number): s
   const routes: Record<CurriculumSubject, (g: number) => string> = {
     math: (g) => `/game/math?grade=${g}`,
     science: (g) => `/game/science?grade=${g}`,
-    english: (g) => `/lesson/english?grade=${g}`,
+    english: (g) => `/game/english?grade=${g}`,
     social: (g) => `/lesson/social?grade=${g}`,
     socialSkills: (g) => `/social-skills?grade=${g}`,
   };
