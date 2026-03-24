@@ -7,16 +7,9 @@ import { auth } from '@/lib/firebase';
 import { getUserProfile } from '@/lib/firestore';
 import { useProgressStore, RANK_PROGRESSION } from '@/store/progressStore';
 import { useEconomyStore } from '@/store/economyStore';
+import { getAvailableSubjectsForGrade, getRouteForSubject, hasQuestsForGradeSubject } from '@/lib/questData';
+import type { CurriculumSubject, GradeRank } from '@/types';
 import WalletHUD from '@/components/ui/WalletHUD';
-import type { GradeRank } from '@/types';
-
-const SUBJECTS = [
-  { id: 'math',        label: 'Mathematics',   emoji: '🔢', route: (g: number) => `/game/math?grade=${g}` },
-  { id: 'science',     label: 'Science',        emoji: '🔬', route: (g: number) => `/game/science?grade=${g}` },
-  { id: 'english',     label: 'English',        emoji: '📖', route: (g: number) => `/lesson/english?grade=${g}` },
-  { id: 'social',      label: 'Social Studies', emoji: '🌍', route: (g: number) => `/lesson/social?grade=${g}` },
-  { id: 'socialSkills',label: 'Social Skills',  emoji: '💜', route: (g: number) => `/social-skills?grade=${g}` },
-];
 
 const PROGRAMME_LABELS = { PYP: 'Primary Years', MYP: 'Middle Years', DP: 'Diploma' };
 
@@ -302,27 +295,33 @@ export default function WorldMapPage() {
                 <p className="text-center text-xs text-gray-400 uppercase tracking-widest mb-3 font-bold">
                   Choose Your Quest Door
                 </p>
-                {SUBJECTS.map((subj) => (
+                {getAvailableSubjectsForGrade(selectedGrade.grade).map((subj) => (
                   <motion.button key={subj.id}
-                    whileHover={{ x: 4, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={subj.hasQuests ? { x: 4, scale: 1.02 } : {}}
+                    whileTap={subj.hasQuests ? { scale: 0.98 } : {}}
                     onClick={() => {
-                      router.push(subj.route(selectedGrade.grade));
+                      if (!subj.hasQuests) return;
+                      router.push(getRouteForSubject(subj.id, selectedGrade.grade));
                       setSelectedGrade(null);
                     }}
+                    disabled={!subj.hasQuests}
                     className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all"
                     style={{
-                      background: 'rgba(255,255,255,0.07)',
-                      border: `1px solid ${selectedGrade.color}44`,
+                      background: subj.hasQuests ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${subj.hasQuests ? selectedGrade.color + '44' : 'rgba(255,255,255,0.1)'}`,
+                      opacity: subj.hasQuests ? 1 : 0.5,
+                      cursor: subj.hasQuests ? 'pointer' : 'not-allowed',
                     }}>
                     <span className="text-2xl">{subj.emoji}</span>
                     <div className="flex-1">
                       <p className="font-black text-white text-sm">{subj.label}</p>
-                      <p className="text-xs mt-0.5" style={{ color: selectedGrade.color }}>
-                        Grade {selectedGrade.grade} Quest
+                      <p className="text-xs mt-0.5" style={{ color: subj.hasQuests ? selectedGrade.color : 'rgba(255,255,255,0.3)' }}>
+                        {subj.hasQuests ? `Grade ${selectedGrade.grade} Quest` : 'Coming Soon'}
                       </p>
                     </div>
-                    <span className="text-gray-400 text-sm">→</span>
+                    {subj.hasQuests && (
+                      <span className="text-gray-400 text-sm">→</span>
+                    )}
                   </motion.button>
                 ))}
 

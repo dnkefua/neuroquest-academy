@@ -1,6 +1,8 @@
 'use client';
 import { create } from 'zustand';
 import { MATH_QUESTS } from '../data/questData';
+import { getGameQuests, getSubjectsForGrade, type GameQuest } from '@/lib/questData';
+import type { CurriculumSubject } from '@/types';
 
 export type Scene = 'QUEST_MAP' | 'CLASSROOM' | 'MISSION_BRIEFING' | 'PIRATE_ENCOUNTER' | 'QUIZ' | 'VICTORY';
 
@@ -21,6 +23,21 @@ export interface Question {
     moveValue: number;
     moveValue2?: number;
   };
+}
+
+interface MathQuestLocal {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  locationName: string;
+  locationType: 'hut' | 'village' | 'city' | 'castle' | 'boss';
+  color: string;
+  glowColor: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'Boss';
+  briefingTitle: string;
+  briefingDescription: string;
+  questions: Question[];
 }
 
 interface GameState {
@@ -48,34 +65,54 @@ interface GameState {
   reset: () => void;
 }
 
-// Currently only Grade 6 has quest data
-// TODO: Add quest data for other grades
-const GRADE_QUESTS: Record<number, typeof MATH_QUESTS> = {
+// Hardcoded quests for Grade 6 (original data with number line features)
+// TODO: Migrate other grades to curriculum data
+const GRADE_QUESTS: Record<number, MathQuestLocal[]> = {
   6: MATH_QUESTS,
-  // Grades 1-5, 7-12 coming soon
 };
 
-const FIRST_QUEST = MATH_QUESTS[0];
+// Check if math quests are available for a grade using curriculum data
+function hasMathQuestsForGrade(grade: number): boolean {
+  // First check hardcoded data
+  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
+    return true;
+  }
+  // Then check curriculum data
+  const curriculumQuests = getGameQuests(grade, 'math' as CurriculumSubject);
+  return curriculumQuests.length > 0;
+}
+
+// Get quests for a grade - prefer hardcoded for now (has number line features)
+function getQuestsForGrade(grade: number): MathQuestLocal[] {
+  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
+    return GRADE_QUESTS[grade];
+  }
+  // Fallback: would need to convert curriculum quests to math format
+  // For now, return empty array
+  return [];
+}
+
 const DEFAULT_GRADE = 6;
+const FIRST_QUEST = GRADE_QUESTS[DEFAULT_GRADE]?.[0];
 
 export const useGameStore = create<GameState>((set, get) => ({
   scene: 'QUEST_MAP',
   currentGrade: DEFAULT_GRADE,
-  currentQuestId: FIRST_QUEST.id,
+  currentQuestId: FIRST_QUEST?.id || 'g6-math-q1',
   studentName: 'Explorer',
   goldCoins: 0,
   goldTarget: 100,
   currentQuestion: 0,
-  questions: FIRST_QUEST.questions,
+  questions: FIRST_QUEST?.questions || [],
   score: 0,
-  clueUsed: new Array(FIRST_QUEST.questions.length).fill(false),
+  clueUsed: FIRST_QUEST ? new Array(FIRST_QUEST.questions.length).fill(false) : [],
   lessonComplete: false,
   xpEarned: 0,
 
   setScene: (scene) => set({ scene }),
 
   setGrade: (grade) => {
-    const quests = GRADE_QUESTS[grade];
+    const quests = getQuestsForGrade(grade);
     if (!quests || quests.length === 0) {
       // Grade not available yet, stay on current grade
       return;
@@ -97,7 +134,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   loadQuest: (questId) => {
     const { currentGrade } = get();
-    const quests = GRADE_QUESTS[currentGrade] || MATH_QUESTS;
+    const quests = getQuestsForGrade(currentGrade);
     const quest = quests.find(q => q.id === questId);
     if (!quest) return;
     set({
@@ -144,7 +181,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 }));
 
 // Export for QuestMapScene
-export { MATH_QUESTS, GRADE_QUESTS };
+export { MATH_QUESTS, GRADE_QUESTS, getQuestsForGrade };
 export const getQuestById = (id: string) => MATH_QUESTS.find(q => q.id === id);
 export const getNextQuest = (currentId: string) => {
   const idx = MATH_QUESTS.findIndex(q => q.id === currentId);
@@ -153,5 +190,5 @@ export const getNextQuest = (currentId: string) => {
 
 // Check if a grade has quests available
 export function hasQuestsForGrade(grade: number): boolean {
-  return !!GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0;
+  return hasMathQuestsForGrade(grade);
 }

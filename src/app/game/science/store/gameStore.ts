@@ -1,6 +1,8 @@
 'use client';
 import { create } from 'zustand';
 import { SCIENCE_QUESTS } from '../data/questData';
+import { getGameQuests, type GameQuest } from '@/lib/questData';
+import type { CurriculumSubject } from '@/types';
 
 export type ScienceScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'CLOUD_TEACHING' | 'QUIZ' | 'VICTORY';
 export type WaterStage = 'evaporation' | 'condensation' | 'precipitation' | 'collection' | 'all';
@@ -21,6 +23,23 @@ export interface ScienceQuestion {
     example: string;
     highlightStage: WaterStage;
   };
+}
+
+interface ScienceQuestLocal {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  locationName: string;
+  locationType: 'hut' | 'village' | 'city' | 'castle' | 'boss';
+  color: string;
+  glowColor: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'Boss';
+  briefingTitle: string;
+  briefingDescription: string;
+  teacherName: string;
+  teacherEmoji: string;
+  questions: ScienceQuestion[];
 }
 
 interface ScienceState {
@@ -45,33 +64,53 @@ interface ScienceState {
   reset: () => void;
 }
 
-// Currently only Grade 6 has quest data
-// TODO: Add quest data for other grades
-const GRADE_QUESTS: Record<number, typeof SCIENCE_QUESTS> = {
+// Hardcoded quests for Grade 6 (original data with water cycle features)
+// TODO: Migrate other grades to curriculum data
+const GRADE_QUESTS: Record<number, ScienceQuestLocal[]> = {
   6: SCIENCE_QUESTS,
-  // Grades 1-5, 7-12 coming soon
 };
 
-const FIRST_QUEST = SCIENCE_QUESTS[0];
+// Check if science quests are available for a grade using curriculum data
+function hasScienceQuestsForGrade(grade: number): boolean {
+  // First check hardcoded data
+  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
+    return true;
+  }
+  // Then check curriculum data
+  const curriculumQuests = getGameQuests(grade, 'science' as CurriculumSubject);
+  return curriculumQuests.length > 0;
+}
+
+// Get quests for a grade - prefer hardcoded for now (has water cycle features)
+function getQuestsForGrade(grade: number): ScienceQuestLocal[] {
+  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
+    return GRADE_QUESTS[grade];
+  }
+  // Fallback: would need to convert curriculum quests to science format
+  // For now, return empty array
+  return [];
+}
+
 const DEFAULT_GRADE = 6;
+const FIRST_QUEST = GRADE_QUESTS[DEFAULT_GRADE]?.[0];
 
 export const useScienceStore = create<ScienceState>((set, get) => ({
   scene: 'QUEST_MAP',
   currentGrade: DEFAULT_GRADE,
-  currentQuestId: FIRST_QUEST.id,
+  currentQuestId: FIRST_QUEST?.id || 'g6-science-q1',
   studentName: 'Omar',
   vialsCollected: 0,
   totalVials: 4,
   currentQuestion: 0,
-  questions: FIRST_QUEST.questions,
+  questions: FIRST_QUEST?.questions || [],
   score: 0,
-  clueUsed: [false, false, false, false, false],
+  clueUsed: FIRST_QUEST ? new Array(FIRST_QUEST.questions.length).fill(false) : [],
   xpEarned: 0,
 
   setScene: (scene) => set({ scene }),
 
   setGrade: (grade) => {
-    const quests = GRADE_QUESTS[grade];
+    const quests = getQuestsForGrade(grade);
     if (!quests || quests.length === 0) {
       // Grade not available yet
       return;
@@ -92,7 +131,7 @@ export const useScienceStore = create<ScienceState>((set, get) => ({
 
   loadQuest: (questId) => {
     const { currentGrade } = get();
-    const quests = GRADE_QUESTS[currentGrade] || SCIENCE_QUESTS;
+    const quests = getQuestsForGrade(currentGrade);
     const quest = quests.find(q => q.id === questId);
     if (!quest) return;
     set({
@@ -127,11 +166,11 @@ export const useScienceStore = create<ScienceState>((set, get) => ({
   reset: () => set({
     scene: 'QUEST_MAP',
     currentGrade: DEFAULT_GRADE,
-    currentQuestId: FIRST_QUEST.id,
+    currentQuestId: FIRST_QUEST?.id || 'g6-science-q1',
     vialsCollected: 0,
     currentQuestion: 0,
     score: 0,
-    clueUsed: [false, false, false, false, false],
+    clueUsed: FIRST_QUEST ? new Array(FIRST_QUEST.questions.length).fill(false) : [],
     xpEarned: 0,
   }),
 }));
@@ -146,5 +185,5 @@ export const getNextQuest = (currentId: string) => {
 
 // Check if a grade has quests available
 export function hasQuestsForGrade(grade: number): boolean {
-  return !!GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0;
+  return hasScienceQuestsForGrade(grade);
 }

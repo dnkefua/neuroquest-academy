@@ -255,3 +255,43 @@ export function getTotalQuestsForGrade(grade: number): number {
   const subjects = getSubjectsForGrade(grade);
   return subjects.reduce((sum, subject) => sum + getQuestCountForGrade(grade, subject), 0);
 }
+
+/**
+ * Check if any quests exist for a grade/subject combination
+ */
+export function hasQuestsForGradeSubject(grade: number, subject: CurriculumSubject): boolean {
+  return getQuestCountForGrade(grade, subject) > 0;
+}
+
+/**
+ * Get all subjects that have quests for a specific grade
+ * Returns subjects with their availability status
+ */
+export function getAvailableSubjectsForGrade(grade: number): Array<{ id: CurriculumSubject; label: string; emoji: string; hasQuests: boolean }> {
+  const SUBJECT_INFO: Array<{ id: CurriculumSubject; label: string; emoji: string }> = [
+    { id: 'math', label: 'Mathematics', emoji: '🔢' },
+    { id: 'science', label: 'Science', emoji: '🔬' },
+    { id: 'english', label: 'English', emoji: '📖' },
+    { id: 'social', label: 'Social Studies', emoji: '🌍' },
+    { id: 'socialSkills', label: 'Social Skills', emoji: '💜' },
+  ];
+
+  return SUBJECT_INFO.map(subject => ({
+    ...subject,
+    hasQuests: hasQuestsForGradeSubject(grade, subject.id),
+  }));
+}
+
+/**
+ * Get route path for a subject
+ */
+export function getRouteForSubject(subject: CurriculumSubject, grade: number): string {
+  const routes: Record<CurriculumSubject, (g: number) => string> = {
+    math: (g) => `/game/math?grade=${g}`,
+    science: (g) => `/game/science?grade=${g}`,
+    english: (g) => `/lesson/english?grade=${g}`,
+    social: (g) => `/lesson/social?grade=${g}`,
+    socialSkills: (g) => `/social-skills?grade=${g}`,
+  };
+  return routes[subject](grade);
+}
