@@ -4,6 +4,9 @@ import type { CurriculumQuest, CurriculumSubject, Programme } from '@/types';
 import { PYP_QUESTS } from '@/curriculum/data/grades1-5';
 import { MYP_QUESTS } from '@/curriculum/data/grades6-10';
 import { DP_QUESTS } from '@/curriculum/data/grades11-12';
+import { ENGLISH_QUESTS } from '@/curriculum/data/english';
+import { SOCIAL_QUESTS } from '@/curriculum/data/social';
+import { SOCIAL_SKILLS_QUESTS } from '@/curriculum/data/socialSkills';
 
 // ── Game Quest Types ───────────────────────────────────────────────────────────
 
@@ -64,6 +67,9 @@ export const ALL_CURRICULUM_QUESTS: CurriculumQuest[] = [
   ...PYP_QUESTS,
   ...MYP_QUESTS,
   ...DP_QUESTS,
+  ...ENGLISH_QUESTS,
+  ...SOCIAL_QUESTS,
+  ...SOCIAL_SKILLS_QUESTS,
 ];
 
 // ── Helper Functions ─────────────────────────────────────────────────────────────
@@ -122,6 +128,15 @@ export function getProgrammeForGrade(grade: number): Programme {
  * Convert curriculum quest question to game question format
  */
 function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): GameQuestion {
+  // Use clue if provided, otherwise generate defaults
+  const defaultClue = {
+    title: 'Hint',
+    explanation: 'Think carefully about the question.',
+    visual: 'text' as const,
+    cost: 10,
+  };
+  const clueData = q.clue || defaultClue;
+
   return {
     id: index + 1,
     narrative: q.narrative,
@@ -130,10 +145,10 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
     options: q.options,
     correct: q.correctIndex,
     clue: {
-      title: q.clue.title,
-      example: q.clue.explanation,
-      visual: q.clue.visual,
-      cost: q.clue.cost,
+      title: clueData.title,
+      example: clueData.explanation,
+      visual: clueData.visual,
+      cost: clueData.cost,
     },
   };
 }

@@ -90,13 +90,18 @@ export interface CurriculumQuestion {
   equation?: string;
   options: string[];
   correctIndex: number;
-  clue: {
+  clue?: {
     title: string;
     explanation: string;
     visual: 'numberLine' | 'text' | 'diagram';
     cost: number;
   };
-  coinsOnCorrect: number;
+  coinsOnCorrect?: number; // Optional - defaults handled by game engine
+  reward?: string; // Optional badge/achievement name
+  // Optional spirit theme (for social/emotional subjects)
+  spirit?: string;
+  spiritEmoji?: string;
+  spiritColor?: string;
 }
 
 export interface BossChallenge {
@@ -106,9 +111,15 @@ export interface BossChallenge {
   villainEmoji: string;
   narrative: string;
   question: string;
-  answer: string;
+  answer: string | string[];
   hints: string[];
   coinReward: number;
+}
+
+export interface SimpleBossChallenge {
+  question: string;
+  answer: string | string[];
+  reward: string;
 }
 
 export interface CurriculumQuest {
@@ -122,8 +133,9 @@ export interface CurriculumQuest {
   characterTeacher: string;
   teacherEmoji: string;
   theme: string;
-  coinReward: number;
-  boss: BossChallenge;
+  coinReward?: number; // Optional - defaults handled by game engine
+  boss?: BossChallenge;
+  bossChallenge?: SimpleBossChallenge; // Simpler format for non-math subjects
   questions: CurriculumQuestion[];
 }
 
