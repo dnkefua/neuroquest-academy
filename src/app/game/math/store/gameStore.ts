@@ -1,6 +1,6 @@
 'use client';
 import { create } from 'zustand';
-import { MATH_QUESTS } from '../data/questData';
+import { MATH_QUESTS, type MathQuest } from '../data/questData';
 import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
@@ -37,6 +37,10 @@ export interface MathQuestLocal {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'Boss';
   briefingTitle: string;
   briefingDescription: string;
+  teacherName: string;
+  teacherEmoji: string;
+  subject: string;
+  theme: string;
   questions: Question[];
 }
 
@@ -67,7 +71,7 @@ interface GameState {
 
 // Hardcoded quests for Grade 6 (original data with number line features)
 // These have special number line visualization
-const GRADE_QUESTS_HARDCODED: Record<number, MathQuestLocal[]> = {
+const GRADE_QUESTS_HARDCODED: Record<number, MathQuest[]> = {
   6: MATH_QUESTS,
 };
 
@@ -109,7 +113,33 @@ function toMathQuestLocal(gq: GameQuest): MathQuestLocal {
     difficulty: gq.difficulty,
     briefingTitle: gq.briefingTitle,
     briefingDescription: gq.briefingDescription,
+    teacherName: gq.teacherName || 'Zara the Wise',
+    teacherEmoji: gq.teacherEmoji || '🧙‍♀️',
+    subject: gq.subject,
+    theme: gq.subtitle,
     questions: gq.questions.map((q, i) => toLocalQuestion(q, i)),
+  };
+}
+
+// Convert hardcoded MathQuest to MathQuestLocal format
+function toMathQuestLocalFromHardcoded(mq: typeof MATH_QUESTS[0]): MathQuestLocal {
+  return {
+    id: mq.id,
+    title: mq.title,
+    subtitle: mq.subtitle,
+    emoji: mq.emoji,
+    locationName: mq.locationName,
+    locationType: mq.locationType,
+    color: mq.color,
+    glowColor: mq.glowColor,
+    difficulty: mq.difficulty,
+    briefingTitle: mq.briefingTitle,
+    briefingDescription: mq.briefingDescription,
+    teacherName: mq.teacherName || 'Zara the Wise',
+    teacherEmoji: mq.teacherEmoji || '🧙‍♀️',
+    subject: mq.subject || 'math',
+    theme: mq.theme || mq.subtitle,
+    questions: mq.questions,
   };
 }
 
@@ -127,8 +157,10 @@ function hasMathQuestsForGrade(grade: number): boolean {
 // Get quests for a grade - prefer hardcoded (has number line features), then curriculum
 function getQuestsForGrade(grade: number): MathQuestLocal[] {
   // First check if we have hardcoded quests with special features
-  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
-    return GRADE_QUESTS_HARDCODED[grade];
+  const hardcoded = GRADE_QUESTS_HARDCODED[grade];
+  if (hardcoded && hardcoded.length > 0) {
+    // Convert to MathQuestLocal format
+    return hardcoded.map(q => toMathQuestLocalFromHardcoded(q));
   }
   // Convert curriculum quests to local format
   const curriculumQuests = getGameQuests(grade, 'math' as CurriculumSubject);

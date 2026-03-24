@@ -12,6 +12,10 @@ export interface MathQuest {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | 'Boss';
   briefingTitle: string;
   briefingDescription: string;
+  teacherName?: string;
+  teacherEmoji?: string;
+  subject?: string;
+  theme?: string;
   questions: Question[];
 }
 
@@ -245,6 +249,10 @@ export const MATH_QUESTS: MathQuest[] = [
     difficulty: 'Beginner',
     briefingTitle: 'The Pirate Treasure Challenge',
     briefingDescription: 'Help the pirates count their treasure using positive and negative numbers!',
+    teacherName: 'Zara the Wise',
+    teacherEmoji: '🧙‍♀️',
+    subject: 'math',
+    theme: 'Adding positive and negative integers',
     questions: QUEST_1_QUESTIONS,
   },
   {
@@ -259,6 +267,10 @@ export const MATH_QUESTS: MathQuest[] = [
     difficulty: 'Intermediate',
     briefingTitle: 'Surviving the Number Storm',
     briefingDescription: 'Navigate the storm by mastering subtraction with negative numbers!',
+    teacherName: 'Captain Zero',
+    teacherEmoji: '🏴‍☠️',
+    subject: 'math',
+    theme: 'Subtracting with negative numbers',
     questions: QUEST_2_QUESTIONS,
   },
   {
@@ -273,6 +285,10 @@ export const MATH_QUESTS: MathQuest[] = [
     difficulty: 'Advanced',
     briefingTitle: 'The Crystal Mining Expedition',
     briefingDescription: 'Dig through the caverns using advanced negative number operations!',
+    teacherName: 'Crystal the Miner',
+    teacherEmoji: '⛏️',
+    subject: 'math',
+    theme: 'Mixed operations with large integers',
     questions: QUEST_3_QUESTIONS,
   },
   {
@@ -287,6 +303,10 @@ export const MATH_QUESTS: MathQuest[] = [
     difficulty: 'Boss',
     briefingTitle: 'BOSS: The Number Kraken Awakens!',
     briefingDescription: 'Face the ultimate challenge — defeat the Kraken with your mastery of all negative number operations!',
+    teacherName: 'Zara the Wise',
+    teacherEmoji: '🧙‍♀️',
+    subject: 'math',
+    theme: 'All integer operations',
     questions: QUEST_4_QUESTIONS,
   },
 ];

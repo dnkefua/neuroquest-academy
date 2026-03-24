@@ -5,49 +5,58 @@ import { useGameStore, getQuestById } from '../store/gameStore';
 import { gameTTS } from '../../shared/tts';
 
 // Grade display info
-const GRADE_INFO: Record<number, { programme: string; subject: string }> = {
-  1: { programme: 'PYP', subject: 'Counting & Numbers' },
-  2: { programme: 'PYP', subject: 'Place Value & Operations' },
-  3: { programme: 'PYP', subject: 'Multiplication & Division' },
-  4: { programme: 'PYP', subject: 'Decimals & Geometry' },
-  5: { programme: 'PYP', subject: 'Fractions & Data' },
-  6: { programme: 'MYP', subject: 'Integers & Negative Numbers' },
-  7: { programme: 'MYP', subject: 'Fractions & Percents' },
-  8: { programme: 'MYP', subject: 'Ratios & Geometry' },
-  9: { programme: 'MYP', subject: 'Algebra & Pythagoras' },
-  10: { programme: 'MYP', subject: 'Quadratic Equations' },
-  11: { programme: 'DP', subject: 'Functions & Calculus' },
-  12: { programme: 'DP', subject: 'Advanced Mathematics' },
+const GRADE_INFO: Record<number, { programme: string; topic: string }> = {
+  1: { programme: 'PYP', topic: 'Counting & Numbers' },
+  2: { programme: 'PYP', topic: 'Place Value & Operations' },
+  3: { programme: 'PYP', topic: 'Multiplication & Division' },
+  4: { programme: 'PYP', topic: 'Decimals & Geometry' },
+  5: { programme: 'PYP', topic: 'Fractions & Data' },
+  6: { programme: 'MYP', topic: 'Integers & Negative Numbers' },
+  7: { programme: 'MYP', topic: 'Fractions & Percents' },
+  8: { programme: 'MYP', topic: 'Ratios & Geometry' },
+  9: { programme: 'MYP', topic: 'Algebra & Pythagoras' },
+  10: { programme: 'MYP', topic: 'Quadratic Equations' },
+  11: { programme: 'DP', topic: 'Functions & Calculus' },
+  12: { programme: 'DP', topic: 'Advanced Mathematics' },
 };
 
-// Grade-specific dialogue
-const getGradeDialogue = (grade: number, subject: string): string[] => {
-  if (grade === 6) {
-    return [
-      "Welcome, brave explorer! I am Zara the Wise 🧙‍♀️",
-      "Your kingdom needs YOU. Your castle is unfinished...",
-      "To complete it, you must collect 100 Gold Coins from Coin City! 💰",
-      "But the road is dangerous. Pirates guard the mountain pass!",
-      "They speak the ancient language of Numbers — both Positive and Negative.",
-      "Master their secrets... and you shall pass! ⚔️",
-      "Are you ready, brave one?",
-    ];
-  }
-  // Generic dialogue for other grades
+// Generate dynamic dialogue based on quest info
+const getQuestDialogue = (quest: { title: string; locationName: string; theme: string; teacherName: string; teacherEmoji: string } | null, grade: number): string[] => {
+  const location = quest?.locationName || 'the Number Kingdom';
+  const theme = quest?.theme || 'mathematics';
+  const teacher = quest?.teacherName || 'Zara the Wise';
+  const teacherEmoji = quest?.teacherEmoji || '🧙‍♀️';
+
+  // Grade-specific opening dialogue
+  const gradeGreetings: Record<number, string> = {
+    1: "Welcome, young Number Seed! 🌱",
+    2: "Greetings, Village Scout! 🏘️",
+    3: "Welcome, Forest Ranger! 🌲",
+    4: "Hail, Ocean Guardian! 🌊",
+    5: "Welcome, City Builder! 🏙️",
+    6: "Greetings, Dungeon Seeker! ⚔️",
+    7: "Welcome, Time Traveller! ⏳",
+    8: "Hail, Master Artisan! 🎨",
+    9: "Greetings, Tech Wizard! 🔬",
+    10: "Welcome, World Diplomat! 🌍",
+    11: "Hail, Grand Sage! 📜",
+    12: "Welcome, Champion Wizard Warrior! 🏆",
+  };
+
   return [
-    "Welcome, brave explorer! I am your guide for this journey 🧙‍♀️",
-    `Today's quest focuses on ${subject}!`,
-    "You must collect Gold Coins by solving math challenges! 💰",
+    `${gradeGreetings[grade] || 'Welcome, brave explorer!'} I am ${teacher} ${teacherEmoji}`,
+    `You have entered ${location}...`,
+    `Here, you will master: ${theme}!`,
+    "Your quest is to collect Gold Coins by solving challenges! 💰",
     "Each correct answer brings you closer to victory!",
-    "Use your skills and knowledge to succeed! ⚔️",
-    "Are you ready to begin?",
+    "Are you ready to begin? ⚔️",
   ];
 };
 
 export default function MissionBriefing() {
   const { setScene, currentQuestId, currentGrade } = useGameStore();
   const currentQuest = getQuestById(currentQuestId, currentGrade);
-  const gradeInfo = GRADE_INFO[currentGrade] || { programme: 'IB', subject: 'Mathematics' };
+  const gradeInfo = GRADE_INFO[currentGrade] || { programme: 'IB', topic: 'Mathematics' };
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
   const [titleDone, setTitleDone] = useState(false);
@@ -68,7 +77,14 @@ export default function MissionBriefing() {
   }, []);
 
   // Get grade-appropriate dialogue
-  const missionDialogue = getGradeDialogue(currentGrade, gradeInfo.subject);
+  const questInfo = currentQuest ? {
+    title: currentQuest.title,
+    locationName: currentQuest.locationName,
+    theme: currentQuest.theme,
+    teacherName: currentQuest.teacherName,
+    teacherEmoji: currentQuest.teacherEmoji,
+  } : null;
+  const missionDialogue = getQuestDialogue(questInfo, currentGrade);
 
   // Dialogue: advance to next line only after TTS fully finishes reading current line
   useEffect(() => {
@@ -179,12 +195,12 @@ export default function MissionBriefing() {
             <h2 className="text-center font-black text-2xl text-yellow-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
               {currentQuest?.emoji || '⚔️'} {currentQuest?.briefingTitle || 'Math Quest'}
             </h2>
-            <p className="text-center text-xs text-yellow-300/70 mb-2">{currentQuest?.briefingDescription || `Complete this ${gradeInfo.subject} challenge!`}</p>
+            <p className="text-center text-xs text-yellow-300/70 mb-2">{currentQuest?.briefingDescription || `Complete this ${gradeInfo.topic} challenge!`}</p>
             <div className="w-full h-px bg-yellow-700/40 my-4" />
             {[
               ['🎯 OBJECTIVE', 'Collect 100 Gold Coins'],
-              ['📚 SUBJECT', `Mathematics — Grade ${currentGrade} ${gradeInfo.programme}`],
-              ['📖 TOPIC', currentQuest?.subtitle || gradeInfo.subject],
+              ['📚 PROGRAMME', `Grade ${currentGrade} — ${gradeInfo.programme}`],
+              ['📖 TOPIC', currentQuest?.theme || currentQuest?.subtitle || gradeInfo.topic],
               ['📊 DIFFICULTY', currentQuest?.difficulty || 'Beginner'],
               ['🏰 REWARD', `Quest Badge + ${currentQuest?.locationType === 'boss' ? '500' : '100'} Bonus Coins`],
             ].map(([label, value]) => (
