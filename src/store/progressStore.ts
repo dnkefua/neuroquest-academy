@@ -34,6 +34,7 @@ export function getProgramme(grade: number): Programme {
 interface ProgressState {
   currentGrade: number;
   currentProgramme: Programme;
+  userName: string; // For TTS voice gender detection
   completedQuests: string[];
   bossesDefeated: string[];
   gradesCompleted: number[];
@@ -43,6 +44,7 @@ interface ProgressState {
 
   // Actions
   setCurrentGrade: (grade: number) => void;
+  setUserName: (name: string) => void;
   completeQuest: (questId: string) => void;
   defeatBoss: (bossId: string) => void;
   completeGrade: (grade: number) => void;
@@ -57,6 +59,7 @@ interface ProgressState {
 const DEFAULT_STATE = {
   currentGrade: 1,
   currentProgramme: 'PYP' as Programme,
+  userName: '' as string,
   completedQuests: [] as string[],
   bossesDefeated: [] as string[],
   gradesCompleted: [] as number[],
@@ -76,6 +79,8 @@ export const useProgressStore = create<ProgressState>()(
           currentProgramme: getProgramme(grade),
         });
       },
+
+      setUserName: (name) => set({ userName: name }),
 
       completeQuest: (questId) => {
         const { completedQuests } = get();

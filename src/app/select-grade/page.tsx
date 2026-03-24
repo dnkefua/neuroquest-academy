@@ -48,6 +48,8 @@ export default function SelectGradePage() {
           setName(profile.name || 'Explorer');
           setCurrentGrade(profile.grade || null);
           setSelectedGrade(profile.grade || null);
+          // Set user's name for TTS voice gender detection
+          gameTTS.setUserName(profile.name);
         }
         setLoading(false);
       }
@@ -65,6 +67,9 @@ export default function SelectGradePage() {
 
       // Sync to progress store
       useProgressStore.getState().setCurrentGrade(selectedGrade);
+
+      // Set TTS voice based on user's name
+      gameTTS.setUserName(name);
 
       gameTTS.speak(`Grade ${selectedGrade} selected. Let's begin!`);
       toast.success(`Grade ${selectedGrade} selected! 🎯`);

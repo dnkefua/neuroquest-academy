@@ -2,7 +2,7 @@
 // Supports Google Cloud TTS with grade-appropriate voices
 // Falls back to browser TTS when Cloud TTS unavailable
 
-import { getGradeGroup, getVoiceForGrade } from '@/lib/tts-cache';
+import { getGradeGroup, getVoiceForGrade, detectGenderFromName } from '@/lib/tts-cache';
 
 // Lazy import to avoid circular-dep issues at module init time
 function getAudio() {
@@ -18,7 +18,7 @@ class TTSEngine {
   private _speaking = false;
   private _keepAlive: ReturnType<typeof setInterval> | null = null;
   private _grade: number = 6;
-  private _genderCounter: number = 0;
+  private _userGender: 'male' | 'female' | null = null; // Fixed gender based on user's name
   private _audioCache: Map<string, string> = new Map();
   private _cloudEnabled: boolean = true;
   private _sessionCalls: number = 0;
@@ -49,6 +49,16 @@ class TTSEngine {
     this._grade = grade;
   }
 
+  /** Set user's name to determine voice gender (female name = female voice, male name = male voice) */
+  setUserName(name: string | null | undefined) {
+    this._userGender = detectGenderFromName(name);
+  }
+
+  /** Get the gender for TTS voice - uses user's detected gender, defaults to female */
+  private _getGender(): 'male' | 'female' {
+    return this._userGender || 'female';
+  }
+
   toggle(): boolean {
     this._enabled = !this._enabled;
     if (typeof window !== 'undefined') {
@@ -58,15 +68,12 @@ class TTSEngine {
     return this._enabled;
   }
 
-  /** Get current gender (alternates between male/female) */
-  private _getGender(): 'male' | 'female' {
-    this._genderCounter++;
-    return this._genderCounter % 2 === 0 ? 'male' : 'female';
-  }
-
   /** Main speak method - tries Cloud TTS, falls back to browser TTS */
   speak(text: string, rate?: number, pitch?: number) {
     if (!this._enabled || typeof window === 'undefined' || !window.speechSynthesis) return;
+
+    // Stop any previous speech to prevent echo/overlap
+    this.stop();
 
     // Try Cloud TTS first if enabled and within rate limit
     if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
@@ -86,6 +93,9 @@ class TTSEngine {
       setTimeout(callback, fallbackDelay);
       return;
     }
+
+    // Stop any previous speech to prevent echo/overlap
+    this.stop();
 
     if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
       this._speakCloudWithCallback(text, callback, fallbackDelay);

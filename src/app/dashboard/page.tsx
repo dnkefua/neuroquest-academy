@@ -12,6 +12,7 @@ import { EMOTIONS, SUBJECTS } from '@/lib/constants';
 import BrainBreakModal from '@/components/BrainBreakModal';
 import WalletHUD from '@/components/ui/WalletHUD';
 import StreakClaim from '@/components/StreakClaim';
+import { gameTTS } from '@/app/game/shared/tts';
 import toast from 'react-hot-toast';
 
 const XP_PER_LEVEL = 100;
@@ -24,6 +25,7 @@ export default function DashboardPage() {
   const [updatingEmotion, setUpdatingEmotion] = useState(false);
 
   const setCurrentGrade = useProgressStore(s => s.setCurrentGrade);
+  const setUserName = useProgressStore(s => s.setUserName);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -31,14 +33,18 @@ export default function DashboardPage() {
       const p = await getUserProfile(user.uid);
       if (!p?.name) { router.replace('/onboarding'); return; }
       setProfile(p);
-      // Sync user's grade from profile to progress store
+      // Sync user's grade and name from profile to progress store
       if (p.grade && p.grade !== useProgressStore.getState().currentGrade) {
         setCurrentGrade(p.grade);
+      }
+      if (p.name) {
+        setUserName(p.name);
+        gameTTS.setUserName(p.name);
       }
       setLoading(false);
     });
     return () => unsub();
-  }, [router, setCurrentGrade]);
+  }, [router, setCurrentGrade, setUserName]);
 
   async function handleEmotionChange(emotion: EmotionKey) {
     if (!profile || updatingEmotion) return;

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getQuestById } from '../store/gameStore';
+import { useProgressStore } from '@/store/progressStore';
 import { gameTTS } from '../../shared/tts';
 
 // Grade display info
@@ -20,68 +21,39 @@ const GRADE_INFO: Record<number, { programme: string; topic: string }> = {
   12: { programme: 'DP', topic: 'Advanced Mathematics' },
 };
 
-// Generate dynamic dialogue based on quest info
-const getQuestDialogue = (quest: { title: string; locationName: string; theme: string; teacherName: string; teacherEmoji: string } | null, grade: number): string[] => {
+// Generate dynamic dialogue based on quest info - SHORT for quick briefing (<10s)
+const getQuestDialogue = (quest: { title: string; locationName: string; theme: string; teacherName: string; teacherEmoji: string } | null, _grade: number): string[] => {
   const location = quest?.locationName || 'the Number Kingdom';
   const theme = quest?.theme || 'mathematics';
-  const teacher = quest?.teacherName || 'Zara the Wise';
-  const teacherEmoji = quest?.teacherEmoji || '🧙‍♀️';
 
-  // Grade-specific opening dialogue
-  const gradeGreetings: Record<number, string> = {
-    1: "Welcome, young Number Seed! 🌱",
-    2: "Greetings, Village Scout! 🏘️",
-    3: "Welcome, Forest Ranger! 🌲",
-    4: "Hail, Ocean Guardian! 🌊",
-    5: "Welcome, City Builder! 🏙️",
-    6: "Greetings, Dungeon Seeker! ⚔️",
-    7: "Welcome, Time Traveller! ⏳",
-    8: "Hail, Master Artisan! 🎨",
-    9: "Greetings, Tech Wizard! 🔬",
-    10: "Welcome, World Diplomat! 🌍",
-    11: "Hail, Grand Sage! 📜",
-    12: "Welcome, Champion Wizard Warrior! 🏆",
-  };
-
+  // Just 2 quick lines - mission card shows the details
   return [
-    `${gradeGreetings[grade] || 'Welcome, brave explorer!'} I am ${teacher} ${teacherEmoji}`,
-    `You have entered ${location}...`,
-    `Here, you will master: ${theme}!`,
-    "Your quest is to collect Gold Coins by solving challenges! 💰",
-    "Each correct answer brings you closer to victory!",
-    "Are you ready to begin? ⚔️",
+    `Welcome to ${location}! Master ${theme} and collect gold coins.`,
+    "Let's begin!",
   ];
 };
 
 export default function MissionBriefing() {
   const { setScene, currentQuestId, currentGrade } = useGameStore();
+  const userName = useProgressStore(s => s.userName);
   const currentQuest = getQuestById(currentQuestId, currentGrade);
   const gradeInfo = GRADE_INFO[currentGrade] || { programme: 'IB', topic: 'Mathematics' };
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
-  const [titleDone, setTitleDone] = useState(false);
   const [ttsOn, setTtsOn] = useState(true);
 
-  // Set grade for TTS voice selection
+  // Set grade and user name for TTS voice selection
   useEffect(() => {
     gameTTS.setGrade(currentGrade);
-  }, [currentGrade]);
+    gameTTS.setUserName(userName);
+  }, [currentGrade, userName]);
 
   function toggleTTS() {
     const on = gameTTS.toggle();
     setTtsOn(on);
   }
 
-  // Title screen: wait for TTS to finish reading title before showing dialogue
-  useEffect(() => {
-    gameTTS.afterSpeak(
-      'The Chronicles of NeuroQuest. A new adventure begins...',
-      () => setTitleDone(true),
-      2500,
-    );
-  }, []);
-
-  // Get grade-appropriate dialogue
+  // Get quick dialogue
   const questInfo = currentQuest ? {
     title: currentQuest.title,
     locationName: currentQuest.locationName,
@@ -91,17 +63,16 @@ export default function MissionBriefing() {
   } : null;
   const missionDialogue = getQuestDialogue(questInfo, currentGrade);
 
-  // Dialogue: advance to next line only after TTS fully finishes reading current line
+  // Advance dialogue quickly - no title screen, just brief intro
   useEffect(() => {
-    if (!titleDone) return;
     if (lineIndex >= missionDialogue.length) {
       setShowCard(true);
-      gameTTS.speak('Your mission briefing is ready. Press Begin Quest when you are ready!');
       return;
     }
     const line = missionDialogue[lineIndex - 1] ?? missionDialogue[0];
-    gameTTS.afterSpeak(line, () => setLineIndex(i => i + 1), 3000);
-  }, [lineIndex, titleDone, missionDialogue]); // eslint-disable-line react-hooks/exhaustive-deps
+    // Shorter fallback delay for quick progression
+    gameTTS.afterSpeak(line, () => setLineIndex(i => i + 1), 1500);
+  }, [lineIndex, missionDialogue]);
 
   return (
     <div className="w-full h-screen relative overflow-hidden flex flex-col items-center justify-center"
@@ -137,31 +108,14 @@ export default function MissionBriefing() {
         <p className="text-yellow-300 text-sm font-bold">YOUR CASTLE (Unfinished)</p>
       </div>
 
-      {/* Title */}
-      <AnimatePresence>
-        {!titleDone && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="text-center z-10">
-            <motion.h1
-              className="font-black text-5xl md:text-6xl mb-4"
-              style={{ color: '#FFD700', textShadow: '0 0 30px rgba(255,215,0,0.6)', fontFamily: 'Georgia, serif' }}>
-              ⚔️ THE CHRONICLES OF NEUROQUEST ⚔️
-            </motion.h1>
-            <motion.p className="text-yellow-400 text-lg" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              A new adventure begins...
-            </motion.p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Dialogue */}
-      {titleDone && !showCard && (
+      {/* Brief dialogue */}
+      {!showCard && (
         <div className="z-10 max-w-lg mx-auto text-center px-6">
-          {/* Zara wizard avatar */}
+          {/* Teacher avatar */}
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
             className="text-7xl mb-6 inline-block"
             style={{ filter: 'drop-shadow(0 0 20px #3ECFB2)' }}>
-            🧙‍♀️
+            {currentQuest?.teacherEmoji || '🧙‍♀️'}
           </motion.div>
 
           <AnimatePresence mode="wait">
