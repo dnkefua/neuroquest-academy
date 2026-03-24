@@ -131,13 +131,15 @@ export default function QuizScene() {
             {/* Question */}
             <div className="my-4 p-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
               <p className="text-white font-bold text-base mb-2">❓ {q.question}</p>
-              <p className="font-mono text-yellow-400 text-xl font-black tracking-wider">{q.equation}</p>
+              {q.equation && <p className="font-mono text-yellow-400 text-xl font-black tracking-wider">{q.equation}</p>}
             </div>
 
-            {/* Number line preview */}
-            <div className="rounded-xl p-2 mb-4" style={{ background: 'rgba(0,0,0,0.3)' }}>
-              <NumberLine start={q.numberLineStart} move={q.numberLineMove} move2={q.numberLineMove2} animate={answered && feedback === 'correct'} />
-            </div>
+            {/* Number line preview - only show if we have the values */}
+            {q.numberLineStart !== undefined && q.numberLineMove !== undefined && (
+              <div className="rounded-xl p-2 mb-4" style={{ background: 'rgba(0,0,0,0.3)' }}>
+                <NumberLine start={q.numberLineStart} move={q.numberLineMove} move2={q.numberLineMove2} animate={answered && feedback === 'correct'} />
+              </div>
+            )}
 
             {/* Options */}
             <div className="grid grid-cols-2 gap-3 mb-4">

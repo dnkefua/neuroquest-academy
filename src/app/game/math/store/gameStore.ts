@@ -1,7 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import { MATH_QUESTS } from '../data/questData';
-import { getGameQuests, getSubjectsForGrade, type GameQuest } from '@/lib/questData';
+import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
 export type Scene = 'QUEST_MAP' | 'CLASSROOM' | 'MISSION_BRIEFING' | 'PIRATE_ENCOUNTER' | 'QUIZ' | 'VICTORY';
@@ -10,17 +10,17 @@ export interface Question {
   id: number;
   narrative: string;
   question: string;
-  equation: string;
+  equation?: string;
   options: string[];
   correct: number;
-  numberLineStart: number;
-  numberLineMove: number;
+  numberLineStart?: number;
+  numberLineMove?: number;
   numberLineMove2?: number;
   clue: {
     title: string;
     example: string;
-    startValue: number;
-    moveValue: number;
+    startValue?: number;
+    moveValue?: number;
     moveValue2?: number;
   };
 }
@@ -66,15 +66,52 @@ interface GameState {
 }
 
 // Hardcoded quests for Grade 6 (original data with number line features)
-// TODO: Migrate other grades to curriculum data
-const GRADE_QUESTS: Record<number, MathQuestLocal[]> = {
+// These have special number line visualization
+const GRADE_QUESTS_HARDCODED: Record<number, MathQuestLocal[]> = {
   6: MATH_QUESTS,
 };
 
-// Check if math quests are available for a grade using curriculum data
+// Convert curriculum GameQuestion to local Question format
+function toLocalQuestion(q: GameQuest['questions'][0], index: number): Question {
+  return {
+    id: index + 1,
+    narrative: q.narrative,
+    question: q.question,
+    equation: q.equation,
+    options: q.options,
+    correct: q.correct,
+    // Number line features come from the clue visual type
+    numberLineStart: q.clue.visual === 'numberLine' ? undefined : undefined,
+    numberLineMove: undefined,
+    clue: {
+      title: q.clue.title,
+      example: q.clue.example,
+    },
+  };
+}
+
+// Convert curriculum GameQuest to local MathQuest format
+function toMathQuestLocal(gq: GameQuest): MathQuestLocal {
+  return {
+    id: gq.id,
+    title: gq.title,
+    subtitle: gq.subtitle,
+    emoji: gq.emoji,
+    locationName: gq.locationName,
+    locationType: gq.locationType,
+    color: gq.color,
+    glowColor: gq.glowColor,
+    difficulty: gq.difficulty,
+    briefingTitle: gq.briefingTitle,
+    briefingDescription: gq.briefingDescription,
+    questions: gq.questions.map((q, i) => toLocalQuestion(q, i)),
+  };
+}
+
+// Check if math quests are available for a grade
 function hasMathQuestsForGrade(grade: number): boolean {
   // First check hardcoded data
-  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
+  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
     return true;
   }
   // Then check curriculum data
@@ -82,18 +119,19 @@ function hasMathQuestsForGrade(grade: number): boolean {
   return curriculumQuests.length > 0;
 }
 
-// Get quests for a grade - prefer hardcoded for now (has number line features)
+// Get quests for a grade - prefer hardcoded (has number line features), then curriculum
 function getQuestsForGrade(grade: number): MathQuestLocal[] {
-  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
-    return GRADE_QUESTS[grade];
+  // First check if we have hardcoded quests with special features
+  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
+    return GRADE_QUESTS_HARDCODED[grade];
   }
-  // Fallback: would need to convert curriculum quests to math format
-  // For now, return empty array
-  return [];
+  // Convert curriculum quests to local format
+  const curriculumQuests = getGameQuests(grade, 'math' as CurriculumSubject);
+  return curriculumQuests.map(toMathQuestLocal);
 }
 
 const DEFAULT_GRADE = 6;
-const FIRST_QUEST = GRADE_QUESTS[DEFAULT_GRADE]?.[0];
+const FIRST_QUEST = getQuestsForGrade(DEFAULT_GRADE)[0];
 
 export const useGameStore = create<GameState>((set, get) => ({
   scene: 'QUEST_MAP',
@@ -114,7 +152,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   setGrade: (grade) => {
     const quests = getQuestsForGrade(grade);
     if (!quests || quests.length === 0) {
-      // Grade not available yet, stay on current grade
+      // Grade not available yet
       return;
     }
     const firstQuest = quests[0];
@@ -181,11 +219,15 @@ export const useGameStore = create<GameState>((set, get) => ({
 }));
 
 // Export for QuestMapScene
-export { MATH_QUESTS, GRADE_QUESTS, getQuestsForGrade };
-export const getQuestById = (id: string) => MATH_QUESTS.find(q => q.id === id);
-export const getNextQuest = (currentId: string) => {
-  const idx = MATH_QUESTS.findIndex(q => q.id === currentId);
-  return idx >= 0 && idx < MATH_QUESTS.length - 1 ? MATH_QUESTS[idx + 1] : null;
+export { MATH_QUESTS, GRADE_QUESTS_HARDCODED, getQuestsForGrade };
+export const getQuestById = (id: string, grade: number) => {
+  const quests = getQuestsForGrade(grade);
+  return quests.find(q => q.id === id);
+};
+export const getNextQuest = (currentId: string, grade: number) => {
+  const quests = getQuestsForGrade(grade);
+  const idx = quests.findIndex(q => q.id === currentId);
+  return idx >= 0 && idx < quests.length - 1 ? quests[idx + 1] : null;
 };
 
 // Check if a grade has quests available

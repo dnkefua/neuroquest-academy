@@ -127,15 +127,18 @@ export default function ClueBox({ question, questionIndex }: ClueBoxProps) {
                 {question.clue.example}
               </p>
 
-              <div className="rounded-2xl p-3 mb-5"
-                style={{ background: 'rgba(15,12,41,0.85)', border: '1px solid rgba(255,215,0,0.3)' }}>
-                <NumberLine
-                  start={question.clue.startValue}
-                  move={question.clue.moveValue}
-                  move2={question.clue.moveValue2}
-                  animate={true}
-                />
-              </div>
+              {/* Only show NumberLine if we have the required values */}
+              {question.clue.startValue !== undefined && question.clue.moveValue !== undefined && (
+                <div className="rounded-2xl p-3 mb-5"
+                  style={{ background: 'rgba(15,12,41,0.85)', border: '1px solid rgba(255,215,0,0.3)' }}>
+                  <NumberLine
+                    start={question.clue.startValue}
+                    move={question.clue.moveValue}
+                    move2={question.clue.moveValue2}
+                    animate={true}
+                  />
+                </div>
+              )}
 
               <button
                 onClick={() => setOpen(false)}
