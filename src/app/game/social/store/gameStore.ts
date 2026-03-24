@@ -1,0 +1,152 @@
+'use client';
+import { create } from 'zustand';
+import { getGameQuests, type GameQuest } from '@/lib/questData';
+import type { CurriculumSubject } from '@/types';
+
+export type SocialScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'QUIZ' | 'VICTORY';
+
+export interface SocialQuestion {
+  id: number;
+  narrative: string;
+  question: string;
+  options: string[];
+  correct: number;
+  clue: {
+    title: string;
+    example: string;
+    cost: number;
+  };
+}
+
+interface SocialState {
+  scene: SocialScene;
+  currentGrade: number;
+  currentQuestId: string;
+  studentName: string;
+  currentQuestion: number;
+  questions: SocialQuestion[];
+  score: number;
+  clueUsed: boolean[];
+  xpEarned: number;
+  setScene: (scene: SocialScene) => void;
+  setGrade: (grade: number) => void;
+  loadQuest: (questId: string, grade: number) => void;
+  answerQuestion: (correct: boolean) => void;
+  openClue: (index: number) => void;
+  nextQuestion: () => void;
+  reset: () => void;
+}
+
+// Get quests from curriculum data
+function getQuestsForGrade(grade: number): GameQuest[] {
+  return getGameQuests(grade, 'social' as CurriculumSubject);
+}
+
+// Convert GameQuestion to SocialQuestion format
+function toSocialQuestion(q: GameQuest['questions'][0], index: number): SocialQuestion {
+  return {
+    id: index + 1,
+    narrative: q.narrative,
+    question: q.question,
+    options: q.options,
+    correct: q.correct,
+    clue: {
+      title: q.clue.title,
+      example: q.clue.example,
+      cost: q.clue.cost,
+    },
+  };
+}
+
+const DEFAULT_GRADE = 1;
+
+export const useSocialStore = create<SocialState>((set, get) => ({
+  scene: 'QUEST_MAP',
+  currentGrade: DEFAULT_GRADE,
+  currentQuestId: '',
+  studentName: 'Explorer',
+  currentQuestion: 0,
+  questions: [],
+  score: 0,
+  clueUsed: [],
+  xpEarned: 0,
+
+  setScene: (scene) => set({ scene }),
+
+  setGrade: (grade) => {
+    const quests = getQuestsForGrade(grade);
+    if (quests.length === 0) {
+      return;
+    }
+    const firstQuest = quests[0];
+    set({
+      currentGrade: grade,
+      currentQuestId: firstQuest.id,
+      questions: firstQuest.questions.map((q, i) => toSocialQuestion(q, i)),
+      currentQuestion: 0,
+      score: 0,
+      clueUsed: new Array(firstQuest.questions.length).fill(false),
+      xpEarned: 0,
+      scene: 'QUEST_MAP',
+    });
+  },
+
+  loadQuest: (questId, grade) => {
+    const quests = getQuestsForGrade(grade);
+    const quest = quests.find(q => q.id === questId);
+    if (!quest) return;
+    set({
+      currentGrade: grade,
+      currentQuestId: questId,
+      questions: quest.questions.map((q, i) => toSocialQuestion(q, i)),
+      currentQuestion: 0,
+      score: 0,
+      clueUsed: new Array(quest.questions.length).fill(false),
+      xpEarned: 0,
+      scene: 'MISSION_BRIEFING',
+    });
+  },
+
+  answerQuestion: (correct) => set((s) => ({
+    score: correct ? s.score + 1 : s.score,
+    xpEarned: correct ? s.xpEarned + 30 : s.xpEarned,
+  })),
+
+  openClue: (index) => set((s) => {
+    const c = [...s.clueUsed]; c[index] = true; return { clueUsed: c };
+  }),
+
+  nextQuestion: () => set((s) => {
+    const next = s.currentQuestion + 1;
+    if (next >= s.questions.length) return { scene: 'VICTORY' as SocialScene };
+    return { currentQuestion: next };
+  }),
+
+  reset: () => set({
+    scene: 'QUEST_MAP',
+    currentQuestion: 0,
+    score: 0,
+    clueUsed: [],
+    xpEarned: 0,
+  }),
+}));
+
+// Export helper functions
+export function hasQuestsForGrade(grade: number): boolean {
+  return getQuestsForGrade(grade).length > 0;
+}
+
+export function getQuests(grade: number): GameQuest[] {
+  return getQuestsForGrade(grade);
+}
+
+export function getQuestById(questId: string, grade: number): GameQuest | undefined {
+  const quests = getQuestsForGrade(grade);
+  return quests.find(q => q.id === questId);
+}
+
+export function getNextQuest(currentId: string, grade: number): GameQuest | null {
+  const quests = getQuestsForGrade(grade);
+  const idx = quests.findIndex(q => q.id === currentId);
+  return idx >= 0 && idx < quests.length - 1 ? quests[idx + 1] : null;
+}

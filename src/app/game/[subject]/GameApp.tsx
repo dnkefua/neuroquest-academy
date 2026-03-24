@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useProgressStore } from '@/store/progressStore';
-import { getAvailableSubjectsForGrade, type GameQuest } from '@/lib/questData';
+import { getAvailableSubjectsForGrade } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 import GameSkeleton from '../shared/components/GameSkeleton';
 
@@ -16,9 +16,6 @@ const SUBJECT_THEMES: Record<CurriculumSubject, { color: string; bgGradient: str
   social: { color: '#F59E0B', bgGradient: 'linear-gradient(135deg, #1a0f00 0%, #2a1f00 100%)', emoji: '🌍', name: 'Social Studies' },
   socialSkills: { color: '#EC4899', bgGradient: 'linear-gradient(135deg, #1f001a 0%, #2d0025 100%)', emoji: '💜', name: 'Social Skills' },
 };
-
-// Subjects that have full game experiences implemented
-const FULL_GAME_SUBJECTS: CurriculumSubject[] = ['math', 'science'];
 
 interface GameAppProps {
   subject: CurriculumSubject;
@@ -41,34 +38,9 @@ export default function GameApp({ subject }: GameAppProps) {
   const subjectInfo = availableSubjects.find(s => s.id === subject);
   const hasQuests = subjectInfo?.hasQuests ?? false;
 
-  // Check if this subject has a full game implementation
-  const hasFullGame = FULL_GAME_SUBJECTS.includes(subject);
-
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    // Redirect subjects without full games to lesson page
-    if (mounted && !hasFullGame) {
-      router.replace(`/lesson/${subject}?grade=${grade}`);
-    }
-  }, [mounted, hasFullGame, subject, grade, router]);
-
-  if (!mounted) {
-    return <GameSkeleton />;
-  }
-
-  // For subjects without full games, show loading while redirecting
-  if (!hasFullGame) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: theme.bgGradient }}>
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-          ⚙️
-        </motion.div>
-      </div>
-    );
-  }
 
   // If no quests available, show coming soon
   if (!hasQuests) {

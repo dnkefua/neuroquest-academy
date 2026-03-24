@@ -290,8 +290,8 @@ export function getRouteForSubject(subject: CurriculumSubject, grade: number): s
     math: (g) => `/game/math?grade=${g}`,
     science: (g) => `/game/science?grade=${g}`,
     english: (g) => `/game/english?grade=${g}`,
-    social: (g) => `/lesson/social?grade=${g}`,
-    socialSkills: (g) => `/social-skills?grade=${g}`,
+    social: (g) => `/game/social?grade=${g}`,
+    socialSkills: (g) => `/game/socialSkills?grade=${g}`,
   };
   return routes[subject](grade);
 }
