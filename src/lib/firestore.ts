@@ -22,6 +22,10 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   return snap.exists() ? (snap.data() as UserProfile) : null;
 }
 
+export async function updateUserProfile(uid: string, data: Partial<UserProfile>) {
+  await updateDoc(doc(db, 'users', uid), data);
+}
+
 export async function updateEmotion(uid: string, emotion: string) {
   await updateDoc(doc(db, 'users', uid), { currentEmotion: emotion });
   await addDoc(collection(db, 'users', uid, 'emotionLog'), {

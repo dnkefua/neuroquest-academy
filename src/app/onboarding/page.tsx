@@ -119,7 +119,7 @@ export default function OnboardingPage() {
       }
 
       toast.success(`Welcome to NeuroQuest, ${name}! 🎉`);
-      router.push('/dashboard');
+      router.push('/select-grade');
     } catch (err) {
       console.error('Firestore error:', err);
       toast.error(`Failed: ${(err as Error).message}`, { duration: 8000 });

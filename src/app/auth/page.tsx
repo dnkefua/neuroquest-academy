@@ -24,7 +24,7 @@ export default function AuthPage() {
       .then(async (result) => {
         if (result?.user) {
           const profile = await getUserProfile(result.user.uid);
-          router.push(profile?.name ? '/dashboard' : '/onboarding');
+          router.push(profile?.name ? '/select-grade' : '/onboarding');
         }
       })
       .catch(() => {});
@@ -39,7 +39,7 @@ export default function AuthPage() {
       console.log('Sign in success, uid:', cred.user.uid);
       gameAudio.playSignIn();
       const profile = await getUserProfile(cred.user.uid);
-      router.push(profile?.name ? '/dashboard' : '/onboarding');
+      router.push(profile?.name ? '/select-grade' : '/onboarding');
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? 'unknown';
       console.error('Sign in error:', code, err);

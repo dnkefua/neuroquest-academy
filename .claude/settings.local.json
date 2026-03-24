@@ -7,7 +7,14 @@
       "Bash(lsof -ti:3000)",
       "Bash(curl -s http://localhost:3001)",
       "Bash(cd:*)",
-      "Bash(wc -l src/curriculum/data/*.ts)"
+      "Bash(wc -l src/curriculum/data/*.ts)",
+      "WebSearch",
+      "Bash(grep -l \"grade:\" src/curriculum/data/*.ts)",
+      "Bash(grep -c \"id: ''''g\" src/curriculum/data/*.ts)",
+      "Bash(grep -c \"id: ''g[0-9]*-math''\" src/curriculum/data/grades*.ts)",
+      "Bash(grep \"id: ''g[0-9]*-math''\" src/curriculum/data/grades*.ts)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(curl:*)"
     ]
   }
 }
