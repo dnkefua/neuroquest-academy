@@ -10,6 +10,7 @@ import type { UserProfile, EmotionKey } from '@/types';
 import { EMOTIONS, SUBJECTS } from '@/lib/constants';
 import BrainBreakModal from '@/components/BrainBreakModal';
 import WalletHUD from '@/components/ui/WalletHUD';
+import StreakClaim from '@/components/StreakClaim';
 import toast from 'react-hot-toast';
 
 const XP_PER_LEVEL = 100;
@@ -121,10 +122,7 @@ export default function DashboardPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-4">
-              <div className="flex items-center gap-1.5 bg-white/20 rounded-xl px-3 py-1.5">
-                <span>🔥</span>
-                <span className="font-nunito font-bold text-white text-sm">{profile.streak} day streak</span>
-              </div>
+              <StreakClaim />
               <div className="flex items-center gap-1.5 bg-white/20 rounded-xl px-3 py-1.5">
                 <span>⭐</span>
                 <span className="font-nunito font-bold text-white text-sm">Level {level}</span>
