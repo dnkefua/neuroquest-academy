@@ -25,7 +25,7 @@ export interface Question {
   };
 }
 
-interface MathQuestLocal {
+export interface MathQuestLocal {
   id: string;
   title: string;
   subtitle: string;

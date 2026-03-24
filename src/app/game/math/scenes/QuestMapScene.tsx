@@ -1,35 +1,63 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useGameStore } from '../store/gameStore';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useGameStore, getQuestsForGrade, hasQuestsForGrade, type MathQuestLocal } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
-import { MATH_QUESTS, type MathQuest } from '../data/questData';
 import { gameTTS } from '../../shared/tts';
 import { gameAudio } from '../../shared/audio';
 
-const LOCATION_ICONS: Record<MathQuest['locationType'], string> = {
+const LOCATION_ICONS: Record<MathQuestLocal['locationType'], string> = {
   hut: '🏚️', village: '🏘️', city: '🏙️', castle: '🏰', boss: '🦑',
 };
 
+// Grade display names
+const GRADE_NAMES: Record<number, { programme: string; topic: string }> = {
+  1: { programme: 'PYP', topic: 'Counting & Numbers' },
+  2: { programme: 'PYP', topic: 'Place Value & Operations' },
+  3: { programme: 'PYP', topic: 'Multiplication & Division' },
+  4: { programme: 'PYP', topic: 'Decimals & Geometry' },
+  5: { programme: 'PYP', topic: 'Fractions & Data' },
+  6: { programme: 'MYP', topic: 'Positive & Negative Numbers' },
+  7: { programme: 'MYP', topic: 'Fractions & Percents' },
+  8: { programme: 'MYP', topic: 'Ratios & Geometry' },
+  9: { programme: 'MYP', topic: 'Algebra & Pythagoras' },
+  10: { programme: 'MYP', topic: 'Quadratic Equations' },
+  11: { programme: 'DP', topic: 'Functions & Calculus' },
+  12: { programme: 'DP', topic: 'Advanced Mathematics' },
+};
+
 export default function QuestMapScene() {
-  const { loadQuest, currentQuestId } = useGameStore();
+  const { loadQuest, currentQuestId, currentGrade, setGrade } = useGameStore();
   const { completedQuests } = useProgressStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  // Get grade from URL or use store's current grade
+  const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
+
+  // Set grade from URL if different
+  if (urlGrade && urlGrade !== currentGrade && hasQuestsForGrade(urlGrade)) {
+    setGrade(urlGrade);
+  }
+
+  // Get quests for current grade
+  const quests = getQuestsForGrade(currentGrade);
+  const gradeInfo = GRADE_NAMES[currentGrade] || { programme: 'IB', topic: 'Mathematics' };
 
   // A quest is unlocked if it's the first one, or the previous one is completed
   function isUnlocked(index: number) {
     if (index === 0) return true;
-    return completedQuests.includes(MATH_QUESTS[index - 1].id);
+    return completedQuests.includes(quests[index - 1].id);
   }
 
   function isCompleted(questId: string) {
     return completedQuests.includes(questId);
   }
 
-  function handleQuestClick(quest: MathQuest, index: number) {
+  function handleQuestClick(quest: MathQuestLocal, index: number) {
     if (!isUnlocked(index)) {
       gameTTS.speak('Complete the previous quest to unlock this one!');
       return;
@@ -39,7 +67,7 @@ export default function QuestMapScene() {
     loadQuest(quest.id);
   }
 
-  const completedCount = MATH_QUESTS.filter(q => isCompleted(q.id)).length;
+  const completedCount = quests.filter(q => isCompleted(q.id)).length;
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center px-4 py-8 relative overflow-hidden"
@@ -68,7 +96,7 @@ export default function QuestMapScene() {
           <h1 className="font-black text-2xl text-white" style={{ fontFamily: 'Georgia, serif', textShadow: '0 0 20px rgba(139,92,246,0.6)' }}>
             ⚔️ Math Arena
           </h1>
-          <p className="text-purple-300 text-xs mt-0.5">Grade 6 · IB MYP · Positive &amp; Negative Numbers</p>
+          <p className="text-purple-300 text-xs mt-0.5">Grade {currentGrade} · {gradeInfo.programme} · {gradeInfo.topic}</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setTtsOn(gameTTS.toggle())}
@@ -91,17 +119,17 @@ export default function QuestMapScene() {
               <motion.div className="h-full rounded-full"
                 style={{ background: 'linear-gradient(90deg, #8B5CF6, #14B8A6)' }}
                 initial={{ width: 0 }}
-                animate={{ width: `${(completedCount / MATH_QUESTS.length) * 100}%` }}
+                animate={{ width: `${quests.length > 0 ? (completedCount / quests.length) * 100 : 0}%` }}
                 transition={{ duration: 0.8, delay: 0.3 }} />
             </div>
-            <span className="text-purple-300 text-xs font-bold">{completedCount}/{MATH_QUESTS.length}</span>
+            <span className="text-purple-300 text-xs font-bold">{completedCount}/{quests.length}</span>
           </div>
         </div>
       </motion.div>
 
       {/* Quest path */}
       <div className="relative z-10 w-full max-w-lg space-y-4">
-        {MATH_QUESTS.map((quest, index) => {
+        {quests.map((quest, index) => {
           const unlocked = isUnlocked(index);
           const completed = isCompleted(quest.id);
           const isCurrent = currentQuestId === quest.id;
@@ -109,7 +137,7 @@ export default function QuestMapScene() {
           return (
             <div key={quest.id} className="relative">
               {/* Connector path line */}
-              {index < MATH_QUESTS.length - 1 && (
+              {index < quests.length - 1 && (
                 <div className="absolute left-[52px] top-full w-0.5 h-4 z-0"
                   style={{ background: completed ? quest.color : 'rgba(255,255,255,0.1)' }} />
               )}
@@ -208,7 +236,7 @@ export default function QuestMapScene() {
       </div>
 
       {/* All done celebration */}
-      {completedCount === MATH_QUESTS.length && (
+      {quests.length > 0 && completedCount === quests.length && (
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 w-full max-w-lg mt-6 p-5 rounded-2xl text-center"
           style={{ background: 'rgba(255,215,0,0.12)', border: '2px solid rgba(255,215,0,0.5)' }}>
