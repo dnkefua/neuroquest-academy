@@ -62,6 +62,11 @@ export default function MissionBriefing() {
   const [titleDone, setTitleDone] = useState(false);
   const [ttsOn, setTtsOn] = useState(true);
 
+  // Set grade for TTS voice selection
+  useEffect(() => {
+    gameTTS.setGrade(currentGrade);
+  }, [currentGrade]);
+
   function toggleTTS() {
     const on = gameTTS.toggle();
     setTtsOn(on);
