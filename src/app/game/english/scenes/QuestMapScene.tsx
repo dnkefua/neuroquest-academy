@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEnglishStore, getQuests } from '../store/gameStore';
+import { useEnglishStore, getQuests, hasQuestsForGrade } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
 import { useEconomyStore } from '@/store/economyStore';
 import WalletHUD from '@/components/ui/WalletHUD';
@@ -17,18 +17,44 @@ const LOCATION_ICONS: Record<string, string> = {
   boss: '👑',
 };
 
+// Grade display names for English topics
+const GRADE_NAMES: Record<number, { programme: string; topic: string }> = {
+  1: { programme: 'PYP', topic: 'Reading Foundations' },
+  2: { programme: 'PYP', topic: 'Phonics & Spelling' },
+  3: { programme: 'PYP', topic: 'Reading Comprehension' },
+  4: { programme: 'PYP', topic: 'Writing Skills' },
+  5: { programme: 'PYP', topic: 'Grammar & Vocabulary' },
+  6: { programme: 'MYP', topic: 'Literature Analysis' },
+  7: { programme: 'MYP', topic: 'Creative Writing' },
+  8: { programme: 'MYP', topic: 'Poetry & Drama' },
+  9: { programme: 'MYP', topic: 'Persuasive Writing' },
+  10: { programme: 'MYP', topic: 'Media Studies' },
+  11: { programme: 'DP', topic: 'Advanced Literature' },
+  12: { programme: 'DP', topic: 'Research Writing' },
+};
+
 export default function QuestMapScene() {
-  const { loadQuest, currentQuestId } = useEnglishStore();
+  const { loadQuest, currentQuestId, currentGrade, setGrade } = useEnglishStore();
   const { completedQuests } = useProgressStore();
   const walletCoins = useEconomyStore(s => s.walletCoins);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const grade = parseInt(searchParams.get('grade') || '6', 10);
-
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  const quests = getQuests(grade);
+  // Get grade from URL or use store's current grade
+  const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
+
+  // Set grade from URL if different
+  useEffect(() => {
+    if (urlGrade && urlGrade !== currentGrade && hasQuestsForGrade(urlGrade)) {
+      setGrade(urlGrade);
+    }
+  }, [urlGrade, currentGrade, setGrade]);
+
+  // Get quests for current grade
+  const quests = getQuests(currentGrade);
+  const gradeInfo = GRADE_NAMES[currentGrade] || { programme: 'IB', topic: 'English' };
 
   // A quest is unlocked if it's the first one, or the previous one is completed
   function isUnlocked(index: number) {
@@ -47,7 +73,7 @@ export default function QuestMapScene() {
     }
     gameAudio.playClick();
     gameTTS.stop();
-    loadQuest(questId, grade);
+    loadQuest(questId, currentGrade);
   }
 
   const completedCount = quests.filter(q => isCompleted(q.id)).length;
@@ -81,7 +107,7 @@ export default function QuestMapScene() {
           <h1 className="font-black text-2xl text-white" style={{ fontFamily: 'Georgia, serif', textShadow: '0 0 20px rgba(245,158,11,0.6)' }}>
             📖 English Library
           </h1>
-          <p className="text-amber-300 text-xs mt-0.5">Grade {grade} · Reading & Writing</p>
+          <p className="text-amber-300 text-xs mt-0.5">Grade {currentGrade} · {gradeInfo.programme} · {gradeInfo.topic}</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setTtsOn(gameTTS.toggle())}

@@ -25,7 +25,7 @@ export interface ScienceQuestion {
   };
 }
 
-interface ScienceQuestLocal {
+export interface ScienceQuestLocal {
   id: string;
   title: string;
   subtitle: string;
@@ -65,15 +65,56 @@ interface ScienceState {
 }
 
 // Hardcoded quests for Grade 6 (original data with water cycle features)
-// TODO: Migrate other grades to curriculum data
-const GRADE_QUESTS: Record<number, ScienceQuestLocal[]> = {
+// These have special water cycle stage features
+const GRADE_QUESTS_HARDCODED: Record<number, ScienceQuestLocal[]> = {
   6: SCIENCE_QUESTS,
 };
 
-// Check if science quests are available for a grade using curriculum data
+// Convert curriculum GameQuestion to local ScienceQuestion format
+function toScienceQuestion(q: GameQuest['questions'][0], index: number): ScienceQuestion {
+  return {
+    id: index + 1,
+    spirit: 'Science Guide',
+    spiritEmoji: '🔬',
+    spiritColor: '#0EA5E9',
+    narrative: q.narrative,
+    question: q.question,
+    options: q.options,
+    correct: q.correct,
+    activeStage: 'all' as WaterStage,
+    reward: `Vial ${index + 1} 💧`,
+    clue: {
+      title: q.clue.title,
+      example: q.clue.example,
+      highlightStage: 'all' as WaterStage,
+    },
+  };
+}
+
+// Convert curriculum GameQuest to local ScienceQuest format
+function toScienceQuestLocal(gq: GameQuest): ScienceQuestLocal {
+  return {
+    id: gq.id,
+    title: gq.title,
+    subtitle: gq.subtitle,
+    emoji: gq.emoji,
+    locationName: gq.locationName,
+    locationType: gq.locationType,
+    color: gq.color,
+    glowColor: gq.glowColor,
+    difficulty: gq.difficulty,
+    briefingTitle: gq.briefingTitle,
+    briefingDescription: gq.briefingDescription,
+    teacherName: gq.teacherName,
+    teacherEmoji: gq.teacherEmoji,
+    questions: gq.questions.map((q, i) => toScienceQuestion(q, i)),
+  };
+}
+
+// Check if science quests are available for a grade
 function hasScienceQuestsForGrade(grade: number): boolean {
-  // First check hardcoded data
-  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
+  // First check hardcoded data (has water cycle features)
+  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
     return true;
   }
   // Then check curriculum data
@@ -81,26 +122,27 @@ function hasScienceQuestsForGrade(grade: number): boolean {
   return curriculumQuests.length > 0;
 }
 
-// Get quests for a grade - prefer hardcoded for now (has water cycle features)
+// Get quests for a grade - prefer hardcoded (has water cycle features), then curriculum
 function getQuestsForGrade(grade: number): ScienceQuestLocal[] {
-  if (GRADE_QUESTS[grade] && GRADE_QUESTS[grade].length > 0) {
-    return GRADE_QUESTS[grade];
+  // First check if we have hardcoded quests with special features
+  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
+    return GRADE_QUESTS_HARDCODED[grade];
   }
-  // Fallback: would need to convert curriculum quests to science format
-  // For now, return empty array
-  return [];
+  // Convert curriculum quests to local format
+  const curriculumQuests = getGameQuests(grade, 'science' as CurriculumSubject);
+  return curriculumQuests.map(toScienceQuestLocal);
 }
 
 const DEFAULT_GRADE = 6;
-const FIRST_QUEST = GRADE_QUESTS[DEFAULT_GRADE]?.[0];
+const FIRST_QUEST = getQuestsForGrade(DEFAULT_GRADE)[0];
 
 export const useScienceStore = create<ScienceState>((set, get) => ({
   scene: 'QUEST_MAP',
   currentGrade: DEFAULT_GRADE,
   currentQuestId: FIRST_QUEST?.id || 'g6-science-q1',
-  studentName: 'Omar',
+  studentName: 'Explorer',
   vialsCollected: 0,
-  totalVials: 4,
+  totalVials: 5,
   currentQuestion: 0,
   questions: FIRST_QUEST?.questions || [],
   score: 0,
@@ -176,11 +218,15 @@ export const useScienceStore = create<ScienceState>((set, get) => ({
 }));
 
 // Export for QuestMapScene
-export { SCIENCE_QUESTS, GRADE_QUESTS };
-export const getQuestById = (id: string) => SCIENCE_QUESTS.find(q => q.id === id);
-export const getNextQuest = (currentId: string) => {
-  const idx = SCIENCE_QUESTS.findIndex(q => q.id === currentId);
-  return idx >= 0 && idx < SCIENCE_QUESTS.length - 1 ? SCIENCE_QUESTS[idx + 1] : null;
+export { SCIENCE_QUESTS, GRADE_QUESTS_HARDCODED, getQuestsForGrade };
+export const getQuestById = (id: string, grade: number) => {
+  const quests = getQuestsForGrade(grade);
+  return quests.find(q => q.id === id);
+};
+export const getNextQuest = (currentId: string, grade: number) => {
+  const quests = getQuestsForGrade(grade);
+  const idx = quests.findIndex(q => q.id === currentId);
+  return idx >= 0 && idx < quests.length - 1 ? quests[idx + 1] : null;
 };
 
 // Check if a grade has quests available

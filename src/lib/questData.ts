@@ -45,6 +45,10 @@ export interface GameQuestion {
     example: string;
     visual?: 'numberLine' | 'text' | 'diagram';
     cost: number;
+    // Number line visualization values (for integer operations, etc.)
+    startValue?: number;
+    moveValue?: number;
+    moveValue2?: number;
   };
 }
 
@@ -134,6 +138,9 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
     explanation: 'Think carefully about the question.',
     visual: 'text' as const,
     cost: 10,
+    startValue: undefined as number | undefined,
+    moveValue: undefined as number | undefined,
+    moveValue2: undefined as number | undefined,
   };
   const clueData = q.clue || defaultClue;
 
@@ -149,6 +156,10 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
       example: clueData.explanation,
       visual: clueData.visual,
       cost: clueData.cost,
+      // Copy number line values if provided (for integer operations, etc.)
+      startValue: clueData.startValue,
+      moveValue: clueData.moveValue,
+      moveValue2: clueData.moveValue2,
     },
   };
 }

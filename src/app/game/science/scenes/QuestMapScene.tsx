@@ -1,35 +1,66 @@
 'use client';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useScienceStore } from '../store/gameStore';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useScienceStore, getQuestsForGrade, hasQuestsForGrade } from '../store/gameStore';
+import type { ScienceQuestLocal } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
-import { SCIENCE_QUESTS, type ScienceQuest } from '../data/questData';
 import { gameTTS } from '../../shared/tts';
 import { gameAudio } from '../../shared/audio';
 
-const LOCATION_ICONS: Record<ScienceQuest['locationType'], string> = {
+type LocationType = 'hut' | 'village' | 'city' | 'castle' | 'boss';
+
+const LOCATION_ICONS: Record<LocationType, string> = {
   hut: '🏕️', village: '🏘️', city: '🏙️', castle: '🏛️', boss: '🌀',
 };
 
+// Grade display names for science topics
+const GRADE_NAMES: Record<number, { programme: string; topic: string }> = {
+  1: { programme: 'PYP', topic: 'Living Things' },
+  2: { programme: 'PYP', topic: 'Materials & Matter' },
+  3: { programme: 'PYP', topic: 'Light & Sound' },
+  4: { programme: 'PYP', topic: 'Earth & Space' },
+  5: { programme: 'PYP', topic: 'Forces & Energy' },
+  6: { programme: 'MYP', topic: 'Water Cycle' },
+  7: { programme: 'MYP', topic: 'Ecosystems' },
+  8: { programme: 'MYP', topic: 'Chemical Reactions' },
+  9: { programme: 'MYP', topic: 'Physics & Motion' },
+  10: { programme: 'MYP', topic: 'Biology & Genetics' },
+  11: { programme: 'DP', topic: 'Advanced Sciences' },
+  12: { programme: 'DP', topic: 'Research & Analysis' },
+};
+
 export default function QuestMapScene() {
-  const { loadQuest, currentQuestId } = useScienceStore();
+  const { loadQuest, currentQuestId, currentGrade, setGrade } = useScienceStore();
   const { completedQuests } = useProgressStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  // Get grade from URL or use store's current grade
+  const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
+
+  // Set grade from URL if different
+  if (urlGrade && urlGrade !== currentGrade && hasQuestsForGrade(urlGrade)) {
+    setGrade(urlGrade);
+  }
+
+  // Get quests for current grade
+  const quests = getQuestsForGrade(currentGrade);
+  const gradeInfo = GRADE_NAMES[currentGrade] || { programme: 'IB', topic: 'Science' };
 
   // A quest is unlocked if it's the first one, or the previous one is completed
   function isUnlocked(index: number) {
     if (index === 0) return true;
-    return completedQuests.includes(SCIENCE_QUESTS[index - 1].id);
+    return completedQuests.includes(quests[index - 1].id);
   }
 
   function isCompleted(questId: string) {
     return completedQuests.includes(questId);
   }
 
-  function handleQuestClick(quest: ScienceQuest, index: number) {
+  function handleQuestClick(quest: ScienceQuestLocal, index: number) {
     if (!isUnlocked(index)) {
       gameTTS.speak('Complete the previous quest to unlock this one!');
       return;
@@ -39,7 +70,7 @@ export default function QuestMapScene() {
     loadQuest(quest.id);
   }
 
-  const completedCount = SCIENCE_QUESTS.filter(q => isCompleted(q.id)).length;
+  const completedCount = quests.filter(q => isCompleted(q.id)).length;
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center px-4 py-8 relative overflow-hidden"
@@ -62,7 +93,7 @@ export default function QuestMapScene() {
 
       {/* Header */}
       <div className="relative z-10 w-full max-w-lg flex items-center justify-between mb-6">
-        <button onClick={() => router.push('/game/science')}
+        <button onClick={() => router.push('/world-map')}
           className="text-sm font-bold text-gray-400 hover:text-white transition-all flex items-center gap-1">
           ← Back
         </button>
@@ -70,7 +101,7 @@ export default function QuestMapScene() {
           <h1 className="font-black text-2xl text-white" style={{ fontFamily: 'Georgia, serif', textShadow: '0 0 20px rgba(14,165,233,0.6)' }}>
             🔬 Science Lab
           </h1>
-          <p className="text-cyan-300 text-xs mt-0.5">Grade 6 · IB MYP · Water &amp; Earth Science</p>
+          <p className="text-cyan-300 text-xs mt-0.5">Grade {currentGrade} · {gradeInfo.programme} · {gradeInfo.topic}</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setTtsOn(gameTTS.toggle())}
@@ -93,25 +124,24 @@ export default function QuestMapScene() {
               <motion.div className="h-full rounded-full"
                 style={{ background: 'linear-gradient(90deg, #0EA5E9, #14B8A6)' }}
                 initial={{ width: 0 }}
-                animate={{ width: `${(completedCount / SCIENCE_QUESTS.length) * 100}%` }}
+                animate={{ width: `${quests.length > 0 ? (completedCount / quests.length) * 100 : 0}%` }}
                 transition={{ duration: 0.8, delay: 0.3 }} />
             </div>
-            <span className="text-cyan-300 text-xs font-bold">{completedCount}/{SCIENCE_QUESTS.length}</span>
+            <span className="text-cyan-300 text-xs font-bold">{completedCount}/{quests.length}</span>
           </div>
         </div>
       </motion.div>
 
       {/* Quest path */}
       <div className="relative z-10 w-full max-w-lg space-y-4">
-        {SCIENCE_QUESTS.map((quest, index) => {
+        {quests.map((quest, index) => {
           const unlocked = isUnlocked(index);
           const completed = isCompleted(quest.id);
-          const isCurrent = currentQuestId === quest.id;
 
           return (
             <div key={quest.id} className="relative">
               {/* Connector path line */}
-              {index < SCIENCE_QUESTS.length - 1 && (
+              {index < quests.length - 1 && (
                 <div className="absolute left-[52px] top-full w-0.5 h-4 z-0"
                   style={{ background: completed ? quest.color : 'rgba(255,255,255,0.1)' }} />
               )}
@@ -210,13 +240,13 @@ export default function QuestMapScene() {
       </div>
 
       {/* All done celebration */}
-      {completedCount === SCIENCE_QUESTS.length && (
+      {quests.length > 0 && completedCount === quests.length && (
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 w-full max-w-lg mt-6 p-5 rounded-2xl text-center"
           style={{ background: 'rgba(14,165,233,0.12)', border: '2px solid rgba(14,165,233,0.5)' }}>
-          <div className="text-4xl mb-2">🌊</div>
+          <div className="text-4xl mb-2">🏆</div>
           <p className="font-black text-cyan-400 text-lg">SCIENCE LAB CONQUERED!</p>
-          <p className="text-cyan-300/70 text-sm mt-1">You've mastered the Water Cycle! A true Science Champion!</p>
+          <p className="text-cyan-300/70 text-sm mt-1">You've mastered Grade {currentGrade} Science! A true Science Champion!</p>
         </motion.div>
       )}
 

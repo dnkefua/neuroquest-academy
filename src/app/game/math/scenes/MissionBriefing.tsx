@@ -1,14 +1,53 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore } from '../store/gameStore';
-import { MISSION_DIALOGUE } from '../data/pirateDialogue';
+import { useGameStore, getQuestById } from '../store/gameStore';
 import { gameTTS } from '../../shared/tts';
-import { MATH_QUESTS } from '../data/questData';
+
+// Grade display info
+const GRADE_INFO: Record<number, { programme: string; subject: string }> = {
+  1: { programme: 'PYP', subject: 'Counting & Numbers' },
+  2: { programme: 'PYP', subject: 'Place Value & Operations' },
+  3: { programme: 'PYP', subject: 'Multiplication & Division' },
+  4: { programme: 'PYP', subject: 'Decimals & Geometry' },
+  5: { programme: 'PYP', subject: 'Fractions & Data' },
+  6: { programme: 'MYP', subject: 'Integers & Negative Numbers' },
+  7: { programme: 'MYP', subject: 'Fractions & Percents' },
+  8: { programme: 'MYP', subject: 'Ratios & Geometry' },
+  9: { programme: 'MYP', subject: 'Algebra & Pythagoras' },
+  10: { programme: 'MYP', subject: 'Quadratic Equations' },
+  11: { programme: 'DP', subject: 'Functions & Calculus' },
+  12: { programme: 'DP', subject: 'Advanced Mathematics' },
+};
+
+// Grade-specific dialogue
+const getGradeDialogue = (grade: number, subject: string): string[] => {
+  if (grade === 6) {
+    return [
+      "Welcome, brave explorer! I am Zara the Wise 🧙‍♀️",
+      "Your kingdom needs YOU. Your castle is unfinished...",
+      "To complete it, you must collect 100 Gold Coins from Coin City! 💰",
+      "But the road is dangerous. Pirates guard the mountain pass!",
+      "They speak the ancient language of Numbers — both Positive and Negative.",
+      "Master their secrets... and you shall pass! ⚔️",
+      "Are you ready, brave one?",
+    ];
+  }
+  // Generic dialogue for other grades
+  return [
+    "Welcome, brave explorer! I am your guide for this journey 🧙‍♀️",
+    `Today's quest focuses on ${subject}!`,
+    "You must collect Gold Coins by solving math challenges! 💰",
+    "Each correct answer brings you closer to victory!",
+    "Use your skills and knowledge to succeed! ⚔️",
+    "Are you ready to begin?",
+  ];
+};
 
 export default function MissionBriefing() {
-  const { setScene, currentQuestId } = useGameStore();
-  const currentQuest = MATH_QUESTS.find(q => q.id === currentQuestId) ?? MATH_QUESTS[0];
+  const { setScene, currentQuestId, currentGrade } = useGameStore();
+  const currentQuest = getQuestById(currentQuestId, currentGrade);
+  const gradeInfo = GRADE_INFO[currentGrade] || { programme: 'IB', subject: 'Mathematics' };
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
   const [titleDone, setTitleDone] = useState(false);
@@ -28,17 +67,20 @@ export default function MissionBriefing() {
     );
   }, []);
 
+  // Get grade-appropriate dialogue
+  const missionDialogue = getGradeDialogue(currentGrade, gradeInfo.subject);
+
   // Dialogue: advance to next line only after TTS fully finishes reading current line
   useEffect(() => {
     if (!titleDone) return;
-    if (lineIndex >= MISSION_DIALOGUE.length) {
+    if (lineIndex >= missionDialogue.length) {
       setShowCard(true);
       gameTTS.speak('Your mission briefing is ready. Press Begin Quest when you are ready!');
       return;
     }
-    const line = MISSION_DIALOGUE[lineIndex - 1] ?? MISSION_DIALOGUE[0];
+    const line = missionDialogue[lineIndex - 1] ?? missionDialogue[0];
     gameTTS.afterSpeak(line, () => setLineIndex(i => i + 1), 3000);
-  }, [lineIndex, titleDone]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lineIndex, titleDone, missionDialogue]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="w-full h-screen relative overflow-hidden flex flex-col items-center justify-center"
@@ -107,14 +149,14 @@ export default function MissionBriefing() {
               className="rounded-3xl p-6 mb-4"
               style={{ background: 'rgba(62,207,178,0.12)', border: '2px solid rgba(62,207,178,0.3)' }}>
               <p className="text-white text-lg font-medium leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-                {MISSION_DIALOGUE[lineIndex - 1] ?? ''}
+                {missionDialogue[lineIndex - 1] ?? ''}
               </p>
             </motion.div>
           </AnimatePresence>
 
           {/* Progress dots */}
           <div className="flex justify-center gap-2 mt-4">
-            {MISSION_DIALOGUE.map((_, i) => (
+            {missionDialogue.map((_, i) => (
               <div key={i} className="w-2 h-2 rounded-full transition-all duration-300"
                 style={{ background: i < lineIndex ? '#3ECFB2' : 'rgba(255,255,255,0.2)' }} />
             ))}
@@ -135,16 +177,16 @@ export default function MissionBriefing() {
               boxShadow: '0 0 60px rgba(255,215,0,0.2)',
             }}>
             <h2 className="text-center font-black text-2xl text-yellow-400 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-              {currentQuest.emoji} {currentQuest.briefingTitle}
+              {currentQuest?.emoji || '⚔️'} {currentQuest?.briefingTitle || 'Math Quest'}
             </h2>
-            <p className="text-center text-xs text-yellow-300/70 mb-2">{currentQuest.briefingDescription}</p>
+            <p className="text-center text-xs text-yellow-300/70 mb-2">{currentQuest?.briefingDescription || `Complete this ${gradeInfo.subject} challenge!`}</p>
             <div className="w-full h-px bg-yellow-700/40 my-4" />
             {[
               ['🎯 OBJECTIVE', 'Collect 100 Gold Coins'],
-              ['📚 SUBJECT', 'Mathematics — Grade 6 IB MYP'],
-              ['📖 TOPIC', currentQuest.subtitle],
-              ['📊 DIFFICULTY', currentQuest.difficulty],
-              ['🏰 REWARD', `Quest Badge + ${currentQuest.locationType === 'boss' ? '500' : '100'} Bonus Coins`],
+              ['📚 SUBJECT', `Mathematics — Grade ${currentGrade} ${gradeInfo.programme}`],
+              ['📖 TOPIC', currentQuest?.subtitle || gradeInfo.subject],
+              ['📊 DIFFICULTY', currentQuest?.difficulty || 'Beginner'],
+              ['🏰 REWARD', `Quest Badge + ${currentQuest?.locationType === 'boss' ? '500' : '100'} Bonus Coins`],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between items-center py-2">
                 <span className="text-yellow-600 text-sm font-bold">{label}</span>
@@ -153,7 +195,7 @@ export default function MissionBriefing() {
             ))}
             <div className="w-full h-px bg-yellow-700/40 my-4" />
             <div className="flex gap-3 mt-2">
-              <button onClick={() => { gameTTS.stop(); setScene('PIRATE_ENCOUNTER'); }}
+              <button onClick={() => { gameTTS.stop(); setScene(currentGrade === 6 ? 'PIRATE_ENCOUNTER' : 'QUIZ'); }}
                 className="flex-1 py-4 rounded-2xl font-black text-black text-base transition-all hover:scale-105 active:scale-95"
                 style={{
                   background: 'linear-gradient(135deg, #FFD700, #FFA500)',

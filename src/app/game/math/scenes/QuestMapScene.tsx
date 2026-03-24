@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGameStore, getQuestsForGrade, hasQuestsForGrade, type MathQuestLocal } from '../store/gameStore';
@@ -38,10 +38,12 @@ export default function QuestMapScene() {
   // Get grade from URL or use store's current grade
   const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
 
-  // Set grade from URL if different
-  if (urlGrade && urlGrade !== currentGrade && hasQuestsForGrade(urlGrade)) {
-    setGrade(urlGrade);
-  }
+  // Set grade from URL if different - use useEffect to avoid state update during render
+  useEffect(() => {
+    if (urlGrade && urlGrade !== currentGrade && hasQuestsForGrade(urlGrade)) {
+      setGrade(urlGrade);
+    }
+  }, [urlGrade, currentGrade, setGrade]);
 
   // Get quests for current grade
   const quests = getQuestsForGrade(currentGrade);

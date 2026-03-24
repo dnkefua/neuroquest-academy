@@ -17,6 +17,8 @@ export interface UserProfile {
   studentClass?: StudentClass;
   approvedQuestIds: string[];
   pendingApprovals: string[];
+  // Completed quests tracking
+  completedQuests?: string[];
 }
 
 export type EmotionKey = 'happy' | 'neutral' | 'frustrated' | 'anxious';
@@ -95,6 +97,10 @@ export interface CurriculumQuestion {
     explanation: string;
     visual: 'numberLine' | 'text' | 'diagram';
     cost: number;
+    // Optional number line values (for integer operations, etc.)
+    startValue?: number;
+    moveValue?: number;
+    moveValue2?: number;
   };
   coinsOnCorrect?: number; // Optional - defaults handled by game engine
   reward?: string; // Optional badge/achievement name

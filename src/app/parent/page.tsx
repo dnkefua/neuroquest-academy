@@ -11,6 +11,8 @@ import {
 } from '@/lib/firestore';
 import type { UserProfile } from '@/types';
 import { EMOTIONS } from '@/lib/constants';
+import { RANK_PROGRESSION } from '@/store/progressStore';
+import { getAvailableSubjectsForGrade, getQuestCountForGrade } from '@/lib/questData';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
@@ -41,7 +43,15 @@ const SUBJECT_COLORS: Record<string, string> = {
   'emotional-regulation': '#EC4899',
 };
 
-type ActiveTab = 'overview' | 'progress' | 'emotions' | 'sessions';
+const SUBJECT_LABELS: Record<string, string> = {
+  math: 'Mathematics',
+  science: 'Science',
+  english: 'English',
+  social: 'Social Studies',
+  socialSkills: 'Social Skills',
+};
+
+type ActiveTab = 'overview' | 'quests' | 'progress' | 'emotions' | 'sessions';
 
 export default function ParentPage() {
   const router = useRouter();
@@ -56,6 +66,7 @@ export default function ParentPage() {
   const [linkUid, setLinkUid] = useState('');
   const [linking, setLinking] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
+  const [childCompletedQuests, setChildCompletedQuests] = useState<string[]>([]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -86,6 +97,10 @@ export default function ParentPage() {
     setWeeklyData(weekly as { week: string; math?: number; science?: number; english?: number; 'social-skills'?: number }[]);
     setMasteryData(mastery);
     setHeatmapData(heatmap);
+    // Get completed quests from child's profile
+    if (cp?.completedQuests) {
+      setChildCompletedQuests(cp.completedQuests);
+    }
   }
 
   async function handleLink() {
@@ -121,6 +136,7 @@ export default function ParentPage() {
 
   const TABS: { key: ActiveTab; label: string; icon: string }[] = [
     { key: 'overview', label: 'Overview', icon: '📊' },
+    { key: 'quests', label: 'Quests', icon: '🗺️' },
     { key: 'progress', label: 'Progress', icon: '📈' },
     { key: 'emotions', label: 'Emotions', icon: '💭' },
     { key: 'sessions', label: 'Sessions', icon: '📋' },
@@ -269,6 +285,102 @@ export default function ParentPage() {
                 <div className="card">
                   <h3 className="font-nunito text-lg font-black text-gray-800 mb-4">🎯 Subject Mastery</h3>
                   <SubjectRadarChart data={masteryData} />
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Quests Tab ── */}
+            {activeTab === 'quests' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                <div className="card">
+                  <h3 className="font-nunito text-lg font-black text-gray-800 mb-1">🗺️ Quest Completion by Grade</h3>
+                  <p className="text-xs text-gray-500 font-dmsans mb-4">
+                    {childProfile?.name}'s progress through each grade level
+                  </p>
+
+                  {/* Grade Progress Grid */}
+                  <div className="space-y-3">
+                    {RANK_PROGRESSION.map((rank) => {
+                      const subjects = getAvailableSubjectsForGrade(rank.grade);
+                      const totalQuests = subjects.reduce((sum, s) => sum + getQuestCountForGrade(rank.grade, s.id as 'math' | 'science' | 'english' | 'social' | 'socialSkills'), 0);
+                      const completedInGrade = childCompletedQuests.filter(q => q.startsWith(`g${rank.grade}-`)).length;
+                      const pct = totalQuests > 0 ? Math.round((completedInGrade / totalQuests) * 100) : 0;
+
+                      return (
+                        <div key={rank.grade} className="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">{rank.emoji}</span>
+                              <div>
+                                <p className="font-nunito font-bold text-gray-800 text-sm">Grade {rank.grade}</p>
+                                <p className="text-xs text-gray-500">{rank.rank}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-nunito font-black text-sm" style={{ color: rank.color }}>
+                                {completedInGrade}/{totalQuests}
+                              </p>
+                              <p className="text-xs text-gray-500">{pct}% complete</p>
+                            </div>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <motion.div className="h-2 rounded-full"
+                              style={{ background: rank.bgGradient }}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${pct}%` }}
+                              transition={{ duration: 0.5 }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Subject Breakdown */}
+                <div className="card">
+                  <h3 className="font-nunito text-lg font-black text-gray-800 mb-4">📚 Quests by Subject</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {['math', 'science', 'english', 'social', 'socialSkills'].map((subject) => {
+                      const completed = childCompletedQuests.filter(q => q.includes(`-${subject}-`) || q.includes(`-${subject}q`)).length;
+                      const color = SUBJECT_COLORS[subject] ?? '#8B5CF6';
+                      return (
+                        <div key={subject} className="p-3 rounded-xl border text-center"
+                          style={{ borderColor: `${color}40`, background: `${color}10` }}>
+                          <div className="text-2xl mb-1">
+                            {subject === 'math' ? '🔢' : subject === 'science' ? '🔬' : subject === 'english' ? '📖' : subject === 'social' ? '🌍' : '💜'}
+                          </div>
+                          <p className="font-nunito font-bold text-sm" style={{ color }}>
+                            {SUBJECT_LABELS[subject] ?? subject}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">{completed} quests</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Recent Quest Completions */}
+                <div className="card">
+                  <h3 className="font-nunito text-lg font-black text-gray-800 mb-4">🏆 Recent Completions</h3>
+                  {childCompletedQuests.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {childCompletedQuests.slice(-10).reverse().map((questId) => {
+                        const gradeMatch = questId.match(/g(\d+)/);
+                        const grade = gradeMatch ? parseInt(gradeMatch[1]) : 1;
+                        const rank = RANK_PROGRESSION.find(r => r.grade === grade);
+                        return (
+                          <div key={questId} className="px-3 py-1.5 rounded-full text-xs font-nunito font-bold"
+                            style={{ background: rank?.color ? `${rank.color}20` : '#F3F4F6', color: rank?.color ?? '#6B7280' }}>
+                            {rank?.emoji} {questId}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 font-dmsans text-sm text-center py-4">
+                      No quests completed yet. Encourage {childProfile?.name} to start learning!
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )}

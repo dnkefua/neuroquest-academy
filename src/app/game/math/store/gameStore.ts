@@ -80,12 +80,17 @@ function toLocalQuestion(q: GameQuest['questions'][0], index: number): Question 
     equation: q.equation,
     options: q.options,
     correct: q.correct,
-    // Number line features come from the clue visual type
-    numberLineStart: q.clue.visual === 'numberLine' ? undefined : undefined,
-    numberLineMove: undefined,
+    // Number line features - copy from clue if provided
+    numberLineStart: q.clue.startValue,
+    numberLineMove: q.clue.moveValue,
+    numberLineMove2: q.clue.moveValue2,
     clue: {
       title: q.clue.title,
       example: q.clue.example,
+      // Copy number line values to clue for ClueBox
+      startValue: q.clue.startValue,
+      moveValue: q.clue.moveValue,
+      moveValue2: q.clue.moveValue2,
     },
   };
 }
