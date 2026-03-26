@@ -218,8 +218,8 @@ export function getGameQuests(grade: number, subject: CurriculumSubject): GameQu
  * Get a specific game quest by ID
  */
 export function getGameQuestById(id: string): GameQuest | undefined {
-  // Parse ID like "g6-math" or "g6-math-boss"
-  const match = id.match(/^g(\d+)-(math|science|english|social|socialSkills)(-boss)?$/);
+  // Parse ID like "g6-math", "g6-math-2", "g6-math-3", or "g6-math-boss"
+  const match = id.match(/^g(\d+)-(math|science|english|social|socialSkills)/);
   if (!match) return undefined;
 
   const [, gradeStr, subject] = match;

@@ -1235,6 +1235,2608 @@ export const MYP_QUESTS: CurriculumQuest[] = [
       },
     ],
   },
+
+  // ========================================================
+  // GRADE 6 MYP — Quest 2: Fractions & Decimals
+  // ========================================================
+  {
+    id: 'g6-math-2',
+    grade: 6,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Fractions & Decimals',
+    realmName: 'The Fractured Isles',
+    narrativeWorld:
+      'The Fractured Isles float above an endless ocean, each island split into uneven pieces by an ancient curse. Only a hero who can reunite fractions and decode decimals can restore the bridges between them.',
+    characterTeacher: 'Captain Halvora',
+    teacherEmoji: '🧭',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g6-math-2-boss',
+      title: 'The Shard Colossus',
+      villain: 'Divisor the Uneven',
+      villainEmoji: '🗿',
+      narrative:
+        'Divisor the Uneven rises from the fractured ground, his body made of mismatched stone slabs. He challenges you to prove your mastery of fractions and decimals to pass.',
+      question:
+        'A treasure chest contains coins worth 3/4 of a gold bar. You find two more chests: one worth 2/5 of a gold bar and another worth 0.35 of a gold bar. (a) Convert all amounts to decimals. (b) Find the total value in decimal form. (c) Express the total as a simplified fraction.',
+      answer:
+        '(a) 3/4 = 0.75, 2/5 = 0.40, and 0.35 stays as 0.35. (b) Total = 0.75 + 0.40 + 0.35 = 1.50. (c) 1.50 = 150/100 = 3/2.',
+      hints: [
+        'To convert a fraction to a decimal, divide the numerator by the denominator.',
+        'Line up the decimal points before adding.',
+        'To convert a decimal to a fraction, write it over the appropriate power of 10 and simplify.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g6-math-2-q1',
+        narrative:
+          'The first bridge requires a fraction keystone. Captain Halvora asks you to combine two pieces.',
+        question: 'What is 1/3 + 1/6?',
+        equation: '1/3 + 1/6 = ?',
+        options: ['1/2', '2/9', '1/6', '2/6'],
+        correctIndex: 0,
+        clue: {
+          title: 'Finding Common Denominators',
+          explanation:
+            'To add fractions with different denominators, find the least common denominator. The LCD of 3 and 6 is 6. Convert 1/3 to 2/6, then add: 2/6 + 1/6 = 3/6 = 1/2.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-2-q2',
+        narrative:
+          'A locked gate displays a decimal puzzle. You must convert to proceed.',
+        question: 'Convert 5/8 to a decimal.',
+        equation: '5/8 = ?',
+        options: ['0.625', '0.58', '0.525', '0.85'],
+        correctIndex: 0,
+        clue: {
+          title: 'Fraction to Decimal',
+          explanation:
+            'Divide the numerator by the denominator: 5 ÷ 8 = 0.625. You can do long division: 50 ÷ 8 = 6 remainder 2, then 20 ÷ 8 = 2 remainder 4, then 40 ÷ 8 = 5.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-2-q3',
+        narrative:
+          'A merchant on the isle offers a trade, but you must subtract fractions to know the fair price.',
+        question: 'What is 7/10 − 2/5?',
+        equation: '7/10 − 2/5 = ?',
+        options: ['3/10', '5/5', '5/10', '1/2'],
+        correctIndex: 0,
+        clue: {
+          title: 'Subtracting Fractions',
+          explanation:
+            'Convert 2/5 to 4/10 so both fractions share the same denominator. Then 7/10 − 4/10 = 3/10.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-2-q4',
+        narrative:
+          'A riddle carved in stone asks you to multiply fractions to reveal a hidden path.',
+        question: 'What is 2/3 × 3/4?',
+        equation: '2/3 × 3/4 = ?',
+        options: ['1/2', '6/7', '5/12', '2/4'],
+        correctIndex: 0,
+        clue: {
+          title: 'Multiplying Fractions',
+          explanation:
+            'Multiply numerators: 2 × 3 = 6. Multiply denominators: 3 × 4 = 12. Result: 6/12 = 1/2.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-2-q5',
+        narrative:
+          'The final island gate requires ordering values from least to greatest to unlock.',
+        question: 'Which list is in order from least to greatest?',
+        equation: '0.3, 1/4, 0.45, 1/2',
+        options: [
+          '1/4, 0.3, 0.45, 1/2',
+          '0.3, 1/4, 1/2, 0.45',
+          '1/2, 0.45, 0.3, 1/4',
+          '0.45, 0.3, 1/4, 1/2',
+        ],
+        correctIndex: 0,
+        clue: {
+          title: 'Comparing Fractions and Decimals',
+          explanation:
+            'Convert everything to decimals: 1/4 = 0.25, 0.3 = 0.3, 0.45 = 0.45, 1/2 = 0.5. Ordering: 0.25, 0.3, 0.45, 0.5.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 6 MYP — Quest 3: Ratios & Percentages
+  // ========================================================
+  {
+    id: 'g6-math-3',
+    grade: 6,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Ratios & Percentages',
+    realmName: 'The Bazaar of Balances',
+    narrativeWorld:
+      'Deep in the desert lies the Bazaar of Balances, where every trade must be perfectly proportioned. The market stalls shimmer with enchanted goods, but only those who master ratios and percentages can strike fair deals.',
+    characterTeacher: 'Merchant Ratika',
+    teacherEmoji: '⚖️',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g6-math-3-boss',
+      title: 'The Grand Haggle',
+      villain: 'Baron Markup',
+      villainEmoji: '🤑',
+      narrative:
+        'Baron Markup controls the Bazaar with unfair prices. Defeat him by calculating the true costs and exposing his tricks.',
+      question:
+        'Baron Markup sells a shield originally priced at $80. He marks it up by 25%, then offers a "generous" 20% discount on the new price. (a) What is the marked-up price? (b) What is the final price after the discount? (c) Is the final price more or less than the original $80, and by how much?',
+      answer:
+        '(a) 25% of $80 = $20, so marked-up price = $80 + $20 = $100. (b) 20% of $100 = $20, so final price = $100 − $20 = $80. (c) The final price equals the original price of $80, so there is no net change.',
+      hints: [
+        'A 25% markup means you add 25% of the original price.',
+        'Apply the discount to the new (marked-up) price, not the original.',
+        'Compare the final price back to the original $80.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g6-math-3-q1',
+        narrative:
+          'A spice trader mixes red and yellow saffron. You must figure out the ratio.',
+        question:
+          'A mixture contains 12 grams of red saffron and 8 grams of yellow saffron. What is the ratio of red to yellow in simplest form?',
+        equation: '12 : 8 = ?',
+        options: ['3 : 2', '4 : 3', '6 : 4', '2 : 3'],
+        correctIndex: 0,
+        clue: {
+          title: 'Simplifying Ratios',
+          explanation:
+            'Divide both parts by their GCD. The GCD of 12 and 8 is 4. So 12 ÷ 4 = 3 and 8 ÷ 4 = 2. The ratio is 3 : 2.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-3-q2',
+        narrative:
+          'A potion recipe says for every 2 parts moonwater, use 5 parts starlight. You need 20 parts moonwater total.',
+        question:
+          'If the ratio of moonwater to starlight is 2 : 5, how many parts starlight do you need for 20 parts moonwater?',
+        equation: '2 : 5 = 20 : ?',
+        options: ['50', '40', '25', '10'],
+        correctIndex: 0,
+        clue: {
+          title: 'Equivalent Ratios',
+          explanation:
+            '20 is 10 times 2, so multiply the starlight part by the same factor: 5 × 10 = 50.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-3-q3',
+        narrative:
+          'A jewel merchant claims 35% of a bag of 200 gems are rubies. How many rubies?',
+        question: 'What is 35% of 200?',
+        equation: '35% × 200 = ?',
+        options: ['70', '65', '75', '35'],
+        correctIndex: 0,
+        clue: {
+          title: 'Finding a Percentage of a Number',
+          explanation:
+            'Convert the percentage to a decimal: 35% = 0.35. Then multiply: 0.35 × 200 = 70.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-3-q4',
+        narrative:
+          'You buy an enchanted cloak for $60 and sell it for $75. What is your percentage profit?',
+        question:
+          'What is the percentage increase from $60 to $75?',
+        equation: '(75 − 60) / 60 × 100 = ?',
+        options: ['25%', '20%', '15%', '30%'],
+        correctIndex: 0,
+        clue: {
+          title: 'Percentage Increase',
+          explanation:
+            'Increase = $75 − $60 = $15. Percentage increase = (15 / 60) × 100 = 25%.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-math-3-q5',
+        narrative:
+          'A tapestry is on sale for 15% off its original price of $120. What do you pay?',
+        question: 'What is $120 after a 15% discount?',
+        equation: '120 − (15% × 120) = ?',
+        options: ['$102', '$105', '$100', '$108'],
+        correctIndex: 0,
+        clue: {
+          title: 'Percentage Decrease',
+          explanation:
+            '15% of $120 = 0.15 × 120 = $18. Final price = $120 − $18 = $102.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 7 MYP — Quest 2: Solving Equations
+  // ========================================================
+  {
+    id: 'g7-math-2',
+    grade: 7,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Solving Equations',
+    realmName: 'The Balancing Citadel',
+    narrativeWorld:
+      'The Balancing Citadel hovers between two mountain peaks, held aloft by enormous golden scales. When the scales tip, the citadel shakes. You must solve equations to keep everything in perfect equilibrium.',
+    characterTeacher: 'Sage Equilon',
+    teacherEmoji: '🏛️',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g7-math-2-boss',
+      title: 'The Unbalanced Throne',
+      villain: 'Lord Inequalis',
+      villainEmoji: '👑',
+      narrative:
+        'Lord Inequalis sits on a crooked throne, surrounded by floating equations. He claims no one can solve his multi-step challenge.',
+      question:
+        'Lord Inequalis presents this riddle: "I think of a number, multiply it by 3, then subtract 7, and get 20. Then I take the same number, add 5, and divide by 2." (a) Find the number. (b) What is the result of the second operation?',
+      answer:
+        '(a) 3x − 7 = 20 → 3x = 27 → x = 9. (b) (9 + 5) / 2 = 14 / 2 = 7.',
+      hints: [
+        'Set up the equation: 3x − 7 = 20.',
+        'Add 7 to both sides first, then divide by 3.',
+        'Once you know x, substitute into the second expression.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g7-math-2-q1',
+        narrative:
+          'The citadel gate displays a simple equation. Solve it to enter.',
+        question: 'Solve for x: x + 14 = 30',
+        equation: 'x + 14 = 30',
+        options: ['16', '44', '14', '20'],
+        correctIndex: 0,
+        clue: {
+          title: 'One-Step Equations (Addition)',
+          explanation:
+            'Subtract 14 from both sides: x = 30 − 14 = 16.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-2-q2',
+        narrative:
+          'A pressure plate in the hallway requires you to solve a multiplication equation.',
+        question: 'Solve for x: 5x = 45',
+        equation: '5x = 45',
+        options: ['9', '40', '50', '225'],
+        correctIndex: 0,
+        clue: {
+          title: 'One-Step Equations (Multiplication)',
+          explanation:
+            'Divide both sides by 5: x = 45 ÷ 5 = 9.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-2-q3',
+        narrative:
+          'The library guardian poses a two-step equation before granting access.',
+        question: 'Solve for x: 2x + 7 = 19',
+        equation: '2x + 7 = 19',
+        options: ['6', '13', '5', '8'],
+        correctIndex: 0,
+        clue: {
+          title: 'Two-Step Equations',
+          explanation:
+            'Step 1: Subtract 7 from both sides → 2x = 12. Step 2: Divide both sides by 2 → x = 6.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-2-q4',
+        narrative:
+          'An enchanted mirror shows an equation with the variable on both sides.',
+        question: 'Solve for x: 4x − 3 = 2x + 9',
+        equation: '4x − 3 = 2x + 9',
+        options: ['6', '3', '4', '12'],
+        correctIndex: 0,
+        clue: {
+          title: 'Variables on Both Sides',
+          explanation:
+            'Subtract 2x from both sides: 2x − 3 = 9. Add 3 to both sides: 2x = 12. Divide by 2: x = 6.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-2-q5',
+        narrative:
+          'The final scale needs balancing with an equation involving negative numbers.',
+        question: 'Solve for x: 3(x − 2) = 15',
+        equation: '3(x − 2) = 15',
+        options: ['7', '5', '3', '9'],
+        correctIndex: 0,
+        clue: {
+          title: 'Equations with Brackets',
+          explanation:
+            'Divide both sides by 3: x − 2 = 5. Add 2 to both sides: x = 7. Alternatively, expand first: 3x − 6 = 15, so 3x = 21, x = 7.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 7 MYP — Quest 3: Rates & Proportions
+  // ========================================================
+  {
+    id: 'g7-math-3',
+    grade: 7,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Rates & Proportions',
+    realmName: 'The Clockwork Caverns',
+    narrativeWorld:
+      'Beneath the mountains lies the Clockwork Caverns, where gears and pistons run on precise ratios. The ancient machinery is failing, and only someone who understands rates and proportions can recalibrate the engines.',
+    characterTeacher: 'Engineer Gilda',
+    teacherEmoji: '⚙️',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g7-math-3-boss',
+      title: 'The Gear Tyrant',
+      villain: 'Overclock the Relentless',
+      villainEmoji: '🤖',
+      narrative:
+        'Overclock the Relentless controls the master gearbox. His gears spin at impossible rates. Solve his proportion puzzle to shut him down.',
+      question:
+        'A train travels 240 km in 3 hours. A second train travels at 90 km/h. (a) What is the speed of the first train? (b) If both trains start at the same time, how far apart are they after 5 hours? (c) How long would the first train take to travel 640 km?',
+      answer:
+        '(a) Speed = 240 ÷ 3 = 80 km/h. (b) After 5 hours: first train = 80 × 5 = 400 km, second train = 90 × 5 = 450 km. Difference = 450 − 400 = 50 km. (c) Time = 640 ÷ 80 = 8 hours.',
+      hints: [
+        'Speed = distance ÷ time.',
+        'Calculate how far each train travels in 5 hours separately, then find the difference.',
+        'Use time = distance ÷ speed for the last part.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g7-math-3-q1',
+        narrative:
+          'A water pump fills a tank. Engineer Gilda needs you to calculate the rate.',
+        question:
+          'A pump fills 60 litres in 4 minutes. What is the rate in litres per minute?',
+        equation: '60 ÷ 4 = ?',
+        options: ['15 L/min', '20 L/min', '12 L/min', '10 L/min'],
+        correctIndex: 0,
+        clue: {
+          title: 'Unit Rates',
+          explanation:
+            'A unit rate is the amount per one unit. Divide 60 litres by 4 minutes to get 15 litres per minute.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-3-q2',
+        narrative:
+          'Two gears are linked by a proportion. If one turns faster, you must find the other\'s speed.',
+        question:
+          'If 3/5 = x/25, what is the value of x?',
+        equation: '3/5 = x/25',
+        options: ['15', '12', '20', '10'],
+        correctIndex: 0,
+        clue: {
+          title: 'Solving Proportions',
+          explanation:
+            'Cross-multiply: 3 × 25 = 5 × x → 75 = 5x → x = 15.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-3-q3',
+        narrative:
+          'A conveyor belt moves crates. You need to work out how many crates it moves in one hour.',
+        question:
+          'A conveyor moves 48 crates in 20 minutes. How many crates does it move in 1 hour?',
+        equation: '48/20 × 60 = ?',
+        options: ['144', '120', '96', '160'],
+        correctIndex: 0,
+        clue: {
+          title: 'Scaling Rates',
+          explanation:
+            'Rate = 48 ÷ 20 = 2.4 crates per minute. In 60 minutes: 2.4 × 60 = 144 crates.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-3-q4',
+        narrative:
+          'A recipe for healing potion needs scaling up. The original serves 4 but you need to serve 10.',
+        question:
+          'A recipe uses 6 cups of herbs for 4 servings. How many cups are needed for 10 servings?',
+        equation: '6/4 = x/10',
+        options: ['15', '12', '24', '8'],
+        correctIndex: 0,
+        clue: {
+          title: 'Proportional Reasoning',
+          explanation:
+            'Set up the proportion: 6/4 = x/10. Cross-multiply: 6 × 10 = 4x → 60 = 4x → x = 15.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-math-3-q5',
+        narrative:
+          'A cart travels at constant speed. You spot it pass two markers and need to predict when it arrives.',
+        question:
+          'A cart travels 90 km in 1.5 hours. How long will it take to travel 210 km at the same speed?',
+        equation: '90/1.5 = 210/x',
+        options: ['3.5 hours', '3 hours', '4 hours', '2.5 hours'],
+        correctIndex: 0,
+        clue: {
+          title: 'Speed, Distance, Time',
+          explanation:
+            'Speed = 90 ÷ 1.5 = 60 km/h. Time = 210 ÷ 60 = 3.5 hours.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 8 MYP — Quest 2: Pythagorean Theorem
+  // ========================================================
+  {
+    id: 'g8-math-2',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Pythagorean Theorem',
+    realmName: 'The Triangle Spire',
+    narrativeWorld:
+      'The Triangle Spire is a colossal tower built entirely from right-angled triangles. Its architect vanished centuries ago, leaving puzzles on every floor. You must use the Pythagorean theorem to ascend to the summit.',
+    characterTeacher: 'Architect Pythia',
+    teacherEmoji: '📐',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g8-math-2-boss',
+      title: 'The Apex Guardian',
+      villain: 'Hypotenax',
+      villainEmoji: '🔺',
+      narrative:
+        'At the top of the spire, Hypotenax blocks your path. His triangular shield can only be shattered by solving a multi-part Pythagorean challenge.',
+      question:
+        'A ladder leans against a wall. The ladder is 13 m long and its base is 5 m from the wall. (a) How high up the wall does the ladder reach? (b) If the base is moved 2 m further from the wall (now 7 m away), how high does the ladder now reach? (c) How much lower is the ladder on the wall compared to part (a)? Round to 2 decimal places.',
+      answer:
+        '(a) h = sqrt(13² − 5²) = sqrt(169 − 25) = sqrt(144) = 12 m. (b) h = sqrt(13² − 7²) = sqrt(169 − 49) = sqrt(120) ≈ 10.95 m. (c) Difference = 12 − 10.95 = 1.05 m lower.',
+      hints: [
+        'Use a² + b² = c² where c is the hypotenuse (the ladder).',
+        'Rearrange to find the height: h = sqrt(c² − b²).',
+        'Subtract the two heights to find how much lower the ladder reaches.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-math-2-q1',
+        narrative:
+          'The first floor has a right triangle drawn on the ground with two sides labelled.',
+        question:
+          'A right triangle has legs of length 3 and 4. What is the hypotenuse?',
+        equation: 'c = sqrt(3² + 4²)',
+        options: ['5', '7', '6', '12'],
+        correctIndex: 0,
+        clue: {
+          title: 'Pythagorean Theorem Basics',
+          explanation:
+            'a² + b² = c². So 9 + 16 = 25. c = sqrt(25) = 5.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-2-q2',
+        narrative:
+          'A drawbridge forms a right triangle. You know the hypotenuse and one leg.',
+        question:
+          'A right triangle has a hypotenuse of 10 and one leg of 6. What is the other leg?',
+        equation: 'b = sqrt(10² − 6²)',
+        options: ['8', '4', '7', '64'],
+        correctIndex: 0,
+        clue: {
+          title: 'Finding a Missing Leg',
+          explanation:
+            'Rearrange: b² = c² − a² = 100 − 36 = 64. b = sqrt(64) = 8.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-2-q3',
+        narrative:
+          'You need to check whether a triangular panel is a right triangle.',
+        question:
+          'Is a triangle with sides 5, 12, and 13 a right triangle?',
+        equation: '5² + 12² = 13²?',
+        options: [
+          'Yes, because 25 + 144 = 169',
+          'No, because 25 + 144 ≠ 169',
+          'Yes, because 5 + 12 = 17',
+          'No, because 13 is too large',
+        ],
+        correctIndex: 0,
+        clue: {
+          title: 'Checking for Right Triangles',
+          explanation:
+            'Check if a² + b² = c² for the longest side as c. 5² + 12² = 25 + 144 = 169 = 13². Yes, it is a right triangle.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-2-q4',
+        narrative:
+          'A diagonal brace across a rectangular doorway needs measuring.',
+        question:
+          'A rectangle is 8 m wide and 6 m tall. What is the length of its diagonal?',
+        equation: 'd = sqrt(8² + 6²)',
+        options: ['10 m', '14 m', '12 m', '100 m'],
+        correctIndex: 0,
+        clue: {
+          title: 'Diagonals of Rectangles',
+          explanation:
+            'The diagonal of a rectangle forms a right triangle with the width and height. d = sqrt(64 + 36) = sqrt(100) = 10 m.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-2-q5',
+        narrative:
+          'Two explorers start at the same point. One walks 9 m north and the other walks 12 m east. How far apart are they?',
+        question:
+          'What is the straight-line distance between points that are 9 m north and 12 m east of a common starting point?',
+        equation: 'd = sqrt(9² + 12²)',
+        options: ['15 m', '21 m', '18 m', '225 m'],
+        correctIndex: 0,
+        clue: {
+          title: 'Distance Using Pythagorean Theorem',
+          explanation:
+            'The paths form a right angle. d = sqrt(81 + 144) = sqrt(225) = 15 m.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 8 MYP — Quest 3: Volume & Surface Area
+  // ========================================================
+  {
+    id: 'g8-math-3',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Volume & Surface Area',
+    realmName: 'The Sculptor\'s Forge',
+    narrativeWorld:
+      'In the heart of a dormant volcano lies the Sculptor\'s Forge, where enormous 3D shapes are carved from enchanted stone. You must calculate volumes and surface areas to unlock each chamber and reach the hidden forge master.',
+    characterTeacher: 'Forgemaster Solida',
+    teacherEmoji: '🔶',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g8-math-3-boss',
+      title: 'The Molten Core',
+      villain: 'Prismus the Unyielding',
+      villainEmoji: '🌋',
+      narrative:
+        'Prismus the Unyielding guards the deepest chamber with shapes that shift and grow. Only precise calculations will contain his power.',
+      question:
+        'A cylindrical water tank has a radius of 3 m and height of 7 m. (a) Calculate the volume of the tank (use pi = 3.14). (b) Calculate the total surface area. (c) If the tank is only 60% full, what volume of water is inside?',
+      answer:
+        '(a) V = pi × r² × h = 3.14 × 9 × 7 = 197.82 m³. (b) SA = 2 × pi × r² + 2 × pi × r × h = 2 × 3.14 × 9 + 2 × 3.14 × 3 × 7 = 56.52 + 131.88 = 188.4 m². (c) 60% of 197.82 = 0.6 × 197.82 = 118.69 m³.',
+      hints: [
+        'Volume of a cylinder: V = pi × r² × h.',
+        'Total surface area of a cylinder: SA = 2 × pi × r² + 2 × pi × r × h.',
+        'Multiply the full volume by 0.6 for the 60% capacity.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-math-3-q1',
+        narrative:
+          'The first chamber holds a giant rectangular prism. Measure it to proceed.',
+        question:
+          'What is the volume of a rectangular prism with length 5 cm, width 4 cm, and height 3 cm?',
+        equation: 'V = 5 × 4 × 3',
+        options: ['60 cm³', '12 cm³', '24 cm³', '50 cm³'],
+        correctIndex: 0,
+        clue: {
+          title: 'Volume of a Rectangular Prism',
+          explanation:
+            'Volume = length × width × height = 5 × 4 × 3 = 60 cm³.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-3-q2',
+        narrative:
+          'A spherical boulder blocks the path. You must know its volume to determine the force needed.',
+        question:
+          'What is the volume of a sphere with radius 6 cm? (Use pi = 3.14)',
+        equation: 'V = (4/3) × pi × 6³',
+        options: ['904.32 cm³', '753.6 cm³', '452.16 cm³', '1130.4 cm³'],
+        correctIndex: 0,
+        clue: {
+          title: 'Volume of a Sphere',
+          explanation:
+            'V = (4/3) × pi × r³ = (4/3) × 3.14 × 216 = 4 × 3.14 × 72 = 904.32 cm³.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-3-q3',
+        narrative:
+          'A cube-shaped chest sits on a pedestal. How much material covers it?',
+        question:
+          'What is the total surface area of a cube with side length 5 cm?',
+        equation: 'SA = 6 × 5²',
+        options: ['150 cm²', '125 cm²', '25 cm²', '100 cm²'],
+        correctIndex: 0,
+        clue: {
+          title: 'Surface Area of a Cube',
+          explanation:
+            'A cube has 6 equal faces, each with area s². SA = 6 × 25 = 150 cm².',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-3-q4',
+        narrative:
+          'A triangular prism tunnel leads deeper into the forge. Calculate its volume.',
+        question:
+          'A triangular prism has a triangle base with base 6 cm and height 4 cm, and the prism length is 10 cm. What is its volume?',
+        equation: 'V = (1/2 × 6 × 4) × 10',
+        options: ['120 cm³', '240 cm³', '60 cm³', '80 cm³'],
+        correctIndex: 0,
+        clue: {
+          title: 'Volume of a Triangular Prism',
+          explanation:
+            'First find the area of the triangular base: (1/2) × 6 × 4 = 12 cm². Then multiply by the length: 12 × 10 = 120 cm³.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-math-3-q5',
+        narrative:
+          'The forge master\'s cone-shaped helmet must be replicated. What volume of metal is needed?',
+        question:
+          'What is the volume of a cone with radius 3 cm and height 8 cm? (Use pi = 3.14)',
+        equation: 'V = (1/3) × pi × 3² × 8',
+        options: ['75.36 cm³', '226.08 cm³', '150.72 cm³', '37.68 cm³'],
+        correctIndex: 0,
+        clue: {
+          title: 'Volume of a Cone',
+          explanation:
+            'V = (1/3) × pi × r² × h = (1/3) × 3.14 × 9 × 8 = (1/3) × 226.08 = 75.36 cm³.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 9 MYP — Quest 2: Graphing Linear Functions
+  // ========================================================
+  {
+    id: 'g9-math-2',
+    grade: 9,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Graphing Linear Functions',
+    realmName: 'The Grid Expanse',
+    narrativeWorld:
+      'The Grid Expanse is a vast plane etched with glowing coordinate lines that stretch to infinity. Ancient waypoints are hidden at intersections, and only those who can read slopes and intercepts can navigate this luminous terrain.',
+    characterTeacher: 'Navigator Linara',
+    teacherEmoji: '📈',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g9-math-2-boss',
+      title: 'The Origin Overlord',
+      villain: 'Slopebane',
+      villainEmoji: '🕸️',
+      narrative:
+        'Slopebane lurks at the origin, tangling all the lines of the Grid. Untangle his web by mastering linear functions.',
+      question:
+        'Line A passes through (1, 3) and (4, 9). Line B has equation y = −x + 10. (a) Find the equation of Line A in slope-intercept form. (b) Find the point where Line A and Line B intersect. (c) Is the intersection point in the first quadrant? Explain.',
+      answer:
+        '(a) Slope of A = (9 − 3)/(4 − 1) = 6/3 = 2. Using point (1, 3): y − 3 = 2(x − 1) → y = 2x + 1. (b) Set 2x + 1 = −x + 10 → 3x = 9 → x = 3. y = 2(3) + 1 = 7. Intersection: (3, 7). (c) Yes, both x = 3 and y = 7 are positive, so the point is in the first quadrant.',
+      hints: [
+        'Slope = (y2 − y1) / (x2 − x1).',
+        'Set the two equations equal to each other to find x.',
+        'The first quadrant has both x > 0 and y > 0.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g9-math-2-q1',
+        narrative:
+          'Navigator Linara points to two waypoints and asks for the slope between them.',
+        question:
+          'What is the slope of the line through (2, 5) and (6, 13)?',
+        equation: 'm = (13 − 5) / (6 − 2)',
+        options: ['2', '4', '8', '1/2'],
+        correctIndex: 0,
+        clue: {
+          title: 'Calculating Slope',
+          explanation:
+            'Slope = (y2 − y1) / (x2 − x1) = (13 − 5) / (6 − 2) = 8 / 4 = 2.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-2-q2',
+        narrative:
+          'A beacon line is described as y = 3x − 4. Where does it cross the y-axis?',
+        question: 'What is the y-intercept of y = 3x − 4?',
+        equation: 'y = 3x − 4',
+        options: ['(0, −4)', '(0, 3)', '(−4, 0)', '(4, 0)'],
+        correctIndex: 0,
+        clue: {
+          title: 'Y-Intercept',
+          explanation:
+            'The y-intercept is where x = 0. Substitute: y = 3(0) − 4 = −4. The point is (0, −4).',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-2-q3',
+        narrative:
+          'You need to write the equation of a line from a slope and a point.',
+        question:
+          'A line has slope 4 and passes through (1, 7). What is the equation in slope-intercept form?',
+        equation: 'y − 7 = 4(x − 1)',
+        options: ['y = 4x + 3', 'y = 4x + 7', 'y = 4x − 3', 'y = 7x + 4'],
+        correctIndex: 0,
+        clue: {
+          title: 'Point-Slope to Slope-Intercept',
+          explanation:
+            'y − 7 = 4(x − 1) → y = 4x − 4 + 7 → y = 4x + 3.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-2-q4',
+        narrative:
+          'Two parallel paths run across the grid. You need to identify which equation is parallel.',
+        question:
+          'Which line is parallel to y = 2x + 5?',
+        equation: 'Parallel lines have the same slope',
+        options: ['y = 2x − 3', 'y = −2x + 5', 'y = 0.5x + 5', 'y = 3x + 5'],
+        correctIndex: 0,
+        clue: {
+          title: 'Parallel Lines',
+          explanation:
+            'Parallel lines have identical slopes. y = 2x + 5 has slope 2. Only y = 2x − 3 also has slope 2.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-2-q5',
+        narrative:
+          'A grid lock requires the x-intercept of a line to open.',
+        question:
+          'What is the x-intercept of y = −3x + 9?',
+        equation: '0 = −3x + 9',
+        options: ['(3, 0)', '(9, 0)', '(−3, 0)', '(0, 9)'],
+        correctIndex: 0,
+        clue: {
+          title: 'Finding X-Intercepts',
+          explanation:
+            'Set y = 0: 0 = −3x + 9 → 3x = 9 → x = 3. The x-intercept is (3, 0).',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 9 MYP — Quest 3: Inequalities & Systems
+  // ========================================================
+  {
+    id: 'g9-math-3',
+    grade: 9,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Inequalities & Systems',
+    realmName: 'The Dual Kingdoms',
+    narrativeWorld:
+      'Two rival kingdoms share a border defined by equations and inequalities. To broker peace, you must find where their territories overlap and solve the systems that govern the boundary lines.',
+    characterTeacher: 'Diplomat Dualyn',
+    teacherEmoji: '🤝',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g9-math-3-boss',
+      title: 'The Border Warlord',
+      villain: 'Contradictus',
+      villainEmoji: '⚔️',
+      narrative:
+        'Contradictus claims the two kingdoms can never agree. Prove him wrong by solving a system of equations and inequalities.',
+      question:
+        'Kingdom A produces swords (s) and shields (h) with constraints: s + h <= 100, s >= 20, h >= 30. Each sword earns 5 gold and each shield earns 3 gold. (a) Solve the system: s + h = 100 with s = 20 to find h. (b) Solve s + h = 100 with h = 30 to find s. (c) Which combination gives more gold: (20, 80) or (70, 30)?',
+      answer:
+        '(a) 20 + h = 100 → h = 80. (b) s + 30 = 100 → s = 70. (c) Gold at (20, 80): 5(20) + 3(80) = 100 + 240 = 340. Gold at (70, 30): 5(70) + 3(30) = 350 + 90 = 440. (70, 30) gives more gold.',
+      hints: [
+        'Substitute the known value into the equation to solve for the unknown.',
+        'Check that each solution satisfies all the constraints.',
+        'Calculate total gold for each combination: 5s + 3h.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g9-math-3-q1',
+        narrative:
+          'A guard says you need at least 18 gold coins to cross the bridge.',
+        question:
+          'Solve: x + 7 >= 18',
+        equation: 'x + 7 >= 18',
+        options: ['x >= 11', 'x >= 25', 'x <= 11', 'x >= 7'],
+        correctIndex: 0,
+        clue: {
+          title: 'Solving Linear Inequalities',
+          explanation:
+            'Subtract 7 from both sides: x >= 18 − 7 = 11.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-3-q2',
+        narrative:
+          'A locked chest opens only when you solve a system of two equations.',
+        question:
+          'Solve the system: x + y = 10 and x − y = 4. What is x?',
+        equation: 'x + y = 10, x − y = 4',
+        options: ['7', '3', '6', '5'],
+        correctIndex: 0,
+        clue: {
+          title: 'Solving by Elimination',
+          explanation:
+            'Add the equations: (x + y) + (x − y) = 10 + 4 → 2x = 14 → x = 7.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-3-q3',
+        narrative:
+          'The kingdom boundary is defined by an inequality. Which region is safe?',
+        question:
+          'Which point satisfies y < 2x + 1?',
+        equation: 'y < 2x + 1',
+        options: ['(3, 5)', '(0, 2)', '(1, 4)', '(−1, 0)'],
+        correctIndex: 0,
+        clue: {
+          title: 'Testing Points in Inequalities',
+          explanation:
+            'Test (3, 5): Is 5 < 2(3) + 1 = 7? Yes, 5 < 7. Test (0, 2): Is 2 < 1? No. So (3, 5) works.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-3-q4',
+        narrative:
+          'You and an ally split resources. Use substitution to find each person\'s share.',
+        question:
+          'Solve: y = 2x and x + y = 12. What is y?',
+        equation: 'y = 2x, x + y = 12',
+        options: ['8', '4', '6', '10'],
+        correctIndex: 0,
+        clue: {
+          title: 'Solving by Substitution',
+          explanation:
+            'Substitute y = 2x into x + y = 12: x + 2x = 12 → 3x = 12 → x = 4. So y = 2(4) = 8.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-math-3-q5',
+        narrative:
+          'A treaty requires solving an inequality involving multiplication by a negative.',
+        question:
+          'Solve: −3x > 12',
+        equation: '−3x > 12',
+        options: ['x < −4', 'x > −4', 'x < 4', 'x > 4'],
+        correctIndex: 0,
+        clue: {
+          title: 'Inequalities with Negatives',
+          explanation:
+            'Divide both sides by −3 and flip the inequality sign: x < −4.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 10 MYP — Quest 2: Quadratic Equations
+  // ========================================================
+  {
+    id: 'g10-math-2',
+    grade: 10,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Quadratic Equations',
+    realmName: 'The Parabolic Abyss',
+    narrativeWorld:
+      'The Parabolic Abyss is a canyon whose walls curve in perfect parabolas. Ancient catapults line the rim, and only someone who understands quadratic equations can aim them to hit distant targets across the void.',
+    characterTeacher: 'Ballista Master Paraben',
+    teacherEmoji: '🎯',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g10-math-2-boss',
+      title: 'The Vertex Vortex',
+      villain: 'Discriminox',
+      villainEmoji: '🌀',
+      narrative:
+        'Discriminox swirls at the deepest point of the abyss, feeding on unsolved equations. Defeat him with the quadratic formula.',
+      question:
+        'A projectile follows the path h(t) = −5t² + 30t + 10, where h is height in metres and t is time in seconds. (a) What is the initial height (at t = 0)? (b) At what time does it reach maximum height? (c) What is the maximum height?',
+      answer:
+        '(a) h(0) = −5(0)² + 30(0) + 10 = 10 m. (b) t = −b/(2a) = −30/(2 × −5) = −30/−10 = 3 seconds. (c) h(3) = −5(9) + 30(3) + 10 = −45 + 90 + 10 = 55 m.',
+      hints: [
+        'Substitute t = 0 into the equation for initial height.',
+        'The vertex of y = ax² + bx + c occurs at t = −b/(2a).',
+        'Substitute the vertex t-value back into the equation for max height.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g10-math-2-q1',
+        narrative:
+          'A catapult equation needs factoring to find where the projectile lands.',
+        question: 'Solve x² − 5x + 6 = 0 by factoring.',
+        equation: 'x² − 5x + 6 = 0',
+        options: ['x = 2 and x = 3', 'x = −2 and x = −3', 'x = 1 and x = 6', 'x = −1 and x = −6'],
+        correctIndex: 0,
+        clue: {
+          title: 'Factoring Quadratics',
+          explanation:
+            'Find two numbers that multiply to 6 and add to −5: −2 and −3. So (x − 2)(x − 3) = 0, giving x = 2 or x = 3.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-2-q2',
+        narrative:
+          'A stone bridge has a parabolic arch. You need the vertex to find the highest point.',
+        question: 'What is the vertex of y = x² − 6x + 8?',
+        equation: 'x = −b/(2a) = 6/2 = 3',
+        options: ['(3, −1)', '(3, 1)', '(−3, −1)', '(6, 8)'],
+        correctIndex: 0,
+        clue: {
+          title: 'Vertex of a Parabola',
+          explanation:
+            'x-coordinate: −b/(2a) = 6/2 = 3. y-coordinate: (3)² − 6(3) + 8 = 9 − 18 + 8 = −1. Vertex: (3, −1).',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-2-q3',
+        narrative:
+          'The discriminant of an equation tells you how many solutions exist.',
+        question:
+          'What is the discriminant of 2x² + 3x − 5 = 0?',
+        equation: 'D = b² − 4ac = 9 − 4(2)(−5)',
+        options: ['49', '−31', '19', '1'],
+        correctIndex: 0,
+        clue: {
+          title: 'The Discriminant',
+          explanation:
+            'D = b² − 4ac = 3² − 4(2)(−5) = 9 + 40 = 49. Since D > 0, there are two real solutions.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-2-q4',
+        narrative:
+          'Use the quadratic formula to aim the final catapult shot.',
+        question:
+          'Solve x² + 2x − 8 = 0 using the quadratic formula.',
+        equation: 'x = (−2 ± sqrt(4 + 32)) / 2',
+        options: ['x = 2 and x = −4', 'x = −2 and x = 4', 'x = 8 and x = −1', 'x = 1 and x = −8'],
+        correctIndex: 0,
+        clue: {
+          title: 'Quadratic Formula',
+          explanation:
+            'x = (−2 ± sqrt(4 + 32)) / 2 = (−2 ± sqrt(36)) / 2 = (−2 ± 6) / 2. So x = 4/2 = 2 or x = −8/2 = −4.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-2-q5',
+        narrative:
+          'A parabolic shield deflects attacks. You must determine if it opens up or down.',
+        question:
+          'Does the parabola y = −2x² + 4x + 1 open upward or downward, and what is the y-intercept?',
+        equation: 'a = −2, c = 1',
+        options: [
+          'Downward, y-intercept is (0, 1)',
+          'Upward, y-intercept is (0, 1)',
+          'Downward, y-intercept is (0, −2)',
+          'Upward, y-intercept is (0, 4)',
+        ],
+        correctIndex: 0,
+        clue: {
+          title: 'Direction and Y-Intercept',
+          explanation:
+            'Since a = −2 < 0, the parabola opens downward. The y-intercept is the constant term c = 1, giving the point (0, 1).',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ========================================================
+  // GRADE 10 MYP — Quest 3: Statistics & Probability
+  // ========================================================
+  {
+    id: 'g10-math-3',
+    grade: 10,
+    programme: 'MYP',
+    subject: 'math',
+    title: 'Statistics & Probability',
+    realmName: 'The Oracle\'s Chamber',
+    narrativeWorld:
+      'The Oracle\'s Chamber is filled with crystal spheres that predict the future through data patterns. To gain the Oracle\'s wisdom, you must interpret statistics and calculate probabilities from the swirling numbers within the crystals.',
+    characterTeacher: 'Oracle Stazia',
+    teacherEmoji: '🔮',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g10-math-3-boss',
+      title: 'The Chaos Predictor',
+      villain: 'Varian the Random',
+      villainEmoji: '🎲',
+      narrative:
+        'Varian the Random thrives on chaos and uncertainty. He claims nothing can be predicted. Prove him wrong with statistics and probability.',
+      question:
+        'A class of 20 students scored the following on a test: 45, 50, 55, 55, 60, 60, 60, 65, 65, 70, 70, 70, 75, 75, 80, 80, 85, 85, 90, 95. (a) Find the median. (b) Find the interquartile range (IQR). (c) If a student is chosen at random, what is the probability they scored above 75?',
+      answer:
+        '(a) With 20 values, median = average of 10th and 11th values = (70 + 70)/2 = 70. (b) Q1 = average of 5th and 6th = (60 + 60)/2 = 60. Q3 = average of 15th and 16th = (80 + 80)/2 = 80. IQR = 80 − 60 = 20. (c) Scores above 75: 80, 80, 85, 85, 90, 95 = 6 students. P = 6/20 = 3/10 = 0.3.',
+      hints: [
+        'The median of an even number of values is the average of the two middle values.',
+        'Q1 is the median of the lower half, Q3 is the median of the upper half.',
+        'Count how many scores are strictly greater than 75.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g10-math-3-q1',
+        narrative:
+          'A crystal sphere shows five numbers. You must calculate the mean.',
+        question:
+          'What is the mean of: 12, 18, 24, 30, 16?',
+        equation: '(12 + 18 + 24 + 30 + 16) / 5',
+        options: ['20', '24', '18', '22'],
+        correctIndex: 0,
+        clue: {
+          title: 'Calculating the Mean',
+          explanation:
+            'Sum = 12 + 18 + 24 + 30 + 16 = 100. Mean = 100 / 5 = 20.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-3-q2',
+        narrative:
+          'An ancient scroll shows a data set and asks for the median.',
+        question:
+          'What is the median of: 3, 7, 9, 12, 15, 18, 21?',
+        equation: 'Median = middle value of 7 ordered numbers',
+        options: ['12', '9', '15', '11'],
+        correctIndex: 0,
+        clue: {
+          title: 'Finding the Median',
+          explanation:
+            'With 7 values in order, the median is the 4th value: 12.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-3-q3',
+        narrative:
+          'A bag of enchanted marbles contains different colours. What is the chance of drawing a blue one?',
+        question:
+          'A bag has 4 red, 6 blue, and 5 green marbles. What is the probability of drawing a blue marble?',
+        equation: 'P(blue) = 6/15',
+        options: ['2/5', '6/15', '1/3', '2/3'],
+        correctIndex: 0,
+        clue: {
+          title: 'Basic Probability',
+          explanation:
+            'Total marbles = 4 + 6 + 5 = 15. P(blue) = 6/15 = 2/5.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-3-q4',
+        narrative:
+          'Two dice are rolled. The Oracle asks about their combined outcome.',
+        question:
+          'What is the probability of rolling a sum of 7 with two standard dice?',
+        equation: 'Favourable outcomes / 36',
+        options: ['1/6', '1/7', '5/36', '7/36'],
+        correctIndex: 0,
+        clue: {
+          title: 'Probability with Two Dice',
+          explanation:
+            'Combinations that sum to 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1) = 6 outcomes. P = 6/36 = 1/6.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-math-3-q5',
+        narrative:
+          'The Oracle shows two data sets and asks which has greater spread.',
+        question:
+          'Data set A: {2, 4, 6, 8, 10}. What is the standard deviation? (Round to 2 decimal places.)',
+        equation: 'SD = sqrt(mean of squared deviations)',
+        options: ['2.83', '3.16', '2.00', '4.00'],
+        correctIndex: 0,
+        clue: {
+          title: 'Standard Deviation',
+          explanation:
+            'Mean = 6. Deviations: −4, −2, 0, 2, 4. Squared: 16, 4, 0, 4, 16. Mean of squares = 40/5 = 8. SD = sqrt(8) ≈ 2.83.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 6 MYP — Quest 2: Ecosystems & Food Chains
+  // ============================================================
+  {
+    id: 'g6-science-2',
+    grade: 6,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Ecosystems & Food Chains',
+    realmName: 'The Verdant Wilds',
+    narrativeWorld:
+      'You have entered the Verdant Wilds, a sprawling enchanted forest where every creature is connected by invisible threads of energy. The ancient Balance Keeper who once maintained harmony has vanished, and the food chains are unravelling. Only a true Naturalist can restore order.',
+    characterTeacher: 'Sage Fernleaf',
+    teacherEmoji: '🌿',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g6-science-2-boss',
+      title: 'The Chain Breaker',
+      villain: 'Lord Famine',
+      villainEmoji: '🦴',
+      narrative:
+        'At the heart of the Verdant Wilds, Lord Famine hovers above a dying grove. He feeds on broken food chains and grows stronger with every collapsed ecosystem. You must prove your understanding of energy flow to defeat him.',
+      question:
+        'Lord Famine has severed three links in the forest food chain. (A) Explain what happens to a population of hawks if the frog population is suddenly wiped out by disease. (B) Describe how energy is lost at each trophic level and why there are fewer top predators than producers. (C) Suggest one way the ecosystem could recover naturally over time.',
+      answer:
+        '(A) If frogs are wiped out, hawks lose a food source, so their population will decline. Organisms that frogs ate (insects) may increase without that predator. (B) At each trophic level roughly 90% of energy is lost as heat through respiration, so less energy is available to support organisms at higher levels — this is why top predators are rare. (C) The ecosystem could recover if another organism fills the frog\'s niche, or if surviving frogs reproduce and rebuild the population, gradually restoring balance.',
+      hints: [
+        'Think about what frogs eat and what eats frogs.',
+        'Remember the 10% rule of energy transfer.',
+        'Consider ecological succession and how populations bounce back.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g6-science-2-q1',
+        narrative:
+          'Sage Fernleaf points to a sunlit meadow where grasses sway. "All energy in this ecosystem begins here," she says.',
+        question: 'What is the original source of energy for most ecosystems on Earth?',
+        options: ['Soil nutrients', 'The Sun', 'Water', 'Wind'],
+        correctIndex: 1,
+        clue: {
+          title: 'Energy Source',
+          explanation:
+            'The Sun provides light energy that producers (plants) convert into chemical energy through photosynthesis. This energy then flows through the food chain to herbivores and carnivores.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-2-q2',
+        narrative:
+          'You discover a pond where algae cover the surface, small fish dart below, and a heron watches from the bank.',
+        question:
+          'In the food chain: algae → small fish → heron, what role does the small fish play?',
+        options: ['Producer', 'Primary consumer', 'Secondary consumer', 'Decomposer'],
+        correctIndex: 2,
+        clue: {
+          title: 'Trophic Roles',
+          explanation:
+            'Algae are the producer. The small fish eat algae, making them primary consumers. The heron eats the fish, making it a secondary consumer. Wait — the small fish eat algae directly, so they are primary consumers, and the heron is the secondary consumer.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-2-q3',
+        narrative:
+          'Fallen logs litter the forest floor. Sage Fernleaf kneels beside one covered in fungi. "Without these workers, the forest would drown in its own waste," she warns.',
+        question: 'What is the primary role of decomposers in an ecosystem?',
+        options: [
+          'To produce oxygen for animals',
+          'To break down dead organisms and recycle nutrients back into the soil',
+          'To provide food for predators',
+          'To control the population of herbivores',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Decomposers',
+          explanation:
+            'Decomposers such as fungi and bacteria break down dead plants and animals, returning essential nutrients like nitrogen and phosphorus to the soil so producers can use them again.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-2-q4',
+        narrative:
+          'A food web diagram carved into an ancient stone shows arrows connecting dozens of species. Some arrows point in unexpected directions.',
+        question: 'In a food chain diagram, what do the arrows represent?',
+        options: [
+          'The direction an animal moves',
+          'The flow of energy from one organism to the next',
+          'The size of each organism',
+          'The speed at which organisms grow',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Arrow Direction',
+          explanation:
+            'Arrows in a food chain point from the organism being eaten to the organism doing the eating. They show the direction energy flows — from prey to predator.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-2-q5',
+        narrative:
+          'Sage Fernleaf shows you two ecosystems: a coral reef teeming with life and a desert with only a few species. "One is far more fragile than you might think," she says.',
+        question:
+          'Why is an ecosystem with greater biodiversity generally more stable than one with fewer species?',
+        options: [
+          'Because larger ecosystems have more sunlight',
+          'Because if one species declines, others can fill its role in the food web',
+          'Because more species produce more carbon dioxide',
+          'Because biodiversity makes the weather more predictable',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Biodiversity & Stability',
+          explanation:
+            'High biodiversity means more connections in the food web. If one species is lost, other species can compensate, preventing the whole system from collapsing. Low-diversity ecosystems are more vulnerable.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 6 MYP — Quest 3: Forces & Motion
+  // ============================================================
+  {
+    id: 'g6-science-3',
+    grade: 6,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Forces & Motion',
+    realmName: 'The Iron Colosseum',
+    narrativeWorld:
+      'Welcome to the Iron Colosseum, a floating arena held aloft by ancient force fields. Gladiator constructs battle using pushes, pulls, and gravity itself. The Arena Master has rigged the trials so only those who understand forces can survive.',
+    characterTeacher: 'Commander Torque',
+    teacherEmoji: '⚙️',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g6-science-3-boss',
+      title: 'The Gravity Tyrant',
+      villain: 'General Inertia',
+      villainEmoji: '🗿',
+      narrative:
+        'General Inertia stands immovable at the centre of the arena, a colossal stone warrior who refuses to budge. He claims no force in the realm can move him. Prove him wrong with your knowledge of forces and motion.',
+      question:
+        'General Inertia challenges you with three puzzles: (A) A 10 N force pushes a box to the right and a 6 N force pushes it to the left. What is the net force and which direction does the box move? (B) Why does a ball eventually stop rolling on grass but rolls much further on a smooth floor? (C) Explain why passengers lurch forward when a bus suddenly stops.',
+      answer:
+        '(A) Net force = 10 N − 6 N = 4 N to the right, so the box accelerates to the right. (B) Grass exerts more friction on the ball than a smooth floor, converting kinetic energy to heat and slowing it down faster. (C) When the bus stops, passengers\' bodies continue moving forward due to inertia — the tendency of an object in motion to stay in motion unless acted on by an external force.',
+      hints: [
+        'Subtract opposing forces to find the net force.',
+        'Friction is a force that opposes motion.',
+        'Inertia is the resistance of an object to changes in its state of motion.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g6-science-3-q1',
+        narrative:
+          'Commander Torque rolls a heavy iron sphere across the arena floor. It slows and stops before reaching the wall.',
+        question: 'What force causes the rolling sphere to slow down and eventually stop?',
+        options: ['Gravity', 'Magnetism', 'Friction', 'Air pressure'],
+        correctIndex: 2,
+        clue: {
+          title: 'Friction',
+          explanation:
+            'Friction is a contact force that opposes the motion of an object. When the sphere rolls on the floor, friction between the sphere and the surface gradually converts its kinetic energy into heat, slowing it down.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-3-q2',
+        narrative:
+          'Two gladiator constructs push a boulder from opposite sides. One pushes with 20 N to the left and the other with 15 N to the right.',
+        question: 'What is the net force on the boulder?',
+        options: [
+          '35 N to the left',
+          '5 N to the left',
+          '5 N to the right',
+          '35 N to the right',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Net Force',
+          explanation:
+            'When forces act in opposite directions, subtract the smaller from the larger: 20 N − 15 N = 5 N. The net force is in the direction of the larger force, which is to the left.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-3-q3',
+        narrative:
+          'A hovering platform floats perfectly still in the arena. Commander Torque says it is in a state of equilibrium.',
+        question: 'What does it mean when an object is in equilibrium?',
+        options: [
+          'It is moving at the speed of light',
+          'All forces acting on it are balanced so the net force is zero',
+          'No forces are acting on it at all',
+          'It is getting heavier over time',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Equilibrium',
+          explanation:
+            'An object is in equilibrium when all forces acting on it cancel out, resulting in a net force of zero. The object can be stationary or moving at constant velocity.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-3-q4',
+        narrative:
+          'Commander Torque drops a feather and a steel ball from the same height inside a vacuum chamber where there is no air.',
+        question:
+          'In a vacuum (no air resistance), which object hits the ground first?',
+        options: [
+          'The steel ball, because it is heavier',
+          'The feather, because it is lighter',
+          'They hit the ground at the same time',
+          'Neither falls — there is no gravity in a vacuum',
+        ],
+        correctIndex: 2,
+        clue: {
+          title: 'Gravity in a Vacuum',
+          explanation:
+            'In a vacuum, there is no air resistance. Gravity accelerates all objects at the same rate (about 9.8 m/s² on Earth) regardless of their mass, so both hit the ground simultaneously.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g6-science-3-q5',
+        narrative:
+          'A magnetic rail launches a small cart along a track. The cart speeds up as long as the magnetic force is applied.',
+        question: 'What happens to the speed of an object when an unbalanced force acts on it?',
+        options: [
+          'Its speed stays the same',
+          'It immediately stops',
+          'Its speed changes — it accelerates or decelerates',
+          'It reverses direction instantly',
+        ],
+        correctIndex: 2,
+        clue: {
+          title: 'Unbalanced Forces',
+          explanation:
+            'An unbalanced (net) force causes an object to accelerate — its speed or direction changes. If the force is in the direction of motion, the object speeds up. If opposite, it slows down.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 7 MYP — Quest 2: Photosynthesis & Respiration
+  // ============================================================
+  {
+    id: 'g7-science-2',
+    grade: 7,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Photosynthesis & Respiration',
+    realmName: 'The Emerald Canopy',
+    narrativeWorld:
+      'Deep within the Emerald Canopy, colossal trees stretch to the sky and the air hums with life energy. But a creeping shadow called the Grey Blight is suffocating the forest, blocking sunlight and poisoning the air. You must master the secrets of photosynthesis and respiration to heal the land.',
+    characterTeacher: 'Druid Chlora',
+    teacherEmoji: '🍃',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g7-science-2-boss',
+      title: 'The Breath Stealer',
+      villain: 'The Grey Blight',
+      villainEmoji: '🌫️',
+      narrative:
+        'The Grey Blight manifests as a swirling cloud of toxic fog at the forest\'s heart. It claims to have made photosynthesis obsolete. Prove it wrong and restore the balance of gases in the Emerald Canopy.',
+      question:
+        'The Grey Blight poses three challenges: (A) Write the word equation for photosynthesis and explain where each reactant comes from. (B) Explain how photosynthesis and aerobic respiration are opposite processes in terms of their reactants and products. (C) Why would blocking all sunlight eventually kill both plants AND animals in the forest?',
+      answer:
+        '(A) Carbon dioxide + water → glucose + oxygen. Carbon dioxide comes from the air, water is absorbed through the roots, and light energy from the Sun drives the reaction. (B) Photosynthesis uses CO₂ and water to produce glucose and O₂, while aerobic respiration uses glucose and O₂ to produce CO₂ and water — they are essentially reverse reactions. (C) Without sunlight, plants cannot photosynthesize, so they stop producing glucose (food) and oxygen. Plants die first, then animals lose both their food source and their oxygen supply.',
+      hints: [
+        'Photosynthesis needs light, CO₂, and water.',
+        'Compare the inputs and outputs of each process.',
+        'Think about what animals depend on plants for.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g7-science-2-q1',
+        narrative:
+          'Druid Chlora holds a glowing leaf up to the light. Green pigments shimmer inside its cells.',
+        question: 'Which pigment in plant cells absorbs light energy for photosynthesis?',
+        options: ['Haemoglobin', 'Chlorophyll', 'Melanin', 'Carotene'],
+        correctIndex: 1,
+        clue: {
+          title: 'Chlorophyll',
+          explanation:
+            'Chlorophyll is the green pigment found in chloroplasts. It absorbs red and blue light and reflects green light, which is why leaves appear green. It captures light energy to power photosynthesis.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-2-q2',
+        narrative:
+          'You enter a sealed crystal chamber. Druid Chlora places a plant inside and asks you to predict what gas it will release in bright light.',
+        question: 'What gas is released by plants during photosynthesis?',
+        options: ['Carbon dioxide', 'Nitrogen', 'Oxygen', 'Hydrogen'],
+        correctIndex: 2,
+        clue: {
+          title: 'Products of Photosynthesis',
+          explanation:
+            'During photosynthesis, plants take in carbon dioxide and water, using light energy to produce glucose and oxygen. The oxygen is released as a by-product through the stomata.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-2-q3',
+        narrative:
+          'At night, the forest still hums with activity. Druid Chlora explains that plants don\'t stop all chemical processes when the Sun goes down.',
+        question: 'Do plants carry out respiration at night?',
+        options: [
+          'No, plants only photosynthesize',
+          'Yes, plants respire all the time — day and night',
+          'Only dead plants respire',
+          'Plants respire only in winter',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Plant Respiration',
+          explanation:
+            'Plants respire 24 hours a day, breaking down glucose to release energy. During the day, photosynthesis produces more oxygen than respiration uses, so net oxygen is released. At night, only respiration occurs.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-2-q4',
+        narrative:
+          'A wilting flower sits in a dark corner of the forest. Its leaves are pale and thin.',
+        question:
+          'What are the THREE main things a plant needs for photosynthesis?',
+        options: [
+          'Oxygen, glucose, and soil',
+          'Carbon dioxide, water, and light energy',
+          'Nitrogen, minerals, and heat',
+          'Oxygen, water, and darkness',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Reactants of Photosynthesis',
+          explanation:
+            'Photosynthesis requires carbon dioxide (from air), water (from soil via roots), and light energy (from the Sun). These combine in the chloroplasts to produce glucose and oxygen.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-2-q5',
+        narrative:
+          'Druid Chlora shows you a diagram of a cell with tiny oval structures scattered throughout.',
+        question: 'In which organelle does aerobic respiration mainly take place?',
+        options: ['Chloroplast', 'Nucleus', 'Mitochondria', 'Cell wall'],
+        correctIndex: 2,
+        clue: {
+          title: 'Mitochondria',
+          explanation:
+            'Mitochondria are known as the "powerhouses of the cell." They are the organelles where aerobic respiration occurs, breaking down glucose with oxygen to release energy (ATP), carbon dioxide, and water.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 7 MYP — Quest 3: Speed, Velocity & Forces
+  // ============================================================
+  {
+    id: 'g7-science-3',
+    grade: 7,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Speed, Velocity & Forces',
+    realmName: 'The Stormrider Circuit',
+    narrativeWorld:
+      'The Stormrider Circuit is a legendary racecourse woven through thunderclouds and mountain passes. Riders harness the power of speed, velocity, and force to navigate treacherous turns. The course has been sabotaged by a rogue engineer, and only physics can set things right.',
+    characterTeacher: 'Pilot Vex',
+    teacherEmoji: '🏎️',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g7-science-3-boss',
+      title: 'The Velocity Phantom',
+      villain: 'Phantom Drift',
+      villainEmoji: '👻',
+      narrative:
+        'Phantom Drift materializes on the final stretch of the circuit, a ghostly racer who warps speed and direction. To outrun him, you must master the difference between speed and velocity, and understand the forces at play.',
+      question:
+        'Phantom Drift poses three riddles: (A) A car travels 150 km north in 3 hours, then 150 km south in 3 hours. Calculate its average speed and its average velocity. (B) Explain why a car going around a circular track at a constant speed is still accelerating. (C) What force keeps the car moving in a circle rather than flying off in a straight line?',
+      answer:
+        '(A) Average speed = total distance ÷ total time = 300 km ÷ 6 h = 50 km/h. Average velocity = total displacement ÷ total time = 0 km ÷ 6 h = 0 km/h (it returned to the start). (B) Acceleration is a change in velocity, and velocity includes direction. Even at constant speed, the car\'s direction constantly changes on the circular track, so it is accelerating. (C) Centripetal force (provided by friction between the tyres and the road) acts towards the centre of the circle, keeping the car on its curved path.',
+      hints: [
+        'Speed uses distance; velocity uses displacement.',
+        'Velocity is a vector — it has both magnitude and direction.',
+        'Think about what force points toward the centre of a circle.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g7-science-3-q1',
+        narrative:
+          'Pilot Vex clocks your training run. You cover 200 metres in 25 seconds along a straight track.',
+        question: 'What is your average speed?',
+        options: ['5 m/s', '8 m/s', '25 m/s', '175 m/s'],
+        correctIndex: 1,
+        clue: {
+          title: 'Speed Calculation',
+          explanation:
+            'Average speed = total distance ÷ total time. So 200 m ÷ 25 s = 8 m/s. Speed tells you how fast you are going but not which direction.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-3-q2',
+        narrative:
+          'Two racers leave the starting line. Racer A goes 100 m east. Racer B goes 60 m east then 40 m west.',
+        question:
+          'What is Racer B\'s total displacement?',
+        options: ['100 m east', '20 m east', '60 m west', '40 m west'],
+        correctIndex: 1,
+        clue: {
+          title: 'Displacement vs Distance',
+          explanation:
+            'Displacement is the straight-line distance from start to finish with direction. Racer B went 60 m east then 40 m west, so displacement = 60 − 40 = 20 m east. Total distance travelled was 100 m, but displacement only cares about the net change in position.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-3-q3',
+        narrative:
+          'A distance–time graph on the control screen shows a straight line going upward at a steep angle.',
+        question: 'What does a straight diagonal line on a distance–time graph indicate?',
+        options: [
+          'The object is stationary',
+          'The object is moving at a constant speed',
+          'The object is accelerating',
+          'The object is decelerating',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Distance–Time Graphs',
+          explanation:
+            'On a distance–time graph, a straight diagonal line means constant speed. The steeper the line, the faster the speed. A flat horizontal line means the object is not moving. A curved line means the speed is changing.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-3-q4',
+        narrative:
+          'Pilot Vex explains the difference between two measurements: one has direction, one does not.',
+        question: 'What is the key difference between speed and velocity?',
+        options: [
+          'Speed is faster than velocity',
+          'Velocity includes direction, speed does not',
+          'Speed is measured in km and velocity in metres',
+          'There is no difference',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Scalars vs Vectors',
+          explanation:
+            'Speed is a scalar quantity — it only has magnitude (e.g., 30 m/s). Velocity is a vector — it has both magnitude and direction (e.g., 30 m/s north). Two objects can have the same speed but different velocities if they travel in different directions.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g7-science-3-q5',
+        narrative:
+          'Your racer approaches a sharp turn. Pilot Vex warns that taking the turn too fast could send you flying off the track.',
+        question: 'What happens to an object moving in a straight line if no force acts on it?',
+        options: [
+          'It stops immediately',
+          'It continues in a straight line at the same speed',
+          'It gradually speeds up',
+          'It changes direction randomly',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Newton\'s First Law',
+          explanation:
+            'An object in motion stays in motion in a straight line at constant speed unless acted on by an unbalanced force. This is Newton\'s First Law (the law of inertia). A force is needed to change speed or direction.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 8 MYP — Quest 2: Chemical Reactions
+  // ============================================================
+  {
+    id: 'g8-science-2',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Chemical Reactions',
+    realmName: 'The Alchemist\'s Crucible',
+    narrativeWorld:
+      'You descend into the Alchemist\'s Crucible, a vast underground laboratory carved from crystalline rock. Bubbling cauldrons, glowing flasks, and strange vapours fill every chamber. A rogue alchemist has destabilized the reactions below the surface, and only someone who understands chemistry can prevent a catastrophic meltdown.',
+    characterTeacher: 'Alchemist Pyra',
+    teacherEmoji: '🧪',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g8-science-2-boss',
+      title: 'The Reaction Master',
+      villain: 'Baron Combustion',
+      villainEmoji: '🔥',
+      narrative:
+        'Baron Combustion stands before a towering furnace, cackling as unstable reactions rage out of control. He believes chemistry is chaos. Prove him wrong by showing that chemical reactions follow precise rules.',
+      question:
+        'Baron Combustion demands answers: (A) What is the law of conservation of mass and how does it apply to chemical reactions? (B) Give two signs that a chemical reaction has taken place. (C) In the reaction between hydrochloric acid and sodium hydroxide, what type of reaction is this and what are the products?',
+      answer:
+        '(A) The law of conservation of mass states that matter cannot be created or destroyed in a chemical reaction — the total mass of reactants equals the total mass of products. Atoms are rearranged, not lost. (B) Signs include: colour change, gas production (bubbles), temperature change, formation of a precipitate, or production of light/sound. (C) It is a neutralisation reaction. The products are sodium chloride (salt) and water: HCl + NaOH → NaCl + H₂O.',
+      hints: [
+        'Atoms are rearranged in reactions, not created or destroyed.',
+        'Think about what you can see, feel, or smell when a reaction happens.',
+        'Acid + alkali = salt + water.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-science-2-q1',
+        narrative:
+          'Alchemist Pyra mixes two clear liquids in a flask. A bright yellow solid suddenly appears at the bottom.',
+        question: 'What is the yellow solid that forms called?',
+        options: ['A solvent', 'A precipitate', 'A catalyst', 'An electrode'],
+        correctIndex: 1,
+        clue: {
+          title: 'Precipitates',
+          explanation:
+            'A precipitate is an insoluble solid that forms when two solutions react. It appears as a solid settling out of the liquid. This is one sign that a chemical reaction has occurred.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-2-q2',
+        narrative:
+          'Alchemist Pyra places magnesium ribbon in a flame. It burns with a brilliant white light, leaving a white powder behind.',
+        question:
+          'When magnesium burns in air, it combines with oxygen. What type of reaction is this?',
+        options: ['Decomposition', 'Neutralisation', 'Oxidation (combustion)', 'Displacement'],
+        correctIndex: 2,
+        clue: {
+          title: 'Combustion / Oxidation',
+          explanation:
+            'When a substance reacts with oxygen it is called oxidation. Burning magnesium in air is a combustion reaction: 2Mg + O₂ → 2MgO. The magnesium oxide (white powder) is the product.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-2-q3',
+        narrative:
+          'A sealed flask contains exactly 50 g of reactants. After the reaction finishes, Alchemist Pyra asks you to predict the mass of the products.',
+        question:
+          'According to the law of conservation of mass, what is the total mass of the products?',
+        options: ['Less than 50 g', 'Exactly 50 g', 'More than 50 g', 'It depends on the reaction type'],
+        correctIndex: 1,
+        clue: {
+          title: 'Conservation of Mass',
+          explanation:
+            'In a chemical reaction, atoms are rearranged but never created or destroyed. Therefore the total mass of the products must equal the total mass of the reactants: 50 g in = 50 g out.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-2-q4',
+        narrative:
+          'Alchemist Pyra drops a piece of zinc into copper sulfate solution. The blue colour slowly fades and a reddish coating appears on the zinc.',
+        question: 'What type of reaction is occurring?',
+        options: [
+          'Neutralisation',
+          'Displacement',
+          'Decomposition',
+          'Photosynthesis',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Displacement Reactions',
+          explanation:
+            'A more reactive metal can displace a less reactive metal from its compound. Zinc is more reactive than copper, so zinc displaces copper from copper sulfate: Zn + CuSO₄ → ZnSO₄ + Cu.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-2-q5',
+        narrative:
+          'A reaction is happening very slowly. Alchemist Pyra adds a mysterious powder and the reaction speeds up dramatically, but the powder itself remains unchanged.',
+        question: 'What is the mysterious powder most likely to be?',
+        options: [
+          'A reactant',
+          'A product',
+          'A catalyst',
+          'A precipitate',
+        ],
+        correctIndex: 2,
+        clue: {
+          title: 'Catalysts',
+          explanation:
+            'A catalyst is a substance that speeds up a chemical reaction without being used up itself. It lowers the activation energy needed for the reaction to occur. Enzymes are biological catalysts.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 8 MYP — Quest 3: Waves (Sound & Light)
+  // ============================================================
+  {
+    id: 'g8-science-3',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Waves (Sound & Light)',
+    realmName: 'The Resonance Caverns',
+    narrativeWorld:
+      'The Resonance Caverns echo with the sound of dripping crystals and shimmering light beams. Once a place of harmony, the caverns have been thrown into dissonance by a creature that warps sound and bends light. You must master wave science to restore the symphony of the deep.',
+    characterTeacher: 'Echo Mistress Lyra',
+    teacherEmoji: '🔔',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g8-science-3-boss',
+      title: 'The Dissonance',
+      villain: 'Warden Shatter',
+      villainEmoji: '💎',
+      narrative:
+        'Warden Shatter sits atop a throne of fractured crystals, bending sound waves into painful screeches and splitting light into blinding chaos. Only a master of wave science can silence him.',
+      question:
+        'Warden Shatter demands you solve three puzzles: (A) Explain the difference between transverse and longitudinal waves, giving one example of each. (B) A sound wave has a frequency of 500 Hz and a wavelength of 0.68 m. Calculate the speed of sound in this medium. (C) Why can light travel through space but sound cannot?',
+      answer:
+        '(A) In transverse waves, the vibrations are perpendicular to the direction of energy transfer (e.g., light waves, water ripples). In longitudinal waves, the vibrations are parallel to the direction of energy transfer (e.g., sound waves). (B) Speed = frequency × wavelength = 500 × 0.68 = 340 m/s. (C) Sound is a mechanical wave that needs a medium (particles) to travel through. Space is a vacuum with no particles, so sound cannot travel. Light is an electromagnetic wave that does not need a medium.',
+      hints: [
+        'Think about the direction of vibration relative to wave travel.',
+        'Use the wave equation: v = f × λ.',
+        'Consider what medium means — does space have particles?',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-science-3-q1',
+        narrative:
+          'Echo Mistress Lyra plucks a crystal string. The vibration ripples outward like a wave on water.',
+        question: 'What type of wave has vibrations perpendicular to the direction of energy transfer?',
+        options: [
+          'Longitudinal wave',
+          'Transverse wave',
+          'Sound wave',
+          'Compression wave',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Transverse Waves',
+          explanation:
+            'Transverse waves have vibrations (oscillations) at right angles to the direction the wave travels. Examples include light waves, water surface waves, and waves on a string.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-3-q2',
+        narrative:
+          'You clap your hands in the cavern and hear the echo 2 seconds later. The cavern wall is 340 metres away.',
+        question: 'Why do we hear an echo?',
+        options: [
+          'Sound is absorbed by the wall',
+          'Sound is reflected off the wall back to our ears',
+          'Sound speeds up near walls',
+          'The wall creates its own sound',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Echoes and Reflection',
+          explanation:
+            'An echo occurs when sound waves hit a hard surface and are reflected back. We hear the reflected sound after a short delay because it takes time for the sound to travel to the surface and back.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-3-q3',
+        narrative:
+          'Echo Mistress Lyra shines a beam of white light through a glass prism. A rainbow of colours fans out on the other side.',
+        question: 'What is happening to the white light as it passes through the prism?',
+        options: [
+          'The light is being reflected',
+          'The light is being absorbed',
+          'The light is being dispersed into its component colours',
+          'The light is being destroyed',
+        ],
+        correctIndex: 2,
+        clue: {
+          title: 'Dispersion',
+          explanation:
+            'White light is made up of all colours of the visible spectrum. When it passes through a prism, each colour refracts (bends) by a slightly different amount, spreading them out into a spectrum — this is called dispersion.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-3-q4',
+        narrative:
+          'A tuning fork vibrates 256 times per second, producing a musical note.',
+        question: 'What is the frequency of this tuning fork?',
+        options: ['256 m/s', '256 Hz', '256 N', '256 J'],
+        correctIndex: 1,
+        clue: {
+          title: 'Frequency',
+          explanation:
+            'Frequency is the number of complete waves (vibrations) per second, measured in Hertz (Hz). If a tuning fork vibrates 256 times per second, its frequency is 256 Hz.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-science-3-q5',
+        narrative:
+          'Two notes are played: one with a high pitch and one with a low pitch. Echo Mistress Lyra asks what physical property differs between them.',
+        question: 'What property of a sound wave determines its pitch?',
+        options: ['Amplitude', 'Frequency', 'Wavelength only', 'Speed'],
+        correctIndex: 1,
+        clue: {
+          title: 'Pitch and Frequency',
+          explanation:
+            'Pitch is determined by frequency. A high-frequency sound wave produces a high-pitched note, while a low-frequency wave produces a low-pitched note. Amplitude determines loudness, not pitch.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 9 MYP — Quest 2: Newton's Laws
+  // ============================================================
+  {
+    id: 'g9-science-2',
+    grade: 9,
+    programme: 'MYP',
+    subject: 'science',
+    title: "Newton's Laws",
+    realmName: 'The Graviton Fortress',
+    narrativeWorld:
+      'The Graviton Fortress floats above a shattered planet, held aloft by ancient engines that obey Newton\'s Laws. A warlord has seized control, using gravity and force to trap anyone who enters. You must master the three laws of motion to reclaim the fortress.',
+    characterTeacher: 'Captain Newton',
+    teacherEmoji: '🍎',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g9-science-2-boss',
+      title: 'The Force Warden',
+      villain: 'Warlord Momentum',
+      villainEmoji: '⚔️',
+      narrative:
+        'Warlord Momentum stands in the gravity chamber, surrounded by floating debris. He boasts that no one can overcome his force field. Prove your mastery of Newton\'s Laws to shatter his defences.',
+      question:
+        'Warlord Momentum challenges you: (A) State Newton\'s Second Law and use it to calculate the acceleration of a 5 kg object when a net force of 20 N is applied. (B) A cannon fires a cannonball forward. Explain, using Newton\'s Third Law, why the cannon recoils backward. (C) An astronaut floating in space throws a wrench. Explain what happens to the astronaut and why, referring to Newton\'s Laws.',
+      answer:
+        '(A) Newton\'s Second Law: F = ma (force equals mass times acceleration). a = F/m = 20 N / 5 kg = 4 m/s². (B) Newton\'s Third Law states that every action has an equal and opposite reaction. The cannon exerts a forward force on the cannonball, and the cannonball exerts an equal backward force on the cannon, causing it to recoil. (C) When the astronaut throws the wrench forward, by Newton\'s Third Law, the wrench pushes back on the astronaut with an equal and opposite force. The astronaut moves backward. By Newton\'s First Law, both will continue moving in their respective directions since there are no friction forces in space.',
+      hints: [
+        'F = ma — rearrange for acceleration.',
+        'Third Law: forces come in action-reaction pairs on different objects.',
+        'In space there is no friction to slow things down.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g9-science-2-q1',
+        narrative:
+          'Captain Newton places a book on a perfectly smooth table. He gives it a gentle push and it slides across without stopping.',
+        question: 'Which of Newton\'s Laws explains why the book keeps moving on a frictionless surface?',
+        options: [
+          'Newton\'s First Law (Law of Inertia)',
+          'Newton\'s Second Law',
+          'Newton\'s Third Law',
+          'The Law of Gravity',
+        ],
+        correctIndex: 0,
+        clue: {
+          title: 'Newton\'s First Law',
+          explanation:
+            'Newton\'s First Law states that an object at rest stays at rest, and an object in motion stays in motion at constant velocity, unless acted upon by an unbalanced force. On a frictionless surface, no force opposes the motion.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-2-q2',
+        narrative:
+          'A training droid accelerates across the fortress floor. Captain Newton tells you its mass is 10 kg and the net force on it is 30 N.',
+        question: 'What is the droid\'s acceleration?',
+        options: ['0.3 m/s²', '3 m/s²', '20 m/s²', '300 m/s²'],
+        correctIndex: 1,
+        clue: {
+          title: 'F = ma',
+          explanation:
+            'Newton\'s Second Law: F = ma. Rearranging for acceleration: a = F/m = 30 N / 10 kg = 3 m/s². A larger force or smaller mass means greater acceleration.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-2-q3',
+        narrative:
+          'You stand on a hoverboard and push against a wall. Instead of the wall moving, you glide backward.',
+        question: 'Which law explains why you move backward when you push the wall?',
+        options: [
+          'Newton\'s First Law',
+          'Newton\'s Second Law',
+          'Newton\'s Third Law',
+          'The law of conservation of energy',
+        ],
+        correctIndex: 2,
+        clue: {
+          title: 'Newton\'s Third Law',
+          explanation:
+            'Newton\'s Third Law states that for every action there is an equal and opposite reaction. You push the wall (action), and the wall pushes you back (reaction). Since you are on a hoverboard with little friction, you move backward.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-2-q4',
+        narrative:
+          'Two objects have different masses: a 2 kg ball and a 10 kg ball. The same 20 N force is applied to each.',
+        question: 'Which ball has the greater acceleration and why?',
+        options: [
+          'The 10 kg ball — heavier objects accelerate faster',
+          'The 2 kg ball — less mass means more acceleration for the same force',
+          'They accelerate equally — force is the same',
+          'Neither accelerates — 20 N is not enough force',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Mass and Acceleration',
+          explanation:
+            'From F = ma, a = F/m. For the 2 kg ball: a = 20/2 = 10 m/s². For the 10 kg ball: a = 20/10 = 2 m/s². The smaller mass has the larger acceleration when the same force is applied.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-2-q5',
+        narrative:
+          'Captain Newton shows you a video of a hammer and a feather being dropped on the Moon by an Apollo astronaut. Both hit the ground at the same time.',
+        question: 'Why do the hammer and feather land at the same time on the Moon?',
+        options: [
+          'The Moon has no gravity',
+          'The Moon has no air resistance, so only gravity acts on both objects equally',
+          'The feather is heavier on the Moon',
+          'The hammer falls slower on the Moon',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Gravity Without Air Resistance',
+          explanation:
+            'The Moon has no atmosphere, so there is no air resistance. Gravity accelerates all objects equally regardless of mass (about 1.6 m/s² on the Moon). On Earth, air resistance makes the feather fall slower.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 9 MYP — Quest 3: Periodic Table & Reactivity
+  // ============================================================
+  {
+    id: 'g9-science-3',
+    grade: 9,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Periodic Table & Reactivity',
+    realmName: 'The Elemental Vault',
+    narrativeWorld:
+      'The Elemental Vault is a grand library where every element is stored as a glowing crystal orb, arranged in rows and columns just like the periodic table. A thief has scrambled the orbs, mixing reactive metals with noble gases. You must restore order using your knowledge of periodicity and reactivity.',
+    characterTeacher: 'Curator Mendel',
+    teacherEmoji: '⚗️',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g9-science-3-boss',
+      title: 'The Element Thief',
+      villain: 'Isotope Rex',
+      villainEmoji: '🧬',
+      narrative:
+        'Isotope Rex lurks in the deepest chamber of the vault, clutching stolen element orbs. He claims the periodic table is meaningless. Show him that patterns in the table predict chemical behaviour.',
+      question:
+        'Isotope Rex demands three proofs: (A) Explain why elements in the same group of the periodic table have similar chemical properties. (B) Arrange these metals in order of reactivity from most to least reactive: copper, potassium, iron, gold. (C) Potassium reacts vigorously with water. Write a word equation for this reaction and describe what you would observe.',
+      answer:
+        '(A) Elements in the same group have the same number of electrons in their outer shell, and it is the outer electrons that determine how an element reacts. So elements in the same group react in similar ways. (B) Most to least reactive: potassium, iron, copper, gold. (C) Potassium + water → potassium hydroxide + hydrogen. You would see the potassium fizzing vigorously on the water surface, producing hydrogen gas, and it may catch fire with a lilac flame. The solution becomes alkaline.',
+      hints: [
+        'Chemical properties depend on outer shell electrons.',
+        'Use the reactivity series: K > Na > Ca > Mg > Al > Zn > Fe > Cu > Ag > Au.',
+        'Group 1 metals react with water to form a metal hydroxide and hydrogen gas.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g9-science-3-q1',
+        narrative:
+          'Curator Mendel points to a column of glowing orbs on the left side of the vault. "These are the most reactive metals," she says.',
+        question: 'Which group of the periodic table contains the alkali metals?',
+        options: ['Group 1', 'Group 7', 'Group 0', 'Group 4'],
+        correctIndex: 0,
+        clue: {
+          title: 'Alkali Metals',
+          explanation:
+            'Group 1 contains the alkali metals: lithium, sodium, potassium, rubidium, caesium, and francium. They all have one electron in their outer shell, making them highly reactive metals.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-3-q2',
+        narrative:
+          'A series of orbs on the far right of the vault glow softly but refuse to react with anything Curator Mendel offers them.',
+        question: 'Why are noble gases (Group 0) unreactive?',
+        options: [
+          'They are too heavy to react',
+          'They have full outer electron shells',
+          'They are radioactive',
+          'They only exist in space',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Noble Gases',
+          explanation:
+            'Noble gases have full outer electron shells (e.g., helium has 2, neon has 8). Since they have a stable electron configuration, they do not need to gain, lose, or share electrons, making them chemically inert.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-3-q3',
+        narrative:
+          'Curator Mendel places a piece of sodium in water. It fizzes rapidly, darting across the surface.',
+        question: 'What gas is produced when an alkali metal reacts with water?',
+        options: ['Oxygen', 'Carbon dioxide', 'Hydrogen', 'Nitrogen'],
+        correctIndex: 2,
+        clue: {
+          title: 'Alkali Metals + Water',
+          explanation:
+            'When alkali metals react with water they produce a metal hydroxide and hydrogen gas. The hydrogen gas causes the fizzing. The "pop test" with a lit splint can confirm hydrogen is present.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-3-q4',
+        narrative:
+          'Curator Mendel shows you four metals: magnesium, zinc, copper, and gold. She asks you to rank them by reactivity.',
+        question: 'Which of the following metals is the MOST reactive?',
+        options: ['Gold', 'Copper', 'Zinc', 'Magnesium'],
+        correctIndex: 3,
+        clue: {
+          title: 'Reactivity Series',
+          explanation:
+            'The reactivity series ranks metals from most to least reactive. The order here is: magnesium > zinc > copper > gold. More reactive metals lose their outer electrons more easily.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g9-science-3-q5',
+        narrative:
+          'Two orbs sit side by side: fluorine (top of Group 7) and iodine (further down Group 7). Curator Mendel says their reactivity differs greatly.',
+        question: 'How does reactivity change as you go DOWN Group 7 (the halogens)?',
+        options: [
+          'Reactivity increases going down',
+          'Reactivity decreases going down',
+          'Reactivity stays the same',
+          'Halogens are not reactive',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Halogen Reactivity',
+          explanation:
+            'In Group 7, reactivity decreases going down. Fluorine is the most reactive halogen. As atoms get larger, the outer shell is further from the nucleus, so it is harder to attract an extra electron to complete the shell.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 10 MYP — Quest 2: Reproduction & Evolution
+  // ============================================================
+  {
+    id: 'g10-science-2',
+    grade: 10,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Reproduction & Evolution',
+    realmName: 'The Genesis Archive',
+    narrativeWorld:
+      'The Genesis Archive is a living museum where ancient creatures are preserved in crystallised amber and holograms of DNA spiral upward through towering halls. A corrupting force has begun rewriting the genetic records, threatening to erase millions of years of evolutionary history. You must defend the archive with your knowledge of reproduction and evolution.',
+    characterTeacher: 'Archivist Gena',
+    teacherEmoji: '🧬',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g10-science-2-boss',
+      title: 'The Genome Corruptor',
+      villain: 'Muton the Unraveller',
+      villainEmoji: '🦠',
+      narrative:
+        'Muton the Unraveller sits in the core of the archive, pulling strands of DNA apart and splicing them at random. He believes evolution has no logic. Show him that natural selection follows clear principles.',
+      question:
+        'Muton poses three challenges: (A) Explain the difference between mitosis and meiosis in terms of purpose and chromosome number. (B) Describe how natural selection leads to the evolution of antibiotic-resistant bacteria. (C) Why is genetic variation important for the survival of a species?',
+      answer:
+        '(A) Mitosis produces two genetically identical daughter cells with the same chromosome number as the parent — it is used for growth and repair. Meiosis produces four genetically different cells with half the chromosome number — it is used to produce gametes (sex cells). (B) In a bacterial population, some bacteria may have random mutations that make them resistant to an antibiotic. When the antibiotic is applied, non-resistant bacteria die, but resistant ones survive and reproduce, passing on the resistance gene. Over time, the population becomes mostly resistant. (C) Genetic variation means individuals have different traits. If the environment changes, some individuals may have traits better suited to survive. Without variation, an entire species could be wiped out by a single disease or environmental change.',
+      hints: [
+        'Mitosis = 2 identical cells. Meiosis = 4 different cells with half the chromosomes.',
+        'Think about survival of the fittest in a population exposed to antibiotics.',
+        'Variation provides a "safety net" for changing environments.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g10-science-2-q1',
+        narrative:
+          'Archivist Gena activates a hologram showing a cell dividing into two identical copies.',
+        question: 'What type of cell division produces two genetically identical daughter cells?',
+        options: ['Meiosis', 'Mitosis', 'Fertilisation', 'Binary fusion'],
+        correctIndex: 1,
+        clue: {
+          title: 'Mitosis',
+          explanation:
+            'Mitosis is cell division that produces two genetically identical daughter cells, each with the same number of chromosomes as the parent cell. It is used for growth, repair, and asexual reproduction.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-2-q2',
+        narrative:
+          'A display shows the human chromosome count: 46 in body cells, but a different number in egg and sperm cells.',
+        question: 'How many chromosomes are in a human gamete (sex cell)?',
+        options: ['46', '23', '92', '12'],
+        correctIndex: 1,
+        clue: {
+          title: 'Gametes and Meiosis',
+          explanation:
+            'Meiosis halves the chromosome number. Human body cells have 46 chromosomes (23 pairs). Gametes (eggs and sperm) have 23 chromosomes. When fertilisation occurs, the full 46 is restored.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-2-q3',
+        narrative:
+          'Archivist Gena shows fossils of finches from different islands. Each has a differently shaped beak.',
+        question: 'What is the best explanation for the different beak shapes among these finches?',
+        options: [
+          'The finches chose to change their beaks',
+          'Natural selection favoured beak shapes suited to available food on each island',
+          'All birds eventually grow the same beak',
+          'The beaks changed due to temperature differences only',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Natural Selection',
+          explanation:
+            'Darwin\'s finches are a classic example of natural selection. On each island, finches with beak shapes best suited to the available food sources were more likely to survive and reproduce, passing on those traits.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-2-q4',
+        narrative:
+          'A strand of DNA is displayed, and one base pair has been randomly changed.',
+        question: 'What is a random change in the DNA base sequence called?',
+        options: ['Natural selection', 'A mutation', 'Mitosis', 'Fertilisation'],
+        correctIndex: 1,
+        clue: {
+          title: 'Mutations',
+          explanation:
+            'A mutation is a random change in the DNA base sequence. Mutations can be harmful, beneficial, or neutral. They are a source of genetic variation in a population and can drive evolution if they affect survival.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-2-q5',
+        narrative:
+          'Archivist Gena explains that some organisms reproduce without a mate, producing identical offspring.',
+        question: 'What is reproduction that involves only one parent and produces genetically identical offspring called?',
+        options: [
+          'Sexual reproduction',
+          'Asexual reproduction',
+          'Cross-pollination',
+          'Selective breeding',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Asexual Reproduction',
+          explanation:
+            'Asexual reproduction involves only one parent and produces genetically identical offspring (clones) through mitosis. Examples include bacterial binary fission, budding in yeast, and runners in strawberry plants.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
+
+  // ============================================================
+  // GRADE 10 MYP — Quest 3: Chemical Reactions & Energy
+  // ============================================================
+  {
+    id: 'g10-science-3',
+    grade: 10,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'Chemical Reactions & Energy',
+    realmName: 'The Pyroclasm Foundry',
+    narrativeWorld:
+      'Deep beneath a volcanic mountain lies the Pyroclasm Foundry, where rivers of molten metal flow alongside freezing chambers. The balance between exothermic and endothermic processes keeps the foundry stable. A rogue engineer has disrupted this balance, and explosions rock the chambers. You must master energy changes in reactions to restore order.',
+    characterTeacher: 'Forge Master Kelvin',
+    teacherEmoji: '🌋',
+    theme: 'dungeon',
+    coinReward: 150,
+    boss: {
+      id: 'g10-science-3-boss',
+      title: 'The Entropy Engine',
+      villain: 'Thermion the Unstable',
+      villainEmoji: '💥',
+      narrative:
+        'Thermion the Unstable stands before the foundry\'s core reactor, feeding it random substances and watching explosions with glee. Prove that energy changes in reactions are predictable, not chaotic.',
+      question:
+        'Thermion demands three answers: (A) Define exothermic and endothermic reactions and give one example of each. (B) In an exothermic reaction, is the energy of the products higher or lower than the energy of the reactants? Explain using the concept of bond energies. (C) Calculate the overall energy change for a reaction if the total energy needed to break bonds in the reactants is 800 kJ and the total energy released forming bonds in the products is 1050 kJ. Is this exothermic or endothermic?',
+      answer:
+        '(A) Exothermic reactions release energy to the surroundings (temperature rises), e.g., combustion of methane. Endothermic reactions absorb energy from the surroundings (temperature drops), e.g., thermal decomposition of calcium carbonate. (B) In exothermic reactions, the products have lower energy than the reactants because more energy is released forming new bonds than is used breaking old bonds. (C) Energy change = energy to break bonds − energy released forming bonds = 800 − 1050 = −250 kJ. The negative value means the reaction is exothermic (energy is released).',
+      hints: [
+        'Exo = exit (energy leaves). Endo = enter (energy goes in).',
+        'Bond breaking requires energy; bond making releases energy.',
+        'If more energy is released than absorbed, the reaction is exothermic.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g10-science-3-q1',
+        narrative:
+          'Forge Master Kelvin holds a beaker. After mixing two chemicals, the beaker becomes very hot to the touch.',
+        question: 'What type of reaction releases energy and causes the surroundings to heat up?',
+        options: ['Endothermic', 'Exothermic', 'Catalytic', 'Displacement'],
+        correctIndex: 1,
+        clue: {
+          title: 'Exothermic Reactions',
+          explanation:
+            'Exothermic reactions transfer energy to the surroundings, causing a temperature increase. The energy released comes from the formation of new chemical bonds in the products. Examples include combustion and neutralisation.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-3-q2',
+        narrative:
+          'In the freezing chamber, Kelvin dissolves ammonium nitrate in water. The beaker feels ice cold.',
+        question: 'What type of reaction absorbs energy from the surroundings?',
+        options: ['Exothermic', 'Endothermic', 'Neutralisation', 'Oxidation'],
+        correctIndex: 1,
+        clue: {
+          title: 'Endothermic Reactions',
+          explanation:
+            'Endothermic reactions absorb energy from the surroundings, causing a temperature decrease. The energy is needed to break chemical bonds in the reactants. Examples include thermal decomposition and dissolving certain salts.',
+          visual: 'text',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-3-q3',
+        narrative:
+          'Forge Master Kelvin draws an energy profile diagram showing the reactants at a high energy level and products at a lower energy level.',
+        question: 'What does this energy profile diagram represent?',
+        options: [
+          'An endothermic reaction',
+          'An exothermic reaction',
+          'A reaction that does not involve energy',
+          'A physical change, not a chemical reaction',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Energy Profile Diagrams',
+          explanation:
+            'In an energy profile diagram, if the products are at a lower energy level than the reactants, the reaction is exothermic — the difference in energy has been released to the surroundings.',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-3-q4',
+        narrative:
+          'Kelvin explains that starting a fire requires a match, even though combustion itself releases energy.',
+        question: 'What is the minimum energy required to start a chemical reaction called?',
+        options: ['Kinetic energy', 'Activation energy', 'Thermal energy', 'Bond energy'],
+        correctIndex: 1,
+        clue: {
+          title: 'Activation Energy',
+          explanation:
+            'Activation energy is the minimum amount of energy reactant particles must have to collide successfully and start a reaction. Even exothermic reactions need activation energy to get started (e.g., a match to light a fire).',
+          visual: 'diagram',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g10-science-3-q5',
+        narrative:
+          'A reaction breaks bonds worth 600 kJ and forms new bonds releasing 900 kJ. Kelvin asks for the overall energy change.',
+        question: 'What is the overall energy change of this reaction?',
+        options: [
+          '+300 kJ (endothermic)',
+          '-300 kJ (exothermic)',
+          '+1500 kJ (endothermic)',
+          '0 kJ (no change)',
+        ],
+        correctIndex: 1,
+        clue: {
+          title: 'Calculating Energy Change',
+          explanation:
+            'Energy change = energy to break bonds − energy released forming bonds = 600 − 900 = −300 kJ. The negative sign indicates an exothermic reaction — more energy is released than absorbed.',
+          visual: 'numberLine',
+          cost: 10,
+        },
+        coinsOnCorrect: 30,
+      },
+    ],
+  },
 ];
 
 export const MYP_QUESTS_BY_GRADE: Record<number, CurriculumQuest[]> = {

@@ -896,6 +896,1645 @@ export const SOCIAL_SKILLS_QUESTS: CurriculumQuest[] = [
       reward: 'Adult Life Ready Award',
     },
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 6 MYP — Quest 2: Public Speaking & Presentations
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g6-socialSkills-2',
+    grade: 6,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Public Speaking & Presentations',
+    realmName: 'The Echoing Amphitheatre',
+    narrativeWorld:
+      'Deep within the Crystal Mountains lies the Echoing Amphitheatre, a grand arena where the bravest speakers channel the power of their voice to awaken dormant spirits. Only those who master the art of speaking before crowds can unlock the secrets of the ancient Voice Crystals.',
+    characterTeacher: 'Orator Lyris',
+    teacherEmoji: '🎤',
+    theme: 'Public speaking, confidence, and effective presentations',
+    questions: [
+      {
+        id: 'g6-ss-2-q1',
+        spirit: 'Clarity Spirit',
+        spiritEmoji: '💎',
+        spiritColor: '#3B82F6',
+        narrative:
+          'You stand before the first Voice Crystal, which glows faintly. Orator Lyris explains that the crystal responds only to speakers who organize their thoughts clearly.',
+        question:
+          'What is the most important first step when preparing a presentation?',
+        options: [
+          'Understanding your audience and organizing your main ideas',
+          'Memorizing every word you plan to say',
+          'Adding as many slides as possible',
+          'Speaking as fast as you can to cover everything',
+        ],
+        correctIndex: 0,
+        reward: 'Clarity Crystal Badge',
+      },
+      {
+        id: 'g6-ss-2-q2',
+        spirit: 'Presence Spirit',
+        spiritEmoji: '👁️',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'The second crystal hums with energy. Lyris tells you it awakens only when a speaker truly connects with their listeners through body language.',
+        question:
+          'Which body language technique helps you connect most effectively with your audience during a presentation?',
+        options: [
+          'Looking down at your notes the entire time',
+          'Crossing your arms to look confident',
+          'Making eye contact and using open gestures',
+          'Standing completely still without moving',
+        ],
+        correctIndex: 2,
+        reward: 'Presence Aura Badge',
+      },
+      {
+        id: 'g6-ss-2-q3',
+        spirit: 'Courage Spirit',
+        spiritEmoji: '🦁',
+        spiritColor: '#EF4444',
+        narrative:
+          'A swirling mist of stage fright blocks the path to the third crystal. Many adventurers have turned back here, but Lyris assures you there are ways to push through nervousness.',
+        question:
+          'You feel very nervous before a class presentation. What is the best strategy to manage this anxiety?',
+        options: [
+          'Avoid the presentation entirely',
+          'Practice deep breathing and rehearse your key points beforehand',
+          'Rush through your speech so it ends quickly',
+          'Pretend you don\'t care about the outcome',
+        ],
+        correctIndex: 1,
+        reward: 'Fearless Voice Badge',
+      },
+      {
+        id: 'g6-ss-2-q4',
+        spirit: 'Story Spirit',
+        spiritEmoji: '📖',
+        spiritColor: '#F59E0B',
+        narrative:
+          'The fourth crystal shimmers with golden light. Lyris explains that the most powerful speakers weave stories into their presentations to captivate listeners.',
+        question:
+          'Why is storytelling an effective technique in public speaking?',
+        options: [
+          'It makes presentations longer',
+          'It helps the audience connect emotionally and remember key points',
+          'It allows you to avoid sharing facts',
+          'It replaces the need for research',
+        ],
+        correctIndex: 1,
+        reward: 'Storyteller Badge',
+      },
+      {
+        id: 'g6-ss-2-q5',
+        spirit: 'Feedback Spirit',
+        spiritEmoji: '🔄',
+        spiritColor: '#10B981',
+        narrative:
+          'The final crystal pulses with green energy. Lyris says this spirit values those who can both give and receive feedback gracefully after a presentation.',
+        question:
+          'After giving a presentation, a classmate suggests you speak louder next time. How should you respond?',
+        options: [
+          'Ignore the feedback because you did your best',
+          'Get upset and argue that you were loud enough',
+          'Thank them for the suggestion and practice projecting your voice',
+          'Never give another presentation again',
+        ],
+        correctIndex: 2,
+        reward: 'Growth Listener Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Voice Crystals merge into one radiant gem and pose a final challenge: Describe what makes a truly great public speaker. Think about preparation, delivery, and connection with the audience.',
+      answer: [
+        'A great speaker prepares thoroughly by organizing ideas clearly and understanding their audience.',
+        'They deliver with confidence using eye contact, open body language, and vocal variety.',
+        'They connect with listeners through storytelling, genuine emotion, and gracefully handling feedback.',
+      ],
+      reward: 'Voice Crystal Master Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 6 MYP — Quest 3: Self-Confidence & Assertiveness
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g6-socialSkills-3',
+    grade: 6,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Self-Confidence & Assertiveness',
+    realmName: 'The Mirror Fortress',
+    narrativeWorld:
+      'Hidden behind a waterfall of light stands the Mirror Fortress, a magical stronghold where every surface reflects not your appearance but your inner self. Only those who learn to speak up for themselves and believe in their worth can pass through its shifting halls.',
+    characterTeacher: 'Guardian Mira',
+    teacherEmoji: '🪞',
+    theme: 'Building self-confidence, assertive communication, and self-worth',
+    questions: [
+      {
+        id: 'g6-ss-3-q1',
+        spirit: 'Inner Strength Spirit',
+        spiritEmoji: '💪',
+        spiritColor: '#7C3AED',
+        narrative:
+          'The first mirror shows a dim reflection. Guardian Mira explains that the mirror brightens when you understand what true confidence means.',
+        question: 'What does it mean to be self-confident?',
+        options: [
+          'Believing you are better than everyone else',
+          'Trusting in your abilities while accepting that you can still grow',
+          'Never feeling nervous or uncertain',
+          'Always agreeing with what others say',
+        ],
+        correctIndex: 1,
+        reward: 'Inner Strength Badge',
+      },
+      {
+        id: 'g6-ss-3-q2',
+        spirit: 'Voice of Truth Spirit',
+        spiritEmoji: '🗣️',
+        spiritColor: '#2563EB',
+        narrative:
+          'A corridor of mirrors distorts your image. Mira says only assertive communication can clear the distortion and reveal the true path.',
+        question:
+          'A friend keeps borrowing your things without asking. What is the most assertive response?',
+        options: [
+          'Say nothing and hope they stop',
+          'Yell at them in front of everyone',
+          'Calmly say, "I\'d appreciate it if you asked before borrowing my things"',
+          'Start taking their things without asking as payback',
+        ],
+        correctIndex: 2,
+        reward: 'Assertive Voice Badge',
+      },
+      {
+        id: 'g6-ss-3-q3',
+        spirit: 'Boundary Spirit',
+        spiritEmoji: '🛡️',
+        spiritColor: '#DC2626',
+        narrative:
+          'A magical barrier blocks the hallway. Mira explains that setting healthy boundaries is like creating a protective shield\u2014it keeps you safe without shutting others out.',
+        question: 'What is a healthy personal boundary?',
+        options: [
+          'Refusing to talk to anyone who disagrees with you',
+          'A clear limit you set about what behavior you will and won\'t accept',
+          'Doing whatever others want so they like you',
+          'Building walls so nobody can get close to you',
+        ],
+        correctIndex: 1,
+        reward: 'Boundary Shield Badge',
+      },
+      {
+        id: 'g6-ss-3-q4',
+        spirit: 'Resilience Spirit',
+        spiritEmoji: '🌱',
+        spiritColor: '#059669',
+        narrative:
+          'A mirror shows moments of past failure and embarrassment. Mira says that confident people learn to bounce back from setbacks rather than being defined by them.',
+        question:
+          'You tried out for the school team but didn\'t make it. What is a confident and healthy response?',
+        options: [
+          'Decide you are terrible at sports and never try again',
+          'Blame the coach for being unfair',
+          'Feel disappointed, then ask the coach for feedback so you can improve',
+          'Pretend you never wanted to be on the team',
+        ],
+        correctIndex: 2,
+        reward: 'Resilience Seed Badge',
+      },
+      {
+        id: 'g6-ss-3-q5',
+        spirit: 'Self-Worth Spirit',
+        spiritEmoji: '⭐',
+        spiritColor: '#F59E0B',
+        narrative:
+          'The final mirror chamber reveals a radiant reflection. Mira says the brightest mirror responds to those who understand the difference between confidence and arrogance.',
+        question:
+          'What is the key difference between confidence and arrogance?',
+        options: [
+          'There is no difference; they are the same thing',
+          'Confident people believe in themselves while still respecting others; arrogant people put others down',
+          'Arrogant people are always more successful',
+          'Confident people never make mistakes',
+        ],
+        correctIndex: 1,
+        reward: 'Radiant Self Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'All mirrors in the fortress converge into one grand reflection and ask: Explain how self-confidence, assertiveness, and setting boundaries work together to help someone navigate social situations at school.',
+      answer: [
+        'Self-confidence provides the inner belief that your thoughts, feelings, and needs matter.',
+        'Assertiveness gives you the communication skills to express yourself clearly and respectfully.',
+        'Healthy boundaries protect your wellbeing while still allowing meaningful connections with others.',
+      ],
+      reward: 'Mirror Fortress Champion Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 7 MYP — Quest 2: Identity & Diversity
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g7-socialSkills-2',
+    grade: 7,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Identity & Diversity',
+    realmName: 'The Mosaic Bazaar',
+    narrativeWorld:
+      'In a vast interdimensional marketplace called the Mosaic Bazaar, travelers from countless realms gather to trade stories, traditions, and wisdom. Each stall reveals a different facet of identity, and only those who celebrate diversity can unlock the Bazaar\'s legendary Prism Gate.',
+    characterTeacher: 'Merchant Kalei',
+    teacherEmoji: '🌍',
+    theme: 'Personal identity, cultural diversity, inclusion, and respect',
+    questions: [
+      {
+        id: 'g7-ss-2-q1',
+        spirit: 'Identity Spirit',
+        spiritEmoji: '🧩',
+        spiritColor: '#6366F1',
+        narrative:
+          'At the first stall, Merchant Kalei lays out a collection of puzzle pieces. She explains that identity is like a mosaic\u2014made of many parts that come together to form who you are.',
+        question: 'Which of the following best describes personal identity?',
+        options: [
+          'Only the culture your family comes from',
+          'A combination of your values, experiences, culture, interests, and beliefs',
+          'Whatever your friends say you are',
+          'Something that is fixed and never changes',
+        ],
+        correctIndex: 1,
+        reward: 'Identity Mosaic Badge',
+      },
+      {
+        id: 'g7-ss-2-q2',
+        spirit: 'Empathy Spirit',
+        spiritEmoji: '💜',
+        spiritColor: '#A855F7',
+        narrative:
+          'A traveler at the next stall shares a story about being misunderstood because of their background. Kalei says true adventurers listen with empathy.',
+        question:
+          'A new student from another country joins your class and some classmates make fun of their accent. What is the most appropriate response?',
+        options: [
+          'Laugh along so you fit in with the group',
+          'Ignore what is happening and walk away',
+          'Welcome the new student and tell the classmates their behavior is hurtful',
+          'Wait for a teacher to handle it',
+        ],
+        correctIndex: 2,
+        reward: 'Empathy Heart Badge',
+      },
+      {
+        id: 'g7-ss-2-q3',
+        spirit: 'Perspective Spirit',
+        spiritEmoji: '🔮',
+        spiritColor: '#EC4899',
+        narrative:
+          'Kalei shows you a crystal that lets you see the world through someone else\'s eyes. She says understanding different perspectives is key to navigating the Bazaar.',
+        question: 'Why is it important to learn about cultures different from your own?',
+        options: [
+          'So you can decide which culture is the best',
+          'It broadens your understanding, builds empathy, and helps you connect with diverse people',
+          'It is not important; your own culture is all you need to know',
+          'Only so you can pass tests at school',
+        ],
+        correctIndex: 1,
+        reward: 'Perspective Lens Badge',
+      },
+      {
+        id: 'g7-ss-2-q4',
+        spirit: 'Belonging Spirit',
+        spiritEmoji: '🏠',
+        spiritColor: '#F97316',
+        narrative:
+          'A quiet corner of the Bazaar holds a stall with mirrors that show communities. Kalei explains that everyone needs to feel they belong, but belonging should never require giving up who you are.',
+        question:
+          'What does it mean to create an inclusive environment?',
+        options: [
+          'Making sure everyone thinks and acts the same way',
+          'Only including people who are similar to you',
+          'Creating a space where people of all backgrounds feel welcomed, valued, and respected',
+          'Avoiding any discussion of differences',
+        ],
+        correctIndex: 2,
+        reward: 'Belonging Hearth Badge',
+      },
+      {
+        id: 'g7-ss-2-q5',
+        spirit: 'Unity Spirit',
+        spiritEmoji: '🤝',
+        spiritColor: '#14B8A6',
+        narrative:
+          'At the final stall before the Prism Gate, Kalei presents a challenge: the gate opens only when you understand that diversity strengthens communities.',
+        question: 'How does diversity strengthen a community or team?',
+        options: [
+          'It doesn\'t; teams work best when everyone is the same',
+          'Different perspectives lead to more creative solutions and better problem-solving',
+          'It only matters in large cities, not in schools',
+          'Diversity makes things more complicated and should be avoided',
+        ],
+        correctIndex: 1,
+        reward: 'Unity Bond Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Prism Gate shimmers with every color imaginable and asks: Explain how understanding your own identity, respecting diversity, and practicing inclusion create stronger communities.',
+      answer: [
+        'Understanding your own identity gives you a secure foundation from which to engage respectfully with others.',
+        'Respecting diversity means valuing different backgrounds, perspectives, and experiences as strengths.',
+        'Practicing inclusion ensures everyone feels welcomed and heard, which builds trust and stronger communities.',
+      ],
+      reward: 'Prism Gate Guardian Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 7 MYP — Quest 3: Healthy Relationships
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g7-socialSkills-3',
+    grade: 7,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Healthy Relationships',
+    realmName: 'The Bond Gardens',
+    narrativeWorld:
+      'Nestled between two ancient mountains are the Bond Gardens, magical gardens where relationships between people take the form of living plants. Healthy relationships bloom into radiant flowers, while toxic ones wither into thorns. Your quest is to tend the gardens and learn the secrets of lasting bonds.',
+    characterTeacher: 'Gardener Thalia',
+    teacherEmoji: '🌸',
+    theme: 'Building healthy friendships, communication, trust, and conflict resolution',
+    questions: [
+      {
+        id: 'g7-ss-3-q1',
+        spirit: 'Trust Spirit',
+        spiritEmoji: '🔑',
+        spiritColor: '#2563EB',
+        narrative:
+          'The first garden bed is parched and empty. Gardener Thalia says that trust is like water\u2014without it, no relationship can grow.',
+        question: 'What is the foundation of any healthy relationship?',
+        options: [
+          'Always doing what the other person wants',
+          'Mutual trust, respect, and honest communication',
+          'Never having any disagreements',
+          'Spending every moment together',
+        ],
+        correctIndex: 1,
+        reward: 'Trust Key Badge',
+      },
+      {
+        id: 'g7-ss-3-q2',
+        spirit: 'Communication Spirit',
+        spiritEmoji: '💬',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'Two plants are growing toward each other but can\'t quite connect. Thalia says they represent two friends who have trouble communicating their feelings.',
+        question:
+          'Your friend seems upset but says "I\'m fine." What is the best way to respond?',
+        options: [
+          'Accept their answer and walk away immediately',
+          'Tell them they are clearly lying',
+          'Gently say you noticed they seem upset and that you\'re there if they want to talk',
+          'Tell other friends that something is wrong with them',
+        ],
+        correctIndex: 2,
+        reward: 'Open Heart Badge',
+      },
+      {
+        id: 'g7-ss-3-q3',
+        spirit: 'Resolution Spirit',
+        spiritEmoji: '⚖️',
+        spiritColor: '#F59E0B',
+        narrative:
+          'A patch of thorny weeds has overtaken a garden bed. Thalia explains these thorns represent unresolved conflicts that can choke even the strongest friendships.',
+        question:
+          'You and your best friend disagree about plans for the weekend. What is the healthiest way to resolve this conflict?',
+        options: [
+          'Insist on your plan because you thought of it first',
+          'Give in to avoid any argument',
+          'Stop talking to your friend until they agree',
+          'Listen to each other\'s ideas and find a compromise that works for both of you',
+        ],
+        correctIndex: 3,
+        reward: 'Peacekeeper Badge',
+      },
+      {
+        id: 'g7-ss-3-q4',
+        spirit: 'Respect Spirit',
+        spiritEmoji: '🌟',
+        spiritColor: '#10B981',
+        narrative:
+          'A glowing flower blooms only when two gardeners work together respectfully. Thalia says mutual respect means honoring each other\'s differences.',
+        question: 'Which behavior is a sign of a healthy friendship?',
+        options: [
+          'A friend who pressures you to do things you are uncomfortable with',
+          'A friend who supports your goals even when they are different from theirs',
+          'A friend who gets jealous when you spend time with others',
+          'A friend who shares your secrets with other people',
+        ],
+        correctIndex: 1,
+        reward: 'Respect Bloom Badge',
+      },
+      {
+        id: 'g7-ss-3-q5',
+        spirit: 'Warning Spirit',
+        spiritEmoji: '🚩',
+        spiritColor: '#DC2626',
+        narrative:
+          'The final garden bed shows a plant that looks beautiful on the surface but has hidden poison beneath. Thalia warns that some relationships can be harmful even when they don\'t seem that way at first.',
+        question: 'Which of the following is a red flag in a friendship?',
+        options: [
+          'A friend who sometimes disagrees with you respectfully',
+          'A friend who gives you space when you need it',
+          'A friend who tries to control who you can hang out with',
+          'A friend who is honest even when it\'s hard to hear',
+        ],
+        correctIndex: 2,
+        reward: 'Wise Guardian Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Bond Gardens bloom with radiant light and ask: Describe what makes a friendship truly healthy, how to handle conflicts constructively, and how to recognize when a relationship is harmful.',
+      answer: [
+        'A healthy friendship is built on mutual trust, respect, and honest communication where both people feel valued.',
+        'Conflicts should be handled by listening actively, expressing feelings calmly, and finding compromises.',
+        'A harmful relationship shows patterns of control, disrespect, manipulation, or pressure to act against your values.',
+      ],
+      reward: 'Bond Garden Protector Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 8 MYP — Quest 2: Emotional Regulation
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g8-socialSkills-2',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Emotional Regulation',
+    realmName: 'The Tempest Sanctum',
+    narrativeWorld:
+      'At the heart of an eternal storm lies the Tempest Sanctum, a floating temple where emotions manifest as raw elemental forces. Uncontrolled anger becomes fire, unchecked anxiety becomes howling wind, and overwhelming sadness becomes torrential rain. Only those who learn to regulate their emotional storms can find the calm eye at the center.',
+    characterTeacher: 'Stormkeeper Zara',
+    teacherEmoji: '🌊',
+    theme: 'Understanding emotions, self-regulation, coping strategies, and emotional intelligence',
+    questions: [
+      {
+        id: 'g8-ss-2-q1',
+        spirit: 'Awareness Spirit',
+        spiritEmoji: '🧠',
+        spiritColor: '#6366F1',
+        narrative:
+          'Lightning crackles around the Sanctum entrance. Stormkeeper Zara explains that the first step to calming any storm is recognizing what emotion is driving it.',
+        question: 'What is the first step in emotional regulation?',
+        options: [
+          'Suppressing your emotions so no one can see them',
+          'Identifying and naming what you are feeling',
+          'Immediately reacting to express the emotion',
+          'Waiting for someone else to tell you how you feel',
+        ],
+        correctIndex: 1,
+        reward: 'Emotional Awareness Badge',
+      },
+      {
+        id: 'g8-ss-2-q2',
+        spirit: 'Calm Spirit',
+        spiritEmoji: '🕊️',
+        spiritColor: '#3B82F6',
+        narrative:
+          'A wall of fire blocks your path\u2014the manifestation of intense anger. Zara says there are proven techniques to cool down before the flames consume you.',
+        question:
+          'You receive a grade you think is unfair and feel a surge of anger. What is the most effective immediate response?',
+        options: [
+          'Confront the teacher right away while you are still upset',
+          'Post about it on social media to vent your frustration',
+          'Take several deep breaths and wait until you are calm before discussing it with the teacher',
+          'Slam your books on the desk to show how you feel',
+        ],
+        correctIndex: 2,
+        reward: 'Cool Breeze Badge',
+      },
+      {
+        id: 'g8-ss-2-q3',
+        spirit: 'Trigger Spirit',
+        spiritEmoji: '⚡',
+        spiritColor: '#EAB308',
+        narrative:
+          'Zara points to swirling patterns in the storm clouds that repeat the same shapes over and over. She explains these patterns are like emotional triggers\u2014recognizing them gives you power over them.',
+        question: 'What is an emotional trigger?',
+        options: [
+          'A situation, person, or event that consistently provokes a strong emotional reaction in you',
+          'A sign that you are weak or overly sensitive',
+          'Something that only affects people with emotional problems',
+          'An emotion that appears for no reason at all',
+        ],
+        correctIndex: 0,
+        reward: 'Pattern Seer Badge',
+      },
+      {
+        id: 'g8-ss-2-q4',
+        spirit: 'Balance Spirit',
+        spiritEmoji: '☯️',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'At the center of the Sanctum, two opposing forces swirl in harmony. Zara explains that emotional regulation is not about eliminating emotions but finding balance.',
+        question:
+          'Which statement about emotional regulation is most accurate?',
+        options: [
+          'The goal is to never feel negative emotions',
+          'Strong emotions are always a sign of weakness',
+          'Emotional regulation means managing how intensely you feel emotions and how you express them',
+          'If you regulate emotions well, you will never feel stressed',
+        ],
+        correctIndex: 2,
+        reward: 'Harmony Core Badge',
+      },
+      {
+        id: 'g8-ss-2-q5',
+        spirit: 'Coping Spirit',
+        spiritEmoji: '🛠️',
+        spiritColor: '#10B981',
+        narrative:
+          'The final chamber holds a toolkit of glowing instruments. Zara says each tool represents a healthy coping strategy that can be used during emotional storms.',
+        question:
+          'Which of the following is a healthy coping strategy for managing overwhelming stress?',
+        options: [
+          'Isolating yourself completely from friends and family',
+          'Physical exercise, journaling, or talking to a trusted person',
+          'Scrolling through social media for hours to distract yourself',
+          'Eating large amounts of junk food to feel better',
+        ],
+        correctIndex: 1,
+        reward: 'Coping Toolkit Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The storm converges into a single swirling vortex and asks: Explain how emotional awareness, healthy coping strategies, and understanding triggers help a person manage their emotions effectively.',
+      answer: [
+        'Emotional awareness means identifying and naming your feelings, which is the essential first step before you can manage them.',
+        'Healthy coping strategies like deep breathing, exercise, and talking to trusted people help you process emotions constructively.',
+        'Understanding your triggers allows you to anticipate strong reactions and prepare responses in advance rather than reacting impulsively.',
+      ],
+      reward: 'Tempest Sanctum Master Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 8 MYP — Quest 3: Setting & Achieving Goals
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g8-socialSkills-3',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Setting & Achieving Goals',
+    realmName: 'The Summit Spire',
+    narrativeWorld:
+      'Rising above the clouds is the Summit Spire, a colossal tower where each floor represents a step closer to achieving your greatest ambitions. Many adventurers start the climb, but only those who set clear goals, plan wisely, and persevere through obstacles reach the pinnacle where the Star of Achievement awaits.',
+    characterTeacher: 'Climber Dax',
+    teacherEmoji: '🏔️',
+    theme: 'Goal setting, planning, perseverance, and personal achievement',
+    questions: [
+      {
+        id: 'g8-ss-3-q1',
+        spirit: 'Vision Spirit',
+        spiritEmoji: '🎯',
+        spiritColor: '#EF4444',
+        narrative:
+          'On the first floor, Climber Dax shows you a telescope that can see the top of the Spire. He says having a clear vision of your goal is essential before you start climbing.',
+        question: 'What makes a goal "SMART"?',
+        options: [
+          'Simple, Massive, Achievable, Random, Timeless',
+          'Specific, Measurable, Achievable, Relevant, Time-bound',
+          'Strong, Meaningful, Aggressive, Rewarding, Tough',
+          'Short, Moderate, Automatic, Realistic, Typical',
+        ],
+        correctIndex: 1,
+        reward: 'Vision Scope Badge',
+      },
+      {
+        id: 'g8-ss-3-q2',
+        spirit: 'Planning Spirit',
+        spiritEmoji: '🗺️',
+        spiritColor: '#3B82F6',
+        narrative:
+          'The staircase splits into dozens of paths. Dax explains that breaking a big goal into smaller steps is like having a map\u2014it prevents you from getting lost.',
+        question: 'Why is it important to break a large goal into smaller steps?',
+        options: [
+          'So the goal seems less important',
+          'Because large goals are impossible to achieve',
+          'Smaller steps make the goal manageable, help track progress, and build momentum',
+          'So you can skip the hard parts',
+        ],
+        correctIndex: 2,
+        reward: 'Pathfinder Badge',
+      },
+      {
+        id: 'g8-ss-3-q3',
+        spirit: 'Obstacle Spirit',
+        spiritEmoji: '🧱',
+        spiritColor: '#F97316',
+        narrative:
+          'A massive wall blocks the stairway. Dax says obstacles are inevitable, but how you respond to them determines whether you reach the summit.',
+        question:
+          'You set a goal to improve your math grade, but after two weeks of studying harder, your next test score is still low. What should you do?',
+        options: [
+          'Give up because clearly the goal is impossible',
+          'Blame the teacher for making the test too hard',
+          'Evaluate your study methods, ask for help, and adjust your approach',
+          'Lower your goal so you don\'t have to work as hard',
+        ],
+        correctIndex: 2,
+        reward: 'Wall Breaker Badge',
+      },
+      {
+        id: 'g8-ss-3-q4',
+        spirit: 'Motivation Spirit',
+        spiritEmoji: '🔥',
+        spiritColor: '#DC2626',
+        narrative:
+          'The air grows cold and your energy fades. Dax says many climbers lose motivation partway through. Understanding what drives you is key to pushing forward.',
+        question:
+          'Which type of motivation tends to be more sustainable in the long run?',
+        options: [
+          'Extrinsic motivation like prizes and rewards from others',
+          'Intrinsic motivation that comes from personal satisfaction and genuine interest',
+          'Fear of punishment and consequences',
+          'Peer pressure from friends and classmates',
+        ],
+        correctIndex: 1,
+        reward: 'Inner Flame Badge',
+      },
+      {
+        id: 'g8-ss-3-q5',
+        spirit: 'Reflection Spirit',
+        spiritEmoji: '📊',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'Near the summit, Dax stops at a lookout point and asks you to look back at how far you\'ve come. He says reflection is what separates those who grow from those who simply finish.',
+        question: 'Why is self-reflection important after achieving or failing to achieve a goal?',
+        options: [
+          'It is not important; just move on to the next goal',
+          'Only to celebrate if you succeeded',
+          'It helps you understand what worked, what didn\'t, and how to improve for future goals',
+          'So you can compare yourself to others',
+        ],
+        correctIndex: 2,
+        reward: 'Summit Sage Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Star of Achievement at the summit glows brilliantly and asks: Describe the complete process of setting and achieving a meaningful goal, including how to handle setbacks along the way.',
+      answer: [
+        'Start by defining a SMART goal and breaking it into manageable steps with clear deadlines.',
+        'Stay motivated through intrinsic drive, track your progress, and adjust strategies when obstacles arise.',
+        'Reflect on the journey regardless of the outcome, learning from both successes and failures to set better future goals.',
+      ],
+      reward: 'Summit Spire Champion Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 9 MYP — Quest 2: Growth Mindset
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g9-socialSkills-2',
+    grade: 9,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Growth Mindset',
+    realmName: 'The Evolving Caverns',
+    narrativeWorld:
+      'Beneath the oldest mountain in the realm lie the Evolving Caverns, a labyrinth of tunnels that constantly reshape themselves. The caverns test not your strength but your willingness to learn, adapt, and embrace challenges. Those with a fixed mindset find the walls closing in, while those with a growth mindset discover the caverns opening into vast, illuminated chambers.',
+    characterTeacher: 'Sage Evolara',
+    teacherEmoji: '🧬',
+    theme: 'Growth mindset, embracing challenges, learning from failure, and neuroplasticity',
+    questions: [
+      {
+        id: 'g9-ss-2-q1',
+        spirit: 'Potential Spirit',
+        spiritEmoji: '🌱',
+        spiritColor: '#10B981',
+        narrative:
+          'The first tunnel narrows ahead. Sage Evolara explains that those who believe abilities can be developed will find the tunnel widening before them.',
+        question:
+          'What is the core difference between a fixed mindset and a growth mindset?',
+        options: [
+          'A fixed mindset believes intelligence is unchangeable; a growth mindset believes abilities can be developed through effort',
+          'A growth mindset means you are naturally smarter than others',
+          'A fixed mindset is always negative and a growth mindset is always positive',
+          'There is no real difference; they are just different names for the same thing',
+        ],
+        correctIndex: 0,
+        reward: 'Potential Seed Badge',
+      },
+      {
+        id: 'g9-ss-2-q2',
+        spirit: 'Challenge Spirit',
+        spiritEmoji: '⛰️',
+        spiritColor: '#6366F1',
+        narrative:
+          'A steep climb appears with no obvious path. Evolara says a growth mindset sees challenges as opportunities to learn, not threats to avoid.',
+        question:
+          'You are offered the chance to take an advanced class that will be very challenging. With a growth mindset, how would you view this opportunity?',
+        options: [
+          'Avoid it because failure would prove you are not smart enough',
+          'Take it only if your friends are also taking it',
+          'Welcome the challenge as an opportunity to stretch your abilities and learn more',
+          'Take it only if you are guaranteed a good grade',
+        ],
+        correctIndex: 2,
+        reward: 'Challenge Climber Badge',
+      },
+      {
+        id: 'g9-ss-2-q3',
+        spirit: 'Failure Spirit',
+        spiritEmoji: '🔄',
+        spiritColor: '#F59E0B',
+        narrative:
+          'A dead end appears. But Evolara points to faint cracks in the wall\u2014evidence that the path forward requires learning from what seems like a failure.',
+        question:
+          'According to growth mindset research, how should failure be viewed?',
+        options: [
+          'As proof that you lack talent in that area',
+          'As something to hide so others don\'t think less of you',
+          'As valuable feedback and a natural part of the learning process',
+          'As a reason to try something completely different instead',
+        ],
+        correctIndex: 2,
+        reward: 'Phoenix Badge',
+      },
+      {
+        id: 'g9-ss-2-q4',
+        spirit: 'Neuroplasticity Spirit',
+        spiritEmoji: '🧠',
+        spiritColor: '#EC4899',
+        narrative:
+          'Glowing neural pathways line the cavern walls. Evolara explains that the brain physically changes and strengthens when you learn something new\u2014this is called neuroplasticity.',
+        question: 'What does neuroplasticity tell us about learning?',
+        options: [
+          'The brain stops developing after childhood',
+          'Intelligence is entirely determined by genetics',
+          'The brain forms new neural connections throughout life, especially when we practice and learn new things',
+          'Only certain people\'s brains can change and grow',
+        ],
+        correctIndex: 2,
+        reward: 'Neural Pathfinder Badge',
+      },
+      {
+        id: 'g9-ss-2-q5',
+        spirit: 'Effort Spirit',
+        spiritEmoji: '💪',
+        spiritColor: '#EF4444',
+        narrative:
+          'The final chamber requires you to push through a heavy stone door. Evolara says the door tests whether you understand the role of effort and strategy in growth.',
+        question:
+          'Which statement best reflects a growth mindset approach to effort?',
+        options: [
+          'If you need to try hard, it means you are not naturally talented',
+          'Effort alone is enough; strategy does not matter',
+          'Strategic effort combined with effective learning methods leads to improvement and mastery',
+          'Talented people never need to put in effort',
+        ],
+        correctIndex: 2,
+        reward: 'Determined Heart Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Evolving Caverns reveal a hidden sanctuary and ask: Explain how adopting a growth mindset, understanding neuroplasticity, and reframing failure can transform a student\'s approach to learning.',
+      answer: [
+        'A growth mindset shifts your belief from "I can\'t do this" to "I can\'t do this yet," opening you up to learning.',
+        'Understanding neuroplasticity provides scientific evidence that effort and practice literally reshape the brain and build new abilities.',
+        'Reframing failure as feedback rather than defeat helps you persist through challenges and continuously improve.',
+      ],
+      reward: 'Evolving Caverns Sage Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 9 MYP — Quest 3: Responsible Decision Making
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g9-socialSkills-3',
+    grade: 9,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Responsible Decision Making',
+    realmName: 'The Crossroads Tribunal',
+    narrativeWorld:
+      'At the center of the realm lies the Crossroads Tribunal, an ancient court where every path leads to a different future. The spirits of Consequence and Wisdom preside here, judging not your actions but the reasoning behind them. Only those who can think critically about their choices and consider their impact on others may pass through to the Hall of Futures.',
+    characterTeacher: 'Judge Verity',
+    teacherEmoji: '⚖️',
+    theme: 'Ethical decision making, consequences, critical thinking, and social responsibility',
+    questions: [
+      {
+        id: 'g9-ss-3-q1',
+        spirit: 'Consequence Spirit',
+        spiritEmoji: '🔮',
+        spiritColor: '#7C3AED',
+        narrative:
+          'Judge Verity presents the first case: a shimmering orb shows possible futures branching from a single choice. She says every decision has consequences that ripple outward.',
+        question:
+          'What is the most important consideration when making a responsible decision?',
+        options: [
+          'What will make you the most popular',
+          'What is easiest to do in the moment',
+          'How the decision will affect yourself and others both now and in the future',
+          'What everyone else is doing',
+        ],
+        correctIndex: 2,
+        reward: 'Foresight Orb Badge',
+      },
+      {
+        id: 'g9-ss-3-q2',
+        spirit: 'Ethics Spirit',
+        spiritEmoji: '📜',
+        spiritColor: '#2563EB',
+        narrative:
+          'Verity unfurls an ancient scroll containing ethical principles. She says that understanding right from wrong often requires more nuance than simply following rules.',
+        question:
+          'You find a classmate\'s completed homework on the floor. You have the same assignment and are struggling with it. What is the most ethical decision?',
+        options: [
+          'Copy the answers since you found them by accident',
+          'Return the homework to your classmate and seek help from your teacher with your own work',
+          'Keep it and use it as a "reference"',
+          'Throw it away so your classmate can\'t submit it either',
+        ],
+        correctIndex: 1,
+        reward: 'Ethical Compass Badge',
+      },
+      {
+        id: 'g9-ss-3-q3',
+        spirit: 'Pressure Spirit',
+        spiritEmoji: '🌪️',
+        spiritColor: '#DC2626',
+        narrative:
+          'A swirling vortex of voices fills the chamber, each one urging a different action. Verity says peer pressure is one of the greatest tests of responsible decision making.',
+        question:
+          'Your friends want you to skip class to hang out. You know missing class could hurt your grades. How should you handle this peer pressure?',
+        options: [
+          'Go along with them; friendships are more important than one class',
+          'Decline firmly but respectfully, explaining that your education matters to you',
+          'Skip class but blame your friends if you get caught',
+          'Say yes but then go to class anyway without telling them',
+        ],
+        correctIndex: 1,
+        reward: 'Steadfast Anchor Badge',
+      },
+      {
+        id: 'g9-ss-3-q4',
+        spirit: 'Analysis Spirit',
+        spiritEmoji: '🔍',
+        spiritColor: '#F59E0B',
+        narrative:
+          'Verity presents a complex scenario with no obvious right answer. She says critical thinking\u2014examining multiple perspectives\u2014is essential for difficult decisions.',
+        question:
+          'Which decision-making strategy is most effective for complex situations?',
+        options: [
+          'Go with your first instinct without overthinking',
+          'Let someone else decide for you',
+          'Identify the problem, gather information, consider alternatives and their consequences, then choose and evaluate',
+          'Flip a coin to avoid bias',
+        ],
+        correctIndex: 2,
+        reward: 'Critical Thinker Badge',
+      },
+      {
+        id: 'g9-ss-3-q5',
+        spirit: 'Accountability Spirit',
+        spiritEmoji: '🏛️',
+        spiritColor: '#059669',
+        narrative:
+          'The final case before the Tribunal tests accountability. Verity says taking responsibility for your choices\u2014even bad ones\u2014is the mark of a mature decision maker.',
+        question:
+          'You made a decision that accidentally hurt a friend\'s feelings. What is the most responsible next step?',
+        options: [
+          'Ignore it and hope they forget about it',
+          'Blame someone else for influencing your decision',
+          'Acknowledge your mistake, sincerely apologize, and take steps to make things right',
+          'Avoid that friend until the situation blows over',
+        ],
+        correctIndex: 2,
+        reward: 'Accountability Shield Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Hall of Futures opens before you and asks: Explain the process of making responsible decisions, including how to handle peer pressure and why accountability matters.',
+      answer: [
+        'Responsible decisions require gathering information, considering consequences for yourself and others, and evaluating multiple options before acting.',
+        'Handling peer pressure means staying true to your values while communicating your boundaries respectfully and firmly.',
+        'Accountability means owning the outcomes of your decisions, learning from mistakes, and making amends when your choices affect others negatively.',
+      ],
+      reward: 'Crossroads Tribunal Judge Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 10 MYP — Quest 2: Ethical Leadership
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g10-socialSkills-2',
+    grade: 10,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Ethical Leadership',
+    realmName: 'The Sovereign\'s Crucible',
+    narrativeWorld:
+      'In the floating citadel known as the Sovereign\'s Crucible, aspiring leaders are tested not by their power but by their principles. The Crucible presents moral dilemmas that reveal whether a leader serves themselves or their community. Only those who demonstrate integrity, empathy, and fairness can claim the Mantle of True Leadership.',
+    characterTeacher: 'Commander Aris',
+    teacherEmoji: '👑',
+    theme: 'Ethical leadership, integrity, serving others, and leading by example',
+    questions: [
+      {
+        id: 'g10-ss-2-q1',
+        spirit: 'Integrity Spirit',
+        spiritEmoji: '💎',
+        spiritColor: '#2563EB',
+        narrative:
+          'Commander Aris presents the Crucible\'s first trial: a locked vault that opens only for those who understand what makes a leader truly ethical.',
+        question:
+          'What is the most important quality of an ethical leader?',
+        options: [
+          'The ability to make everyone like them',
+          'Being the most intelligent person in the group',
+          'Integrity\u2014consistently acting in alignment with moral principles even when no one is watching',
+          'Having authority and power over others',
+        ],
+        correctIndex: 2,
+        reward: 'Integrity Diamond Badge',
+      },
+      {
+        id: 'g10-ss-2-q2',
+        spirit: 'Service Spirit',
+        spiritEmoji: '🤲',
+        spiritColor: '#10B981',
+        narrative:
+          'The second trial shows two paths: one leading to personal glory and another leading to community benefit. Aris says true leaders choose service over self-interest.',
+        question:
+          'What distinguishes a servant leader from an authoritarian leader?',
+        options: [
+          'Servant leaders are weaker because they listen to others',
+          'A servant leader prioritizes the growth and wellbeing of their team, while an authoritarian leader prioritizes control',
+          'There is no difference; all leadership styles are the same',
+          'Authoritarian leaders are always more effective',
+        ],
+        correctIndex: 1,
+        reward: 'Servant Heart Badge',
+      },
+      {
+        id: 'g10-ss-2-q3',
+        spirit: 'Dilemma Spirit',
+        spiritEmoji: '⚖️',
+        spiritColor: '#F59E0B',
+        narrative:
+          'The Crucible presents a moral dilemma: as team captain, you discover that a close friend broke a rule. Aris says this trial tests whether you apply principles fairly.',
+        question:
+          'You are captain of a school team and discover your best friend violated a team rule. What does ethical leadership require?',
+        options: [
+          'Ignore it because they are your friend and confrontation is uncomfortable',
+          'Apply the same consequence you would for any team member, while being supportive privately',
+          'Publicly shame them to set an example for the rest of the team',
+          'Cover for them and hope no one else finds out',
+        ],
+        correctIndex: 1,
+        reward: 'Fair Judgment Badge',
+      },
+      {
+        id: 'g10-ss-2-q4',
+        spirit: 'Influence Spirit',
+        spiritEmoji: '🌟',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'A mirror shows how your actions ripple outward, affecting those around you. Aris explains that leaders influence others most powerfully through their behavior, not their words.',
+        question: 'Why is "leading by example" considered the most powerful form of leadership?',
+        options: [
+          'Because it means you don\'t have to communicate your expectations',
+          'People are more influenced by what they see you do than what they hear you say',
+          'It allows leaders to avoid giving difficult feedback',
+          'Leading by example only works with younger children',
+        ],
+        correctIndex: 1,
+        reward: 'Ripple Effect Badge',
+      },
+      {
+        id: 'g10-ss-2-q5',
+        spirit: 'Empowerment Spirit',
+        spiritEmoji: '🔥',
+        spiritColor: '#EF4444',
+        narrative:
+          'The final trial shows a throne surrounded by people. Aris says the greatest leaders don\'t create followers\u2014they develop other leaders.',
+        question:
+          'What does it mean to empower others as a leader?',
+        options: [
+          'Making all decisions yourself so others don\'t have to worry',
+          'Delegating all work so you have less responsibility',
+          'Helping team members develop their own skills, confidence, and ability to lead',
+          'Giving people exactly what they want to keep them happy',
+        ],
+        correctIndex: 2,
+        reward: 'Empowerment Torch Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Mantle of True Leadership materializes and asks: Describe what ethical leadership looks like in practice, including how leaders handle moral dilemmas and empower those around them.',
+      answer: [
+        'Ethical leaders act with integrity, applying principles consistently and fairly regardless of personal relationships or pressure.',
+        'When facing moral dilemmas, they weigh the impact on all stakeholders, seek diverse perspectives, and choose the path that upholds their values.',
+        'They empower others by developing people\'s strengths, sharing responsibility, and creating environments where everyone can contribute and grow.',
+      ],
+      reward: 'Sovereign\'s Crucible Leader Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 10 MYP — Quest 3: Volunteering & Giving Back
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g10-socialSkills-3',
+    grade: 10,
+    programme: 'MYP',
+    subject: 'socialSkills',
+    title: 'Volunteering & Giving Back',
+    realmName: 'The Generosity Groves',
+    narrativeWorld:
+      'On the outskirts of the realm lies the Generosity Groves, a magical forest where trees grow only when nourished by acts of service and kindness. Each tree represents a community strengthened by those who give their time and effort. The forest has been thinning, and it is up to you to help it flourish again.',
+    characterTeacher: 'Warden Celeste',
+    teacherEmoji: '🌳',
+    theme: 'Community service, volunteering, social responsibility, and civic engagement',
+    questions: [
+      {
+        id: 'g10-ss-3-q1',
+        spirit: 'Purpose Spirit',
+        spiritEmoji: '🌱',
+        spiritColor: '#059669',
+        narrative:
+          'Warden Celeste shows you the first barren patch of land. She explains that volunteering is most impactful when driven by genuine purpose rather than obligation.',
+        question: 'What is the primary benefit of volunteering for both the individual and the community?',
+        options: [
+          'It only benefits the community; volunteers don\'t gain anything',
+          'Volunteers develop empathy, skills, and connections while the community receives needed support',
+          'It looks good on college applications and that is the main reason to do it',
+          'Volunteering is only meaningful if it involves large-scale projects',
+        ],
+        correctIndex: 1,
+        reward: 'Seed of Purpose Badge',
+      },
+      {
+        id: 'g10-ss-3-q2',
+        spirit: 'Awareness Spirit',
+        spiritEmoji: '👁️',
+        spiritColor: '#6366F1',
+        narrative:
+          'Celeste takes you to a lookout point where you can see needs across the forest\u2014some obvious, others hidden. She says effective service begins with understanding what a community truly needs.',
+        question:
+          'What is the best way to determine how to serve your community effectively?',
+        options: [
+          'Choose whatever volunteer work is easiest and most convenient for you',
+          'Research community needs, talk to local organizations, and identify where your skills can make the most impact',
+          'Only volunteer for causes that are popular on social media',
+          'Wait until someone asks you to help',
+        ],
+        correctIndex: 1,
+        reward: 'Community Vision Badge',
+      },
+      {
+        id: 'g10-ss-3-q3',
+        spirit: 'Sustainability Spirit',
+        spiritEmoji: '♻️',
+        spiritColor: '#14B8A6',
+        narrative:
+          'A grove of young trees is struggling to survive. Celeste explains that one-time acts of service are like a single rainfall\u2014helpful but not enough. Sustained effort creates lasting change.',
+        question: 'Why is sustained, ongoing service more impactful than one-time volunteer events?',
+        options: [
+          'One-time events are just as impactful as ongoing service',
+          'Ongoing service builds deeper relationships, creates lasting change, and addresses root causes rather than symptoms',
+          'It doesn\'t matter how often you volunteer as long as you do it once',
+          'One-time events are actually more impactful because they generate more attention',
+        ],
+        correctIndex: 1,
+        reward: 'Evergreen Badge',
+      },
+      {
+        id: 'g10-ss-3-q4',
+        spirit: 'Dignity Spirit',
+        spiritEmoji: '🤝',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'Celeste introduces you to the forest\'s guardian spirits, who represent the people being served. She emphasizes that service should always preserve the dignity of those you help.',
+        question:
+          'What is the most respectful approach when volunteering to help others?',
+        options: [
+          'Sharing photos of the people you helped on social media without their permission',
+          'Assuming you know what people need without asking them',
+          'Working alongside community members as partners, listening to their perspectives and respecting their autonomy',
+          'Helping in ways that create dependency rather than empowerment',
+        ],
+        correctIndex: 2,
+        reward: 'Dignity Guardian Badge',
+      },
+      {
+        id: 'g10-ss-3-q5',
+        spirit: 'Ripple Spirit',
+        spiritEmoji: '🌊',
+        spiritColor: '#3B82F6',
+        narrative:
+          'As the groves begin to flourish, Celeste shows you how each healthy tree sends seeds to grow new trees elsewhere. She says this is the ripple effect of service\u2014it inspires others to give back too.',
+        question: 'How can one person\'s community service create a broader impact?',
+        options: [
+          'It can\'t; individual efforts are too small to matter',
+          'By inspiring others, creating systemic change, and building a culture of service that multiplies over time',
+          'Only through very large donations of money',
+          'By making sure everyone knows about what you did',
+        ],
+        correctIndex: 1,
+        reward: 'Ripple Maker Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Generosity Groves are in full bloom and ask: Explain how meaningful volunteering goes beyond simple charity, how to serve communities with respect, and how service creates lasting change.',
+      answer: [
+        'Meaningful volunteering starts with understanding genuine community needs and matching your skills to where they can have the most impact.',
+        'Respectful service treats those being helped as equal partners, preserves their dignity, and aims to empower rather than create dependency.',
+        'Lasting change comes from sustained commitment, addressing root causes of problems, and inspiring a ripple effect that motivates others to serve.',
+      ],
+      reward: 'Generosity Groves Warden Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 11 DP — Quest 2: Wellbeing & Balance
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g11-socialSkills-2',
+    grade: 11,
+    programme: 'DP',
+    subject: 'socialSkills',
+    title: 'Wellbeing & Balance',
+    realmName: 'The Equilibrium Sanctum',
+    narrativeWorld:
+      'Floating between the realms of Light and Shadow, the Equilibrium Sanctum is a temple where all forces must be perfectly balanced. Academic ambition, social life, physical health, and inner peace exist as four elemental pillars. When one pillar weakens, the entire sanctum trembles. Your task is to restore harmony before the temple collapses.',
+    characterTeacher: 'Keeper Solace',
+    teacherEmoji: '☯️',
+    theme: 'Mental health, work-life balance, stress management, and holistic wellbeing',
+    questions: [
+      {
+        id: 'g11-ss-2-q1',
+        spirit: 'Holistic Spirit',
+        spiritEmoji: '🌀',
+        spiritColor: '#6366F1',
+        narrative:
+          'Keeper Solace shows you the four pillars of the Sanctum, each representing a dimension of wellbeing. One is crumbling from neglect. She says true wellbeing requires attention to all dimensions.',
+        question: 'Which model best describes holistic wellbeing?',
+        options: [
+          'Wellbeing is solely about physical health and fitness',
+          'A balance of physical, mental, emotional, and social dimensions of health',
+          'Wellbeing means the absence of any stress or challenges',
+          'Academic success is the only true measure of wellbeing',
+        ],
+        correctIndex: 1,
+        reward: 'Holistic Harmony Badge',
+      },
+      {
+        id: 'g11-ss-2-q2',
+        spirit: 'Boundary Spirit',
+        spiritEmoji: '🛡️',
+        spiritColor: '#EF4444',
+        narrative:
+          'The academic pillar is towering over the others, threatening to topple the sanctum. Solace explains that overcommitting to one area of life drains the others.',
+        question:
+          'You are overwhelmed with IB coursework, extracurriculars, and social obligations. What is the most effective approach to restoring balance?',
+        options: [
+          'Push through without rest; sleep is for the weak',
+          'Drop all extracurriculars immediately',
+          'Prioritize commitments, set realistic boundaries, and schedule regular time for rest and activities you enjoy',
+          'Ignore schoolwork and focus only on your social life',
+        ],
+        correctIndex: 2,
+        reward: 'Balance Shield Badge',
+      },
+      {
+        id: 'g11-ss-2-q3',
+        spirit: 'Burnout Spirit',
+        spiritEmoji: '🔥',
+        spiritColor: '#F97316',
+        narrative:
+          'A flickering flame in the sanctum grows dim\u2014the burnout spirit warns that it is close to going out entirely. Solace says recognizing the signs of burnout early is critical.',
+        question: 'What are the early warning signs of burnout?',
+        options: [
+          'Feeling energized and excited about everything in your life',
+          'Chronic exhaustion, cynicism, reduced performance, and feeling detached from activities you once enjoyed',
+          'Occasional tiredness after a long day, which is completely normal',
+          'Being very productive and taking on more responsibilities',
+        ],
+        correctIndex: 1,
+        reward: 'Burnout Awareness Badge',
+      },
+      {
+        id: 'g11-ss-2-q4',
+        spirit: 'Mindfulness Spirit',
+        spiritEmoji: '🧘',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'A still pool of water in the center of the sanctum reflects perfect clarity. Solace says mindfulness practices can anchor you during turbulent times.',
+        question: 'How does mindfulness practice support mental wellbeing?',
+        options: [
+          'It eliminates all negative thoughts permanently',
+          'It helps you become aware of your thoughts and emotions without judgment, reducing stress and improving focus',
+          'It is only effective for people who meditate for hours every day',
+          'It replaces the need for professional mental health support',
+        ],
+        correctIndex: 1,
+        reward: 'Mindful Clarity Badge',
+      },
+      {
+        id: 'g11-ss-2-q5',
+        spirit: 'Help-Seeking Spirit',
+        spiritEmoji: '🆘',
+        spiritColor: '#DC2626',
+        narrative:
+          'The final pillar is social connection. Solace says one of the bravest things anyone can do is ask for help when they are struggling.',
+        question:
+          'When is it important to seek professional help for mental health concerns?',
+        options: [
+          'Only when you are in a severe crisis',
+          'Never; mental health issues should be handled privately',
+          'When feelings of distress persist, interfere with daily life, or feel unmanageable despite using coping strategies',
+          'Only if friends or family tell you to',
+        ],
+        correctIndex: 2,
+        reward: 'Courage to Ask Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The four pillars glow in perfect harmony and ask: Explain how to maintain holistic wellbeing during demanding periods like the IB Diploma Programme, including strategies for preventing burnout and knowing when to seek help.',
+      answer: [
+        'Holistic wellbeing requires intentionally balancing physical health, mental clarity, emotional resilience, and social connection rather than sacrificing one for another.',
+        'Preventing burnout involves setting realistic boundaries, scheduling rest, practicing mindfulness, and recognizing early warning signs like chronic exhaustion and detachment.',
+        'Seeking help is a sign of strength\u2014professional support should be sought when distress persists, coping strategies aren\'t enough, or daily functioning is affected.',
+      ],
+      reward: 'Equilibrium Sanctum Keeper Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 11 DP — Quest 3: Global Citizenship
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g11-socialSkills-3',
+    grade: 11,
+    programme: 'DP',
+    subject: 'socialSkills',
+    title: 'Global Citizenship',
+    realmName: 'The Atlas Nexus',
+    narrativeWorld:
+      'At the convergence of all realms exists the Atlas Nexus, a grand hall where maps of every world overlap and interconnect. Here, the actions of one realm ripple into all others. The Nexus is fading because too many citizens think only of their own corner of the world. You must restore its power by understanding global interconnection.',
+    characterTeacher: 'Navigator Orion',
+    teacherEmoji: '🌐',
+    theme: 'Global awareness, intercultural understanding, sustainability, and civic responsibility',
+    questions: [
+      {
+        id: 'g11-ss-3-q1',
+        spirit: 'Interconnection Spirit',
+        spiritEmoji: '🕸️',
+        spiritColor: '#3B82F6',
+        narrative:
+          'Navigator Orion unfurls a massive map showing glowing threads connecting every realm. He explains that in today\'s world, local actions have global consequences.',
+        question: 'What does it mean to be a global citizen?',
+        options: [
+          'Having a passport that allows travel to many countries',
+          'Understanding that you are part of an interconnected world and taking responsibility for contributing to the wellbeing of people and the planet',
+          'Speaking multiple languages fluently',
+          'Preferring global culture over your own local traditions',
+        ],
+        correctIndex: 1,
+        reward: 'Interconnection Web Badge',
+      },
+      {
+        id: 'g11-ss-3-q2',
+        spirit: 'Justice Spirit',
+        spiritEmoji: '⚖️',
+        spiritColor: '#EF4444',
+        narrative:
+          'A portion of the Nexus map shows vast inequality\u2014some realms overflow with resources while others have barely enough. Orion says understanding global justice is fundamental to citizenship.',
+        question:
+          'Why is awareness of global inequality important for a global citizen?',
+        options: [
+          'It is not important; each country should only focus on its own problems',
+          'Awareness helps us understand systemic causes, advocate for fair policies, and make ethical choices as consumers and citizens',
+          'Only economists and politicians need to care about inequality',
+          'Awareness just makes people feel guilty without accomplishing anything',
+        ],
+        correctIndex: 1,
+        reward: 'Justice Scales Badge',
+      },
+      {
+        id: 'g11-ss-3-q3',
+        spirit: 'Sustainability Spirit',
+        spiritEmoji: '🌿',
+        spiritColor: '#10B981',
+        narrative:
+          'Part of the Nexus map shows ecosystems in distress. Orion explains that environmental sustainability is a shared global responsibility that transcends borders.',
+        question:
+          'How does the concept of sustainable development connect individual actions to global impact?',
+        options: [
+          'Individual actions are too small to matter for global sustainability',
+          'Sustainable development means stopping all economic growth',
+          'Individual choices about consumption, energy use, and advocacy collectively shape global environmental and social outcomes',
+          'Sustainability is only about recycling and using less plastic',
+        ],
+        correctIndex: 2,
+        reward: 'Sustainability Guardian Badge',
+      },
+      {
+        id: 'g11-ss-3-q4',
+        spirit: 'Dialogue Spirit',
+        spiritEmoji: '🗣️',
+        spiritColor: '#F59E0B',
+        narrative:
+          'Representatives from different realms gather but struggle to communicate. Orion says intercultural dialogue\u2014listening across differences\u2014is essential for solving global challenges.',
+        question:
+          'What is the most important skill for engaging in productive intercultural dialogue?',
+        options: [
+          'Convincing others that your cultural perspective is correct',
+          'Avoiding topics where cultural values might differ',
+          'Active listening with genuine curiosity, humility, and willingness to examine your own cultural assumptions',
+          'Learning every language spoken by the people you interact with',
+        ],
+        correctIndex: 2,
+        reward: 'Dialogue Bridge Badge',
+      },
+      {
+        id: 'g11-ss-3-q5',
+        spirit: 'Action Spirit',
+        spiritEmoji: '✊',
+        spiritColor: '#7C3AED',
+        narrative:
+          'The Nexus is regaining its glow. Orion says the final step is understanding that awareness without action is incomplete. Global citizens must translate understanding into meaningful action.',
+        question:
+          'Which approach best represents taking meaningful action as a global citizen?',
+        options: [
+          'Sharing posts about global issues on social media and leaving it at that',
+          'Assuming that governments and large organizations will solve all problems',
+          'Educating yourself on issues, supporting ethical organizations, advocating for change, and making informed choices in your daily life',
+          'Focusing only on problems in your immediate neighborhood',
+        ],
+        correctIndex: 2,
+        reward: 'Citizen of Action Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Atlas Nexus shines at full brilliance and asks: Explain what global citizenship means in practice, how intercultural understanding contributes to solving global challenges, and what role young people play in shaping a more just and sustainable world.',
+      answer: [
+        'Global citizenship means recognizing our interconnectedness, understanding systemic issues like inequality and environmental degradation, and taking responsibility for our impact.',
+        'Intercultural understanding builds empathy and collaboration across differences, which is essential for addressing challenges that no single culture or nation can solve alone.',
+        'Young people play a vital role by educating themselves, challenging unjust systems, making ethical choices, and using their energy and creativity to advocate for sustainable change.',
+      ],
+      reward: 'Atlas Nexus Navigator Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 12 DP — Quest 2: Financial Literacy
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g12-socialSkills-2',
+    grade: 12,
+    programme: 'DP',
+    subject: 'socialSkills',
+    title: 'Financial Literacy',
+    realmName: 'The Vault of Futures',
+    narrativeWorld:
+      'Deep beneath the capital city lies the Vault of Futures, an enchanted treasury where gold coins represent not just money but the choices you make with it. Every financial decision opens a new chamber revealing its long-term consequences. The Vault\'s guardian tests whether you have the wisdom to manage resources responsibly as you prepare for independence.',
+    characterTeacher: 'Treasurer Aurum',
+    teacherEmoji: '💰',
+    theme: 'Personal finance, budgeting, saving, investing, and financial responsibility',
+    questions: [
+      {
+        id: 'g12-ss-2-q1',
+        spirit: 'Budget Spirit',
+        spiritEmoji: '📊',
+        spiritColor: '#10B981',
+        narrative:
+          'Treasurer Aurum opens the first chamber, which shows streams of gold flowing in and out. She says understanding where money comes from and where it goes is the foundation of financial literacy.',
+        question: 'What is the primary purpose of creating a personal budget?',
+        options: [
+          'To restrict yourself from ever spending money on things you enjoy',
+          'To track income and expenses so you can make intentional choices about how to use your money',
+          'Budgets are only necessary for people with low incomes',
+          'To save every single coin and never spend anything',
+        ],
+        correctIndex: 1,
+        reward: 'Budget Master Badge',
+      },
+      {
+        id: 'g12-ss-2-q2',
+        spirit: 'Savings Spirit',
+        spiritEmoji: '🏦',
+        spiritColor: '#3B82F6',
+        narrative:
+          'The second chamber shows two paths: one where gold is spent immediately and one where some is stored and grows over time. Aurum explains the concept of paying yourself first.',
+        question: 'Why do financial experts recommend building an emergency fund?',
+        options: [
+          'Emergency funds are unnecessary if you have a steady income',
+          'An emergency fund provides a financial safety net for unexpected expenses, reducing the need to take on debt',
+          'You should only save money after paying for all wants and luxuries',
+          'Emergency funds are only important for older adults',
+        ],
+        correctIndex: 1,
+        reward: 'Safety Net Badge',
+      },
+      {
+        id: 'g12-ss-2-q3',
+        spirit: 'Compound Spirit',
+        spiritEmoji: '📈',
+        spiritColor: '#7C3AED',
+        narrative:
+          'A magical tree in the third chamber grows golden fruit that produces more trees, which produce more fruit. Aurum calls this the power of compound interest\u2014money growing on top of money.',
+        question: 'Why is starting to save and invest early in life so advantageous?',
+        options: [
+          'It doesn\'t matter when you start; the total amount saved is all that counts',
+          'Compound interest allows your money to grow exponentially over time, so starting early gives your investments more time to multiply',
+          'Young people get higher interest rates than older people',
+          'Early investing is too risky and should be avoided until you are older',
+        ],
+        correctIndex: 1,
+        reward: 'Compound Growth Badge',
+      },
+      {
+        id: 'g12-ss-2-q4',
+        spirit: 'Debt Spirit',
+        spiritEmoji: '⛓️',
+        spiritColor: '#DC2626',
+        narrative:
+          'A chamber filled with chains represents debt. Aurum says debt is a tool that can build or destroy\u2014understanding the difference between good and bad debt is critical.',
+        question: 'What distinguishes responsible use of credit from harmful debt?',
+        options: [
+          'All debt is bad and should be avoided completely',
+          'Responsible credit use involves borrowing within your means for value-building purposes and paying on time, while harmful debt comes from overspending on depreciating items with high-interest credit',
+          'Credit cards should be maxed out since the minimum payment is always affordable',
+          'It doesn\'t matter how much debt you have as long as you are earning money',
+        ],
+        correctIndex: 1,
+        reward: 'Credit Wisdom Badge',
+      },
+      {
+        id: 'g12-ss-2-q5',
+        spirit: 'Discernment Spirit',
+        spiritEmoji: '🧐',
+        spiritColor: '#F59E0B',
+        narrative:
+          'The final chamber is filled with illusions designed to trick you into bad financial decisions. Aurum says consumer awareness and critical thinking are your best defenses.',
+        question:
+          'A product is advertised as "70% off\u2014today only!" and you didn\'t plan to buy it. What is the most financially literate response?',
+        options: [
+          'Buy it immediately; 70% off is too good a deal to miss',
+          'Buy several since you\'re saving so much money',
+          'Evaluate whether you actually need it, research the true value, and recognize that urgency tactics are a marketing strategy to encourage impulsive spending',
+          'Ignore all sales forever because they are always scams',
+        ],
+        correctIndex: 2,
+        reward: 'Consumer Wisdom Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Vault of Futures reveals its deepest chamber and asks: As you prepare for life after school, explain the key financial principles every young adult should understand, including budgeting, saving, and managing debt wisely.',
+      answer: [
+        'Budgeting is the foundation\u2014tracking income and expenses allows you to make intentional choices, prioritize needs, and allocate money toward goals.',
+        'Saving early and consistently, especially with compound interest, builds long-term wealth and provides a safety net for emergencies.',
+        'Managing debt wisely means understanding the difference between value-building and harmful debt, using credit responsibly, and being a critical consumer who resists impulsive spending.',
+      ],
+      reward: 'Vault of Futures Master Certificate',
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // GRADE 12 DP — Quest 3: Resilience & Life Transitions
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: 'g12-socialSkills-3',
+    grade: 12,
+    programme: 'DP',
+    subject: 'socialSkills',
+    title: 'Resilience & Life Transitions',
+    realmName: 'The Threshold of New Dawns',
+    narrativeWorld:
+      'At the very edge of the known realm stands the Threshold of New Dawns, a shimmering gateway between the world you know and the vast unknown beyond. Every graduating adventurer must pass through this gateway, leaving behind the familiar and stepping into uncertainty. The Threshold tests your resilience, adaptability, and readiness for the great transitions ahead.',
+    characterTeacher: 'Elder Phoenix',
+    teacherEmoji: '🔥',
+    theme: 'Resilience, adaptability, navigating transitions, and preparing for adulthood',
+    questions: [
+      {
+        id: 'g12-ss-3-q1',
+        spirit: 'Resilience Spirit',
+        spiritEmoji: '🏗️',
+        spiritColor: '#6366F1',
+        narrative:
+          'Elder Phoenix stands before a tower that has been destroyed and rebuilt many times, each time stronger. She says resilience is not about avoiding hardship but about how you rebuild afterward.',
+        question: 'What does psychological resilience actually mean?',
+        options: [
+          'Never experiencing stress, sadness, or difficulty',
+          'Being tough enough that nothing affects you emotionally',
+          'The ability to adapt and recover from adversity, trauma, or significant stress while maintaining your mental health',
+          'Ignoring problems until they go away on their own',
+        ],
+        correctIndex: 2,
+        reward: 'Resilient Foundation Badge',
+      },
+      {
+        id: 'g12-ss-3-q2',
+        spirit: 'Adaptability Spirit',
+        spiritEmoji: '🦎',
+        spiritColor: '#10B981',
+        narrative:
+          'The path beyond the Threshold constantly shifts\u2014solid ground becomes water, forests become deserts. Phoenix says those who thrive in life\'s transitions are those who can adapt without losing their core identity.',
+        question:
+          'You are about to graduate and everything in your life is changing\u2014friends, routines, environment. What is the healthiest approach to this major transition?',
+        options: [
+          'Try to keep everything exactly the same as it was',
+          'Acknowledge the mixed emotions, maintain key relationships, build new connections, and embrace the growth that comes with change',
+          'Cut ties with your old life completely to avoid feeling sad',
+          'Wait until everything is settled before taking any action',
+        ],
+        correctIndex: 1,
+        reward: 'Adaptability Badge',
+      },
+      {
+        id: 'g12-ss-3-q3',
+        spirit: 'Identity Spirit',
+        spiritEmoji: '🧭',
+        spiritColor: '#F59E0B',
+        narrative:
+          'A compass spins wildly at the Threshold. Phoenix says that during life transitions, many people feel lost as their sense of identity shifts. Knowing your core values anchors you during change.',
+        question:
+          'Why is understanding your personal values especially important during major life transitions?',
+        options: [
+          'Values are not important; just go with the flow',
+          'Your values change completely with every transition, so there is no point anchoring to them',
+          'Core values provide a stable foundation for making decisions when external circumstances are uncertain and changing',
+          'Values only matter in professional settings, not personal life',
+        ],
+        correctIndex: 2,
+        reward: 'True North Badge',
+      },
+      {
+        id: 'g12-ss-3-q4',
+        spirit: 'Support Spirit',
+        spiritEmoji: '🤝',
+        spiritColor: '#EC4899',
+        narrative:
+          'At the Threshold, former travelers have left messages of encouragement carved into the gateway. Phoenix says no one navigates life\'s greatest transitions alone\u2014social support is a key factor in resilience.',
+        question:
+          'Research on resilience consistently shows that which factor is among the most important for navigating difficult transitions?',
+        options: [
+          'Having a large amount of money saved up',
+          'Being completely self-reliant and not needing anyone',
+          'Having strong social connections and at least one trusted person you can turn to for support',
+          'Avoiding the transition entirely by staying in your comfort zone',
+        ],
+        correctIndex: 2,
+        reward: 'Connection Anchor Badge',
+      },
+      {
+        id: 'g12-ss-3-q5',
+        spirit: 'Growth Spirit',
+        spiritEmoji: '🌅',
+        spiritColor: '#8B5CF6',
+        narrative:
+          'The gateway begins to glow with the light of a new dawn. Phoenix says the concept of post-traumatic growth shows that difficult experiences can lead to profound personal development.',
+        question:
+          'What is post-traumatic growth, and what does it tell us about facing life\'s challenges?',
+        options: [
+          'It means trauma is actually a good thing and should be sought out',
+          'It is the experience of positive psychological change that can emerge from struggling with highly challenging life circumstances',
+          'It means everyone automatically grows from difficult experiences without any effort',
+          'It is a myth; difficult experiences only cause harm',
+        ],
+        correctIndex: 1,
+        reward: 'New Dawn Badge',
+      },
+    ],
+    bossChallenge: {
+      question:
+        'The Threshold of New Dawns opens fully, revealing the brilliant future beyond, and asks: As you prepare to step into adulthood, explain how resilience, adaptability, and strong social connections will help you navigate the transitions and challenges ahead.',
+      answer: [
+        'Resilience gives you the ability to recover from setbacks by drawing on coping skills, self-awareness, and the understanding that struggle can lead to growth.',
+        'Adaptability allows you to embrace change while staying anchored to your core values, adjusting your strategies without losing your sense of identity.',
+        'Strong social connections provide essential emotional support, diverse perspectives, and a sense of belonging that sustains you through uncertainty and helps you thrive in new environments.',
+      ],
+      reward: 'Threshold of New Dawns Graduate Certificate',
+    },
+  },
 ];
 
 export default SOCIAL_SKILLS_QUESTS;
