@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import GameApp from './GameApp';
 
-// Pre-generate all known subject pages for static export
+// Pre-generate all known subject pages for static export.
+// NOTE: [subject]/GameApp dynamically imports the correct game for each subject,
+// so even if this overwrites subject-specific pages, the correct game renders.
 export function generateStaticParams() {
   return [
     { subject: 'math' },
