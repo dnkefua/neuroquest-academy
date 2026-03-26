@@ -52,9 +52,10 @@ export default function QuestMapScene() {
     }
   }, [urlGrade, currentGrade, setGrade]);
 
-  // Get quests for current grade
-  const quests = getQuests(currentGrade);
-  const gradeInfo = GRADE_NAMES[currentGrade] || { programme: 'IB', topic: 'English' };
+  // Use urlGrade directly so quests are correct on first render (no flash of grade 6)
+  const activeGrade = hasQuestsForGrade(urlGrade) ? urlGrade : currentGrade;
+  const quests = getQuests(activeGrade);
+  const gradeInfo = GRADE_NAMES[activeGrade] || { programme: 'IB', topic: 'English' };
 
   // A quest is unlocked if it's the first one, or the previous one is completed
   function isUnlocked(index: number) {
