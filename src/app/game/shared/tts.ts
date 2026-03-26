@@ -78,8 +78,10 @@ class TTSEngine {
     // Try Cloud TTS first if enabled and within rate limit
     if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
       this._speakCloud(text).catch(() => {
-        // Fall back to browser TTS
-        this._speakBrowser(text, rate, pitch);
+        // Only fall back if we're still supposed to speak (not stopped)
+        if (this._enabled && !this._speaking) {
+          this._speakBrowser(text, rate, pitch);
+        }
       });
     } else {
       // Use browser TTS
@@ -163,13 +165,22 @@ class TTSEngine {
       await this._speakCloud(text);
       setTimeout(callback, 350);
     } catch {
-      this._speakBrowserWithCallback(text, callback, fallbackDelay);
+      // Only fall back if we're still supposed to speak (not stopped)
+      if (this._enabled && !this._speaking) {
+        this._speakBrowserWithCallback(text, callback, fallbackDelay);
+      }
     }
   }
 
   private _playAudio(dataUrl: string): Promise<void> {
     return new Promise((resolve, reject) => {
+      // Stop any previous speech/audio before playing new audio
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+
       const audio = new Audio(dataUrl);
+      audio.volume = 1;
 
       audio.onplay = () => {
         this._speaking = true;

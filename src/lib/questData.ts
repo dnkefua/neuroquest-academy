@@ -166,16 +166,11 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
 
 /**
  * Convert curriculum quest to game quest format
- * Creates 4 quests from each curriculum quest, splitting questions across them
+ * Creates 1 quest per curriculum quest with all 5 questions
  */
 export function toGameQuests(quest: CurriculumQuest): GameQuest[] {
   const theme = SUBJECT_THEMES[quest.subject];
   const questions = quest.questions;
-
-  // Split 5 questions into 4 quests: [2, 1, 1, 1]
-  // Quest 1 gets 2 questions (intro), others get 1 each
-  const questionSplits = [2, 1, 1, 1];
-  let questionIndex = 0;
 
   const locationNames: Record<CurriculumSubject, string[]> = {
     math: ['Number Caves', 'Equation Village', 'Calculus City', 'Infinity Tower', "Final Boss Arena"],
@@ -185,36 +180,30 @@ export function toGameQuests(quest: CurriculumQuest): GameQuest[] {
     socialSkills: ['Friendship Corner', 'Community Center', 'Understanding Hub', 'Leadership Tower', 'Harmony Hall'],
   };
 
-  return questionSplits.map((count, i): GameQuest => {
-    const questQuestions = questions.slice(questionIndex, questionIndex + count);
-    questionIndex += count;
+  // Create a single quest with all 5 questions
+  const difficulty: Difficulty = 'Intermediate';
+  const locationType: LocationType = 'village';
+  const color = theme.colors[0];
 
-    const difficulty = DIFFICULTIES[Math.min(i, 3)];
-    const locationType = LOCATION_TYPES[Math.min(i, 4)];
-    const color = theme.colors[i % theme.colors.length];
-
-    return {
-      id: `${quest.id}-q${i + 1}`,
-      grade: quest.grade,
-      programme: quest.programme,
-      subject: quest.subject,
-      title: quest.title,
-      subtitle: i === 0 ? quest.theme : `Part ${i + 1}: ${quest.theme}`,
-      emoji: i === 3 ? '🏆' : theme.emoji,
-      locationName: locationNames[quest.subject][i] || quest.realmName,
-      locationType,
-      color,
-      glowColor: color + '80',
-      difficulty,
-      briefingTitle: i === 0 ? quest.title : `${quest.title} - Part ${i + 1}`,
-      briefingDescription: i === 0
-        ? quest.narrativeWorld.slice(0, 100) + '...'
-        : `Continue your journey through ${quest.realmName}!`,
-      teacherName: quest.characterTeacher,
-      teacherEmoji: quest.teacherEmoji,
-      questions: questQuestions.map((q, idx) => toGameQuestion(q, idx)),
-    };
-  });
+  return [{
+    id: quest.id,
+    grade: quest.grade,
+    programme: quest.programme,
+    subject: quest.subject,
+    title: quest.title,
+    subtitle: quest.theme,
+    emoji: theme.emoji,
+    locationName: locationNames[quest.subject][0] || quest.realmName,
+    locationType,
+    color,
+    glowColor: color + '80',
+    difficulty,
+    briefingTitle: quest.title,
+    briefingDescription: quest.narrativeWorld.slice(0, 100) + '...',
+    teacherName: quest.characterTeacher,
+    teacherEmoji: quest.teacherEmoji,
+    questions: questions.map((q, idx) => toGameQuestion(q, idx)),
+  }];
 }
 
 /**
@@ -229,11 +218,11 @@ export function getGameQuests(grade: number, subject: CurriculumSubject): GameQu
  * Get a specific game quest by ID
  */
 export function getGameQuestById(id: string): GameQuest | undefined {
-  // Parse ID like "g6-math-q1"
-  const match = id.match(/^g(\d+)-(math|science|english|social|socialSkills)-q(\d+)$/);
+  // Parse ID like "g6-math" or "g6-math-boss"
+  const match = id.match(/^g(\d+)-(math|science|english|social|socialSkills)(-boss)?$/);
   if (!match) return undefined;
 
-  const [, gradeStr, subject, questNum] = match;
+  const [, gradeStr, subject] = match;
   const grade = parseInt(gradeStr, 10);
   const quests = getGameQuests(grade, subject as CurriculumSubject);
   return quests.find((q) => q.id === id);
@@ -243,17 +232,18 @@ export function getGameQuestById(id: string): GameQuest | undefined {
  * Get the next quest in sequence
  */
 export function getNextGameQuest(currentId: string): GameQuest | null {
-  const match = currentId.match(/^g(\d+)-(math|science|english|social|socialSkills)-q(\d+)$/);
+  const match = currentId.match(/^g(\d+)-(math|science|english|social|socialSkills)(-boss)?$/);
   if (!match) return null;
 
-  const [, gradeStr, subject, questNum] = match;
+  const [, gradeStr, subject] = match;
   const grade = parseInt(gradeStr, 10);
-  const questNumber = parseInt(questNum, 10);
-
   const quests = getGameQuests(grade, subject as CurriculumSubject);
-  const nextQuest = quests.find((q) => q.id === `${currentId.slice(0, -2)}-q${questNumber + 1}`);
 
-  return nextQuest || null;
+  // Find current quest index and return next one
+  const currentIndex = quests.findIndex((q) => q.id === currentId);
+  if (currentIndex === -1 || currentIndex === quests.length - 1) return null;
+
+  return quests[currentIndex + 1] || null;
 }
 
 // ── Export counts for UI ────────────────────────────────────────────────────────
