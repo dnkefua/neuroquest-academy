@@ -43,12 +43,15 @@ export interface GameQuestion {
   clue: {
     title: string;
     example: string;
-    visual?: 'numberLine' | 'text' | 'diagram';
+    visual?: 'numberLine' | 'text' | 'diagram' | '3d-simulation';
     cost: number;
     // Number line visualization values (for integer operations, etc.)
     startValue?: number;
     moveValue?: number;
     moveValue2?: number;
+    // Optional simulation parameters
+    simulationType?: 'water-cycle' | 'circuit' | 'fraction' | 'force' | 'gravity' | 'number-line';
+    simulationParams?: Record<string, unknown>;
   };
 }
 

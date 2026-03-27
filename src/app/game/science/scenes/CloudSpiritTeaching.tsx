@@ -1,27 +1,36 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScienceStore } from '../store/gameStore';
-import { CLOUD_PANELS } from '../data/scienceData';
-import WaterCycleDiagram from '../components/ui/WaterCycleDiagram';
-import type { WaterStage } from '../store/gameStore';
+import { getGameQuestById } from '@/lib/questData';
+import { generateTeachingPanels, type TeachingPanel } from '../utils/teachingContent';
+import TopicVisualizer from '../components/visualizers/TopicVisualizer';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS } from '../../shared/tts';
 
 export default function CloudSpiritTeaching() {
   const setScene = useScienceStore(s => s.setScene);
+  const currentQuestId = useScienceStore(s => s.currentQuestId);
+  const currentGrade = useScienceStore(s => s.currentGrade);
   const [panelIndex, setPanelIndex] = useState(0);
-  const panel = CLOUD_PANELS[panelIndex];
-  const isLast = panelIndex === CLOUD_PANELS.length - 1;
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [musicOn, setMusicOn] = useState(true);
+
+  // Get quest and generate panels dynamically
+  const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
+  const panels = useMemo(() => generateTeachingPanels(quest), [quest]);
+
+  const panel = panels[panelIndex];
+  const isLast = panelIndex === panels.length - 1;
 
   function toggleTTS() { setTtsOn(gameTTS.toggle()); }
   function toggleMusic() { setMusicOn(gameAudio.toggle()); }
 
   // Read panel content aloud when it changes
   useEffect(() => {
-    gameTTS.speak(`${panel.title}. ${panel.content}`);
+    if (panel) {
+      gameTTS.speak(`${panel.title}. ${panel.content}`);
+    }
   }, [panelIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function go(dir: 1 | -1) {
@@ -29,18 +38,26 @@ export default function CloudSpiritTeaching() {
     setPanelIndex(i => i + dir);
   }
 
+  if (!panel) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(180deg, #0c1a2e 0%, #0d2137 50%, #0a1a0d 100%)' }}>
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-8"
       style={{ background: 'linear-gradient(180deg, #0c1a2e 0%, #0d2137 50%, #0a1a0d 100%)' }}>
 
-      {/* Animated background clouds */}
+      {/* Animated background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {['-20%', '15%', '50%', '75%'].map((left, i) => (
           <motion.div key={i} className="absolute text-5xl opacity-10"
             style={{ top: `${10 + i * 18}%`, left }}
             animate={{ x: [0, 30, 0] }}
             transition={{ duration: 8 + i * 2, repeat: Infinity, ease: 'easeInOut' }}>
-            ☁️
+            {quest?.teacherEmoji || '🔬'}
           </motion.div>
         ))}
       </div>
@@ -61,7 +78,7 @@ export default function CloudSpiritTeaching() {
 
       {/* Panel progress dots */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {CLOUD_PANELS.map((_, i) => (
+        {panels.map((_, i) => (
           <div key={i} className="w-2.5 h-2.5 rounded-full transition-all duration-300"
             style={{ background: i === panelIndex ? panel.color : 'rgba(255,255,255,0.18)' }} />
         ))}
@@ -103,73 +120,14 @@ export default function CloudSpiritTeaching() {
               {panel.content}
             </p>
 
-            {/* Water cycle diagram for relevant panels */}
-            {(panel.visual === 'cycle_diagram' || panel.visual === 'full_cycle') && (
+            {/* Topic visualizer */}
+            {panel.visual && (
               <div className="rounded-2xl p-3 mb-2 flex justify-center"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <WaterCycleDiagram activeStage={(panel.highlightStage as WaterStage) ?? 'all'} />
-              </div>
-            )}
-
-            {/* Stage-specific visual */}
-            {panel.visual && panel.visual !== 'cycle_diagram' && panel.visual !== 'full_cycle' && (
-              <div className="rounded-2xl p-4 mb-2 text-center"
-                style={{ background: `${panel.color}12`, border: `1px solid ${panel.color}30` }}>
-                {panel.visual === 'evaporation' && (
-                  <div>
-                    <div className="text-2xl mb-2">🌊 → 💨 → ☁️</div>
-                    <p className="text-xs" style={{ color: panel.color }}>
-                      Liquid water → Water vapor (invisible gas) → Rises into sky
-                    </p>
-                    <div className="flex justify-center gap-1 mt-2">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <motion.span key={i} className="text-sm"
-                          animate={{ y: [0, -20, 0], opacity: [0.8, 0, 0.8] }}
-                          transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}>
-                          💧
-                        </motion.span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {panel.visual === 'condensation' && (
-                  <div>
-                    <div className="text-2xl mb-2">💨 → ❄️ → ☁️</div>
-                    <p className="text-xs" style={{ color: panel.color }}>
-                      Vapor meets cold air → cools → forms tiny droplets → clouds!
-                    </p>
-                    <motion.div className="text-4xl mt-2"
-                      animate={{ scale: [0.8, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }}>
-                      ☁️
-                    </motion.div>
-                  </div>
-                )}
-                {panel.visual === 'precipitation' && (
-                  <div>
-                    <div className="text-2xl mb-2">🌧️ ❄️ 🌨️</div>
-                    <p className="text-xs" style={{ color: panel.color }}>
-                      Too heavy to float → falls as rain, snow, sleet, or hail
-                    </p>
-                    <div className="flex justify-center gap-2 mt-2">
-                      {Array.from({ length: 7 }).map((_, i) => (
-                        <motion.span key={i} className="text-base"
-                          animate={{ y: [0, 30], opacity: [1, 0] }}
-                          transition={{ duration: 1.2, delay: (i * 0.17) % 1.2, repeat: Infinity }}>
-                          💧
-                        </motion.span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {panel.visual === 'collection' && (
-                  <div>
-                    <div className="text-2xl mb-2">🏞️ 🌊 🏔️</div>
-                    <p className="text-xs" style={{ color: panel.color }}>
-                      Rivers, lakes, oceans, groundwater — all waiting for the sun
-                    </p>
-                    <div className="text-3xl mt-2">🌊</div>
-                  </div>
-                )}
+                <TopicVisualizer
+                  questTitle={quest?.title || 'Science'}
+                  highlightStage={panel.highlightStage}
+                />
               </div>
             )}
           </div>
@@ -189,8 +147,13 @@ export default function CloudSpiritTeaching() {
           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
           className="px-8 py-3 rounded-2xl font-black text-black transition-all"
           style={{ background: `linear-gradient(135deg, ${panel.color}, ${panel.color}CC)` }}>
-          {isLast ? '🧪 Face the Cloud Spirits!' : 'Next →'}
+          {isLast ? '🧪 Take the Quiz!' : 'Next →'}
         </motion.button>
+      </div>
+
+      {/* Quest info */}
+      <div className="absolute bottom-4 left-4 text-xs text-gray-500 z-10">
+        {quest?.title} • Grade {currentGrade}
       </div>
     </div>
   );

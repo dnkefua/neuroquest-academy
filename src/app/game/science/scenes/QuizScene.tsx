@@ -1,16 +1,21 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScienceStore } from '../store/gameStore';
+import { getGameQuestById } from '@/lib/questData';
 import ScienceClueBox from '../components/ui/ClueBox';
 import VialCounter from '../components/ui/VialCounter';
-import WaterCycleDiagram from '../components/ui/WaterCycleDiagram';
+import TopicVisualizer from '../components/visualizers/TopicVisualizer';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS, useTTSCleanup } from '../../shared/tts';
 
 export default function ScienceQuizScene() {
-  const { questions, currentQuestion, score, vialsCollected, answerQuestion, collectVial, nextQuestion } = useScienceStore();
+  const { questions, currentQuestion, score, vialsCollected, currentQuestId, currentGrade, answerQuestion, collectVial, nextQuestion } = useScienceStore();
   const q = questions[currentQuestion];
+
+  // Get quest title for topic visualization
+  const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
+  const questTitle = quest?.title || 'Science';
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
@@ -96,10 +101,10 @@ export default function ScienceQuizScene() {
         </div>
       </motion.div>
 
-      {/* Water cycle diagram */}
+      {/* Topic visualizer */}
       <div className="w-full max-w-xl mb-3 rounded-2xl px-4 py-2"
         style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(56,189,248,0.1)' }}>
-        <WaterCycleDiagram activeStage={q.activeStage} />
+        <TopicVisualizer questTitle={questTitle} />
       </div>
 
       {/* Question card */}

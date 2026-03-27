@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import WaterCycleDiagram from './WaterCycleDiagram';
+import TopicVisualizer from '../visualizers/TopicVisualizer';
 import type { ScienceQuestion } from '../../store/gameStore';
 import { useScienceStore } from '../../store/gameStore';
+import { getGameQuestById } from '@/lib/questData';
 import { gameAudio } from '../../../shared/audio';
 import { gameTTS } from '../../../shared/tts';
 
@@ -12,8 +13,12 @@ export default function ScienceClueBox({ question, questionIndex }: {
   questionIndex: number;
 }) {
   const [open, setOpen] = useState(false);
-  const { clueUsed, openClue } = useScienceStore();
+  const { clueUsed, openClue, currentQuestId } = useScienceStore();
   const used = clueUsed[questionIndex];
+
+  // Get quest title for topic visualization
+  const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
+  const questTitle = quest?.title || 'Science';
 
   function handleOpen() {
     if (!used) openClue(questionIndex);
@@ -66,9 +71,9 @@ export default function ScienceClueBox({ question, questionIndex }: {
               </h3>
               <div className="w-full h-px bg-teal-700/40 my-4" />
 
-              {/* Water cycle diagram */}
+              {/* Topic visualizer */}
               <div className="flex justify-center mb-4">
-                <WaterCycleDiagram activeStage={question.clue.highlightStage} />
+                <TopicVisualizer questTitle={questTitle} highlightStage={question.clue.highlightStage} />
               </div>
 
               <p className="text-sm text-teal-100 leading-relaxed whitespace-pre-line mb-5 text-center"

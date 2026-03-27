@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
-export type ScienceScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'CLOUD_TEACHING' | 'QUIZ' | 'VICTORY';
+export type ScienceScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'CLOUD_TEACHING' | 'SIMULATION' | 'QUIZ' | 'VICTORY';
 export type WaterStage = 'evaporation' | 'condensation' | 'precipitation' | 'collection' | 'all';
 
 export interface ScienceQuestion {
@@ -15,12 +15,14 @@ export interface ScienceQuestion {
   question: string;
   options: string[];
   correct: number;
-  activeStage: WaterStage;
+  activeStage?: string; // Optional, used for topic-specific highlighting
   reward: string;
   clue: {
     title: string;
     example: string;
-    highlightStage: WaterStage;
+    highlightStage?: string; // Optional topic-specific stage
+    explanation?: string;
+    simulationType?: 'water-cycle' | 'circuit' | 'fraction' | 'force' | 'gravity' | 'number-line';
   };
 }
 
@@ -79,12 +81,12 @@ function toScienceQuestion(q: GameQuest['questions'][0], index: number): Science
     question: q.question,
     options: q.options,
     correct: q.correct,
-    activeStage: 'all' as WaterStage,
+    activeStage: 'all', // Generic, can be topic-specific
     reward: `Vial ${index + 1} 💧`,
     clue: {
       title: q.clue.title,
       example: q.clue.example,
-      highlightStage: 'all' as WaterStage,
+      highlightStage: 'all', // Generic, can be topic-specific
     },
   };
 }
