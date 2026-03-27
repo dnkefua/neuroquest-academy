@@ -17,7 +17,7 @@ export default function CloudSpiritTeaching() {
   const [musicOn, setMusicOn] = useState(true);
 
   // Get quest and generate panels dynamically
-  const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
+  const quest = useMemo(() => getGameQuestById(currentQuestId) || null, [currentQuestId]);
   const panels = useMemo(() => generateTeachingPanels(quest), [quest]);
 
   const panel = panels[panelIndex];
