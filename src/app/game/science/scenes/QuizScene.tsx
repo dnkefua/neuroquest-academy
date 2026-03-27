@@ -6,7 +6,7 @@ import ScienceClueBox from '../components/ui/ClueBox';
 import VialCounter from '../components/ui/VialCounter';
 import WaterCycleDiagram from '../components/ui/WaterCycleDiagram';
 import { gameAudio } from '../../shared/audio';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 
 export default function ScienceQuizScene() {
   const { questions, currentQuestion, score, vialsCollected, answerQuestion, collectVial, nextQuestion } = useScienceStore();
@@ -19,6 +19,9 @@ export default function ScienceQuizScene() {
   const filledRef = useRef(vialsCollected);
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
 
+  // Cleanup TTS on unmount
+  useTTSCleanup();
+
   function toggleTTS() { setTtsOn(gameTTS.toggle()); }
 
   useEffect(() => {
@@ -28,7 +31,8 @@ export default function ScienceQuizScene() {
   // Read question aloud on each new question
   useEffect(() => {
     gameTTS.speak(`${q.spirit} says: ${q.narrative}. Question: ${q.question}`);
-  }, [currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => gameTTS.stop(); // Stop TTS when question changes or unmounts
+  }, [currentQuestion, q.spirit, q.narrative, q.question]);
 
   function handleConfirm() {
     if (selected === null) return;

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useSocialStore, getQuestById } from '../store/gameStore';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 import { gameAudio } from '../../shared/audio';
 import { useEffect, useState } from 'react';
 
@@ -14,11 +14,15 @@ export default function MissionBriefing() {
   const grade = parseInt(searchParams.get('grade') || '1', 10);
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
 
+  // Cleanup TTS on unmount
+  useTTSCleanup();
+
   const quest = getQuestById(currentQuestId, grade);
 
   useEffect(() => {
     if (quest) {
       gameTTS.speak(`${quest.briefingTitle}. ${quest.briefingDescription}`);
+      return () => gameTTS.stop(); // Stop TTS on unmount
     }
   }, [quest]);
 

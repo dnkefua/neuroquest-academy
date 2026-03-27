@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getQuestById } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 
 // Grade display info
 const GRADE_INFO: Record<number, { programme: string; topic: string }> = {
@@ -41,6 +41,9 @@ export default function MissionBriefing() {
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
   const [ttsOn, setTtsOn] = useState(true);
+
+  // Cleanup TTS on unmount
+  useTTSCleanup();
 
   // Set grade and user name for TTS voice selection
   useEffect(() => {

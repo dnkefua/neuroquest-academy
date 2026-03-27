@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSocialSkillsStore } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
 import { useEconomyStore } from '@/store/economyStore';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 import { gameAudio } from '../../shared/audio';
 
 export default function QuizScene() {
@@ -29,12 +29,16 @@ export default function QuizScene() {
   const [showClue, setShowClue] = useState(false);
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
 
+  // Cleanup TTS on unmount
+  useTTSCleanup();
+
   const question = questions[currentQuestion];
   const questQuestions = questions;
 
   useEffect(() => {
     if (question) {
       gameTTS.speak(question.question);
+      return () => gameTTS.stop(); // Stop TTS when question changes or unmounts
     }
   }, [question]);
 

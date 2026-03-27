@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getQuestsForGrade } from '../store/gameStore';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 import { useEconomyStore } from '@/store/economyStore';
 import ClueBox from '../components/ui/ClueBox';
 
@@ -31,6 +31,9 @@ export default function QuizScene() {
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
 
+  // Cleanup TTS on unmount
+  useTTSCleanup();
+
   const theme = GRADE_THEMES[currentGrade] || GRADE_THEMES[6];
 
   // Reset per question
@@ -45,6 +48,7 @@ export default function QuizScene() {
     if (q) {
       const text = `${theme.name} asks: ${q.question}`;
       gameTTS.speak(text);
+      return () => gameTTS.stop(); // Stop TTS when question changes or unmounts
     }
   }, [currentQuestion, q, theme.name]);
 

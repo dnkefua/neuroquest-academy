@@ -5,29 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useScienceStore, getQuestsForGrade, hasQuestsForGrade } from '../store/gameStore';
 import type { ScienceQuestLocal } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 import { gameAudio } from '../../shared/audio';
+import { getProgrammeForGrade } from '@/lib/questData';
 
 type LocationType = 'hut' | 'village' | 'city' | 'castle' | 'boss';
 
 const LOCATION_ICONS: Record<LocationType, string> = {
   hut: '🏕️', village: '🏘️', city: '🏙️', castle: '🏛️', boss: '🌀',
-};
-
-// Grade display names for science topics
-const GRADE_NAMES: Record<number, { programme: string; topic: string }> = {
-  1: { programme: 'PYP', topic: 'Living Things' },
-  2: { programme: 'PYP', topic: 'Materials & Matter' },
-  3: { programme: 'PYP', topic: 'Light & Sound' },
-  4: { programme: 'PYP', topic: 'Earth & Space' },
-  5: { programme: 'PYP', topic: 'Forces & Energy' },
-  6: { programme: 'MYP', topic: 'Water Cycle' },
-  7: { programme: 'MYP', topic: 'Ecosystems' },
-  8: { programme: 'MYP', topic: 'Chemical Reactions' },
-  9: { programme: 'MYP', topic: 'Physics & Motion' },
-  10: { programme: 'MYP', topic: 'Biology & Genetics' },
-  11: { programme: 'DP', topic: 'Advanced Sciences' },
-  12: { programme: 'DP', topic: 'Research & Analysis' },
 };
 
 export default function QuestMapScene() {
@@ -37,6 +22,9 @@ export default function QuestMapScene() {
   const searchParams = useSearchParams();
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  // Cleanup TTS on unmount
+  useTTSCleanup();
 
   // Get grade from URL or use store's current grade
   const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
@@ -51,7 +39,13 @@ export default function QuestMapScene() {
   // Use urlGrade directly so quests are correct on first render (no flash of grade 6)
   const activeGrade = hasQuestsForGrade(urlGrade) ? urlGrade : currentGrade;
   const quests = getQuestsForGrade(activeGrade);
-  const gradeInfo = GRADE_NAMES[activeGrade] || { programme: 'IB', topic: 'Science' };
+
+  // Get dynamic topic from first quest or use default
+  const firstQuest = quests[0];
+  const gradeInfo = {
+    programme: getProgrammeForGrade(activeGrade),
+    topic: firstQuest?.subtitle || firstQuest?.title?.split(' ').slice(0, 3).join(' ') || 'Science',
+  };
 
   // A quest is unlocked if it's the first one, or the previous one is completed
   function isUnlocked(index: number) {

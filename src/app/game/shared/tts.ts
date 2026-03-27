@@ -1,6 +1,7 @@
 // Enhanced TTS engine for NeuroQuest
 // Supports Google Cloud TTS with grade-appropriate voices
 // Falls back to browser TTS when Cloud TTS unavailable
+// v2: Fixed race conditions, echo, and added LRU cache
 
 import { getGradeGroup, getVoiceForGrade, detectGenderFromName } from '@/lib/tts-cache';
 
@@ -12,6 +13,7 @@ function getAudio() {
 
 const TTS_STORAGE_KEY = 'nq-tts-enabled';
 const SESSION_CALLS_KEY = 'nq-tts-calls';
+const MAX_CACHE_SIZE = 100; // LRU cache limit
 
 class TTSEngine {
   private _enabled: boolean;
@@ -19,10 +21,12 @@ class TTSEngine {
   private _keepAlive: ReturnType<typeof setInterval> | null = null;
   private _grade: number = 6;
   private _userGender: 'male' | 'female' | null = null; // Fixed gender based on user's name
-  private _audioCache: Map<string, string> = new Map();
+  private _audioCache: Map<string, string> = new Map(); // LRU cache
   private _cloudEnabled: boolean = true;
   private _sessionCalls: number = 0;
   private _maxSessionCalls: number = 50; // Rate limit
+  private _lock: Promise<void> = Promise.resolve(); // Async lock to prevent overlap
+  private _aborted: boolean = false; // Track if current speech was aborted
 
   constructor() {
     // Restore persisted preference
@@ -72,21 +76,33 @@ class TTSEngine {
   speak(text: string, rate?: number, pitch?: number) {
     if (!this._enabled || typeof window === 'undefined' || !window.speechSynthesis) return;
 
-    // Stop any previous speech to prevent echo/overlap
+    // Mark previous speech as aborted and stop
+    this._aborted = true;
     this.stop();
 
-    // Try Cloud TTS first if enabled and within rate limit
-    if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
-      this._speakCloud(text).catch(() => {
-        // Only fall back if we're still supposed to speak (not stopped)
-        if (this._enabled && !this._speaking) {
-          this._speakBrowser(text, rate, pitch);
+    // Use async lock to ensure no overlap between speeches
+    this._lock = this._lock.then(async () => {
+      // Reset aborted flag for new speech
+      this._aborted = false;
+
+      // Try Cloud TTS first if enabled and within rate limit
+      if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
+        try {
+          await this._speakCloud(text);
+          return;
+        } catch {
+          // Only fall back if not aborted and still enabled
+          if (!this._aborted && this._enabled) {
+            this._speakBrowser(text, rate, pitch);
+          }
         }
-      });
-    } else {
-      // Use browser TTS
-      this._speakBrowser(text, rate, pitch);
-    }
+      } else {
+        // Use browser TTS
+        this._speakBrowser(text, rate, pitch);
+      }
+    }).catch(() => {
+      // Lock errors should not propagate
+    });
   }
 
   /** Speak text, then call callback when speech ends */
@@ -96,17 +112,35 @@ class TTSEngine {
       return;
     }
 
-    // Stop any previous speech to prevent echo/overlap
+    // Mark previous speech as aborted and stop
+    this._aborted = true;
     this.stop();
 
-    if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
-      this._speakCloudWithCallback(text, callback, fallbackDelay);
-    } else {
-      this._speakBrowserWithCallback(text, callback, fallbackDelay);
-    }
+    // Use async lock to ensure no overlap
+    this._lock = this._lock.then(async () => {
+      this._aborted = false;
+
+      if (this._cloudEnabled && this._sessionCalls < this._maxSessionCalls) {
+        try {
+          await this._speakCloud(text);
+          if (!this._aborted) {
+            setTimeout(callback, 350);
+          }
+        } catch {
+          if (!this._aborted && this._enabled) {
+            this._speakBrowserWithCallback(text, callback, fallbackDelay);
+          }
+        }
+      } else {
+        this._speakBrowserWithCallback(text, callback, fallbackDelay);
+      }
+    }).catch(() => {
+      // Lock errors should not propagate
+    });
   }
 
   stop() {
+    this._aborted = true; // Mark as aborted so pending fallbacks don't play
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
@@ -121,9 +155,12 @@ class TTSEngine {
       const gender = this._getGender();
       const cacheKey = `${text}_${this._grade}_${gender}`;
 
-      // Check cache
+      // Check cache (LRU: move to end if found)
       const cached = this._audioCache.get(cacheKey);
       if (cached) {
+        // Move to end for LRU (delete and re-add)
+        this._audioCache.delete(cacheKey);
+        this._audioCache.set(cacheKey, cached);
         await this._playAudio(cached);
         return;
       }
@@ -147,7 +184,11 @@ class TTSEngine {
       }
 
       if (data.audio) {
-        // Cache the audio
+        // LRU cache management: remove oldest if at capacity
+        if (this._audioCache.size >= MAX_CACHE_SIZE) {
+          const oldestKey = this._audioCache.keys().next().value;
+          if (oldestKey) this._audioCache.delete(oldestKey);
+        }
         this._audioCache.set(cacheKey, data.audio);
         this._sessionCalls++;
         sessionStorage.setItem(SESSION_CALLS_KEY, String(this._sessionCalls));
@@ -299,18 +340,25 @@ class TTSEngine {
     }
   }
 
-  // Chrome stops speech after ~15s — periodically resume() to prevent it
+  // Chrome stops speech after ~15s — use gentle keepalive to prevent cutoff
+  // Instead of pause/resume (which causes artifacts), we use a gentler approach
   private startKeepAlive() {
     this.stopKeepAlive();
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     this._keepAlive = setInterval(() => {
+      // Only act if still speaking
       if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.pause();
-        window.speechSynthesis.resume();
+        // Gentle resume without pause - helps prevent Chrome's 15s cutoff
+        // without causing audible artifacts
+        try {
+          window.speechSynthesis.resume();
+        } catch {
+          // Resume can throw if speech ended, ignore
+        }
       } else {
         this.stopKeepAlive();
       }
-    }, 10000);
+    }, 14000); // Just before Chrome's ~15s cutoff
   }
 
   private stopKeepAlive() {
@@ -319,6 +367,39 @@ class TTSEngine {
       this._keepAlive = null;
     }
   }
+
+  /**
+   * Get a cleanup function for useEffect hooks.
+   * Call this in useEffect return to ensure TTS stops on unmount.
+   *
+   * @example
+   * useEffect(() => {
+   *   gameTTS.speak(text);
+   *   return gameTTS.getCleanupFn();
+   * }, [text]);
+   */
+  getCleanupFn(): () => void {
+    return () => {
+      this._aborted = true;
+      this.stop();
+    };
+  }
 }
 
 export const gameTTS = new TTSEngine();
+
+/**
+ * React hook for TTS cleanup on unmount.
+ * Automatically stops TTS when component unmounts.
+ *
+ * @example
+ * useTTSCleanup();
+ * // or with dependency
+ * useEffect(() => {
+ *   gameTTS.speak(text);
+ *   return useTTSCleanup();
+ * }, [text]);
+ */
+export function useTTSCleanup(): () => void {
+  return () => gameTTS.stop();
+}

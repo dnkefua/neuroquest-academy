@@ -1,6 +1,5 @@
 'use client';
 import { create } from 'zustand';
-import { SCIENCE_QUESTS } from '../data/questData';
 import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
@@ -64,11 +63,10 @@ interface ScienceState {
   reset: () => void;
 }
 
-// Hardcoded quests for Grade 6 (original data with water cycle features)
-// These have special water cycle stage features
-const GRADE_QUESTS_HARDCODED: Record<number, ScienceQuestLocal[]> = {
-  6: SCIENCE_QUESTS,
-};
+// All grades now use curriculum data from questData.ts
+// This provides appropriate content for each grade level
+// The water cycle visualization was specific to grade 6 but has been removed
+// to allow all grades to have proper science content
 
 // Convert curriculum GameQuestion to local ScienceQuestion format
 function toScienceQuestion(q: GameQuest['questions'][0], index: number): ScienceQuestion {
@@ -113,22 +111,12 @@ function toScienceQuestLocal(gq: GameQuest): ScienceQuestLocal {
 
 // Check if science quests are available for a grade
 function hasScienceQuestsForGrade(grade: number): boolean {
-  // First check hardcoded data (has water cycle features)
-  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
-    return true;
-  }
-  // Then check curriculum data
   const curriculumQuests = getGameQuests(grade, 'science' as CurriculumSubject);
   return curriculumQuests.length > 0;
 }
 
-// Get quests for a grade - prefer hardcoded (has water cycle features), then curriculum
+// Get quests for a grade - uses curriculum data for all grades
 function getQuestsForGrade(grade: number): ScienceQuestLocal[] {
-  // First check if we have hardcoded quests with special features
-  if (GRADE_QUESTS_HARDCODED[grade] && GRADE_QUESTS_HARDCODED[grade].length > 0) {
-    return GRADE_QUESTS_HARDCODED[grade];
-  }
-  // Convert curriculum quests to local format
   const curriculumQuests = getGameQuests(grade, 'science' as CurriculumSubject);
   return curriculumQuests.map(toScienceQuestLocal);
 }
@@ -218,7 +206,7 @@ export const useScienceStore = create<ScienceState>((set, get) => ({
 }));
 
 // Export for QuestMapScene
-export { SCIENCE_QUESTS, GRADE_QUESTS_HARDCODED, getQuestsForGrade };
+export { getQuestsForGrade };
 export const getQuestById = (id: string, grade: number) => {
   const quests = getQuestsForGrade(grade);
   return quests.find(q => q.id === id);

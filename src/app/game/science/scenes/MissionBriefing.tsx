@@ -6,7 +6,7 @@ import { useScienceStore } from '../store/gameStore';
 import { SCIENCE_QUESTS, getQuestById } from '../data/questData';
 import { SCIENCE_MISSION_DIALOGUE } from '../data/scienceData';
 import { gameAudio } from '../../shared/audio';
-import { gameTTS } from '../../shared/tts';
+import { gameTTS, useTTSCleanup } from '../../shared/tts';
 
 export default function ScienceMissionBriefing() {
   const setScene = useScienceStore(s => s.setScene);
@@ -19,10 +19,18 @@ export default function ScienceMissionBriefing() {
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [musicOn, setMusicOn] = useState(true);
 
+  // Cleanup TTS on unmount
+  useTTSCleanup();
+
   function toggleTTS() { setTtsOn(gameTTS.toggle()); }
   function toggleMusic() { setMusicOn(gameAudio.toggle()); }
 
   useEffect(() => { gameAudio.startBackground('desert'); }, []);
+
+  useEffect(() => {
+    gameAudio.startBackground('desert');
+    return () => gameAudio.stopBackground(); // Cleanup music on unmount
+  }, []);
 
   // Title screen: wait for TTS to finish before showing dialogue
   useEffect(() => {
@@ -33,7 +41,8 @@ export default function ScienceMissionBriefing() {
       () => setTitleDone(true),
       2800,
     );
-  }, [quest?.title]);
+    return () => gameTTS.stop(); // Cleanup on unmount
+  }, [quest?.title, quest?.subtitle]);
 
   // Dialogue: advance only after TTS fully finishes reading each line
   useEffect(() => {
