@@ -1,28 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Voice configuration based on grade level
-// Optimized for natural speech with appropriate pacing
-const VOICE_CONFIG: Record<string, { male: string; female: string; rate: number; pitch: number }> = {
-  // Grades 1-4: Kids-friendly (slower, warm, slightly higher pitch)
+// Voice configuration — Google Cloud Studio voices
+// Studio voices are the highest quality tier: natural prosody, human-like warmth
+// They do NOT support pitch modification (ignored by API)
+const VOICE_CONFIG: Record<string, { male: string; female: string; rate: number }> = {
+  // Grades 1-4: slower pace for comprehension
   '1-4': {
-    male: 'en-US-Neural2-D',
-    female: 'en-US-Neural2-F',
-    rate: 0.82,  // Slower for comprehension
-    pitch: 2.0,  // Slightly higher pitch (Google uses -20.0 to 20.0)
+    male: 'en-US-Studio-Q',
+    female: 'en-US-Studio-O',
+    rate: 0.87,
   },
-  // Grades 5-9: Middle-grade (clear, engaging, normal pace)
+  // Grades 5-9: natural, engaging pace
   '5-9': {
-    male: 'en-US-Neural2-J',
-    female: 'en-US-Neural2-C',
-    rate: 0.88,  // Slightly slower than natural for clarity
-    pitch: 0,    // Normal pitch
+    male: 'en-US-Studio-Q',
+    female: 'en-US-Studio-O',
+    rate: 0.95,
   },
-  // Grades 10-12: Young adult (mature, professional, natural pace)
+  // Grades 10-12: full natural speed
   '10-12': {
-    male: 'en-US-Neural2-A',
-    female: 'en-US-Neural2-E',
-    rate: 0.92,  // Nearly natural pace
-    pitch: 0,    // Normal pitch
+    male: 'en-US-Studio-Q',
+    female: 'en-US-Studio-O',
+    rate: 1.0,
   },
 };
 
@@ -119,7 +117,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         error: 'Cloud TTS disabled',
         fallback: true,
-        voiceConfig: { rate: config.rate, pitch: config.pitch }
+        voiceConfig: { rate: config.rate }
       }, { status: 200 });
     }
 
@@ -137,9 +135,8 @@ export async function POST(req: NextRequest) {
       audioConfig: {
         audioEncoding: 'MP3' as const,
         speakingRate: config.rate,
-        pitch: config.pitch,
-        // Improve audio quality
-        effectsProfileId: ['small-bluetooth-speaker-class-device'],
+        // Studio voices don't support pitch — omitted intentionally
+        effectsProfileId: ['headphone-class-device'],
       },
     };
 
@@ -172,7 +169,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       error: 'TTS generation failed',
       fallback: true,
-      voiceConfig: { rate: config.rate, pitch: config.pitch }
+      voiceConfig: { rate: config.rate }
     }, { status: 200 });
   }
 }

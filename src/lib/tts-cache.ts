@@ -79,25 +79,26 @@ export function getRandomPhrase(category: string, grade: number): string | null 
   return null;
 }
 
-// Voice configuration for TTS
+// Voice configuration for TTS — Google Cloud Studio voices (highest quality tier)
+// Studio voices have human-like warmth and natural prosody; pitch not supported
 export const VOICE_CONFIG: Record<string, { male: string; female: string; rate: number; pitch: number }> = {
   '1-4': {
-    male: 'en-US-Neural2-D',
-    female: 'en-US-Neural2-F',
-    rate: 0.85,
-    pitch: 1.1, // Slightly higher for kid-friendly tone
+    male: 'en-US-Studio-Q',
+    female: 'en-US-Studio-O',
+    rate: 0.87,
+    pitch: 1.0,
   },
   '5-9': {
-    male: 'en-US-Neural2-J',
-    female: 'en-US-Neural2-C',
-    rate: 0.90,
-    pitch: 1.05,
+    male: 'en-US-Studio-Q',
+    female: 'en-US-Studio-O',
+    rate: 0.95,
+    pitch: 1.0,
   },
   '10-12': {
-    male: 'en-US-Neural2-A',
-    female: 'en-US-Neural2-E',
-    rate: 0.95,
-    pitch: 1.0, // Normal pitch for mature voices
+    male: 'en-US-Studio-Q',
+    female: 'en-US-Studio-O',
+    rate: 1.0,
+    pitch: 1.0,
   },
 };
 
