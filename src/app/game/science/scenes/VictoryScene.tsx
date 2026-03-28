@@ -2,16 +2,15 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useScienceStore } from '../store/gameStore';
+import { useScienceStore, getQuestById, getNextQuest } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
 import { useEconomyStore } from '@/store/economyStore';
-import { SCIENCE_QUESTS, getQuestById, getNextQuest } from '../data/questData';
 import VialCounter from '../components/ui/VialCounter';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS } from '../../shared/tts';
 
 export default function ScienceVictoryScene() {
-  const { score, vialsCollected, clueUsed, xpEarned, questions, reset, currentQuestId, setScene, loadQuest } = useScienceStore();
+  const { score, vialsCollected, clueUsed, xpEarned, questions, reset, currentQuestId, setScene, loadQuest, currentGrade } = useScienceStore();
   const { completeQuest, completedQuests } = useProgressStore();
   const { earnCoins } = useEconomyStore();
   const router = useRouter();
@@ -21,8 +20,8 @@ export default function ScienceVictoryScene() {
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [hasRewarded, setHasRewarded] = useState(false);
 
-  const quest = getQuestById(currentQuestId);
-  const nextQuest = getNextQuest(currentQuestId);
+  const quest = getQuestById(currentQuestId, currentGrade);
+  const nextQuest = getNextQuest(currentQuestId, currentGrade);
   const isAlreadyComplete = completedQuests.includes(currentQuestId);
 
   useEffect(() => {

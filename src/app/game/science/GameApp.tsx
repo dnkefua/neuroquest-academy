@@ -4,6 +4,7 @@ import { useScienceStore } from './store/gameStore';
 import QuestMapScene         from './scenes/QuestMapScene';
 import ScienceMissionBriefing from './scenes/MissionBriefing';
 import CloudSpiritTeaching    from './scenes/CloudSpiritTeaching';
+import ScienceSimulationScene from './scenes/SimulationScene';
 import ScienceQuizScene       from './scenes/QuizScene';
 import ScienceVictoryScene    from './scenes/VictoryScene';
 
@@ -11,6 +12,7 @@ const SCENES = {
   QUEST_MAP:        QuestMapScene,
   MISSION_BRIEFING: ScienceMissionBriefing,
   CLOUD_TEACHING:   CloudSpiritTeaching,
+  SIMULATION:       ScienceSimulationScene,
   QUIZ:             ScienceQuizScene,
   VICTORY:          ScienceVictoryScene,
 } as const;

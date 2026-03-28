@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useScienceStore } from '../store/gameStore';
-import { SCIENCE_QUESTS, getQuestById } from '../data/questData';
+import { useScienceStore, getQuestById } from '../store/gameStore';
 import { SCIENCE_MISSION_DIALOGUE } from '../data/scienceData';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS, useTTSCleanup } from '../../shared/tts';
@@ -11,8 +10,9 @@ import { gameTTS, useTTSCleanup } from '../../shared/tts';
 export default function ScienceMissionBriefing() {
   const setScene = useScienceStore(s => s.setScene);
   const currentQuestId = useScienceStore(s => s.currentQuestId);
+  const currentGrade = useScienceStore(s => s.currentGrade);
   const router = useRouter();
-  const quest = getQuestById(currentQuestId);
+  const quest = getQuestById(currentQuestId, currentGrade);
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
   const [titleDone, setTitleDone] = useState(false);
