@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',       // static export for Firebase Hosting
-  trailingSlash: true,    // ensures /dashboard/ works as an index.html
+  output: 'standalone',    // Cloud Run: full Next.js server with API routes
   images: {
-    unoptimized: true,    // required for static export (no Next.js image server)
     domains: ['lh3.googleusercontent.com', 'firebasestorage.googleapis.com'],
   },
 };

@@ -123,17 +123,6 @@ export async function POST(req: NextRequest) {
       }, { status: 200 });
     }
 
-    // Check for credentials
-    const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    if (!credentialsPath) {
-      console.warn('GCP credentials not set, falling back to browser TTS');
-      return NextResponse.json({
-        error: 'GCP credentials not configured',
-        fallback: true,
-        voiceConfig: { rate: config.rate, pitch: config.pitch }
-      }, { status: 200 });
-    }
-
     // Dynamic import to avoid build errors if package isn't installed
     const { TextToSpeechClient } = await import('@google-cloud/text-to-speech');
 
