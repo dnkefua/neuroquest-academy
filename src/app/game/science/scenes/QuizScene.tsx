@@ -67,7 +67,7 @@ export default function ScienceQuizScene() {
   }
 
   return (
-    <div className={`w-full min-h-screen flex flex-col items-center justify-center px-4 py-6 relative overflow-hidden ${shaking ? 'shake' : ''}`}
+    <div className={`w-full h-screen overflow-hidden flex flex-col items-center px-4 py-3 relative ${shaking ? 'shake' : ''}`}
       style={{ background: 'linear-gradient(180deg, #0c1a2e 0%, #0d2137 60%, #091a10 100%)' }}>
 
       {/* TTS toggle */}
@@ -88,7 +88,7 @@ export default function ScienceQuizScene() {
 
       {/* HUD */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-xl mb-4 flex items-center justify-between px-4 py-3 rounded-2xl"
+        className="w-full max-w-xl flex-shrink-0 mb-2 flex items-center justify-between px-4 py-2 rounded-2xl"
         style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(56,189,248,0.2)' }}>
         <VialCounter collected={vialsCollected} total={4} justCollectedIndex={justFilledVial} />
         <div className="text-center">
@@ -101,23 +101,20 @@ export default function ScienceQuizScene() {
         </div>
       </motion.div>
 
-      {/* Topic visualizer */}
-      <div className="w-full max-w-xl mb-3 rounded-2xl px-4 py-2"
-        style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(56,189,248,0.1)' }}>
-        <TopicVisualizer questTitle={questTitle} />
-      </div>
-
-      {/* Question card */}
+      {/* Question card — fills remaining space */}
       <AnimatePresence mode="wait">
         <motion.div key={currentQuestion}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          className="w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl"
+          className="w-full max-w-xl flex-1 min-h-0 flex flex-col rounded-3xl overflow-hidden shadow-2xl"
           style={{ background: 'rgba(12,26,46,0.97)', border: `2px solid ${q.spiritColor}44` }}>
 
+          {/* Scrollable inner content */}
+          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+
           {/* Spirit narrator */}
-          <div className="px-6 pt-5 pb-3 flex items-start gap-3"
+          <div className="px-5 pt-4 pb-2 flex items-start gap-3 flex-shrink-0"
             style={{ background: `linear-gradient(135deg, ${q.spiritColor}18, transparent)` }}>
             <motion.span className="text-4xl flex-shrink-0"
               animate={{ y: [0, -6, 0] }} transition={{ duration: 2, repeat: Infinity }}>
@@ -131,9 +128,9 @@ export default function ScienceQuizScene() {
             </div>
           </div>
 
-          <div className="px-6 pb-5">
+          <div className="px-5 pb-3 flex-1">
             {/* Question */}
-            <div className="my-4 p-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
+            <div className="my-2 p-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
               <p className="text-white font-bold text-base">❓ {q.question}</p>
             </div>
 
@@ -166,42 +163,55 @@ export default function ScienceQuizScene() {
                 );
               })}
             </div>
+          </div>{/* end question/options wrapper */}
+          </div>{/* end scrollable inner */}
+
+          {/* Pinned footer — actions always visible */}
+          <div className="flex-shrink-0 px-5 pb-4 pt-2"
+            style={{ borderTop: '1px solid rgba(56,189,248,0.1)' }}>
 
             {/* Feedback */}
             <AnimatePresence>
               {feedback && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                  className="rounded-2xl p-3 mb-4 text-center font-bold text-sm"
+                  className="rounded-xl px-3 py-2 mb-2 text-center font-bold text-xs overflow-hidden"
                   style={{
                     background: feedback === 'correct' ? 'rgba(0,200,80,0.15)' : 'rgba(255,100,0,0.15)',
                     border: `1px solid ${feedback === 'correct' ? '#00C851' : '#FF6400'}`,
                     color: feedback === 'correct' ? '#00FF6A' : '#FFA040',
                   }}>
-                  {feedback === 'correct'
-                    ? `☁️ CORRECT! ${q.reward} — The Cloud Spirits cheer! 🎉`
-                    : `🌩️ "Not quite, explorer! Try again or use a clue!"`}
+                  {feedback === 'correct' ? `☁️ CORRECT! ${q.reward} 🎉` : `🌩️ Not quite — try again or move on!`}
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Actions */}
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-2">
               <ScienceClueBox question={q} questionIndex={currentQuestion} />
               {!answered ? (
                 <motion.button onClick={handleConfirm} disabled={selected === null}
                   whileHover={selected !== null ? { scale: 1.05 } : {}}
                   whileTap={selected !== null ? { scale: 0.95 } : {}}
-                  className="px-8 py-3 rounded-2xl font-black text-black text-sm disabled:opacity-40"
+                  className="px-6 py-2.5 rounded-2xl font-black text-black text-sm disabled:opacity-40"
                   style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}>
                   🧪 Confirm!
                 </motion.button>
-              ) : feedback === 'wrong' ? (
-                <button onClick={handleTryAgain}
-                  className="px-6 py-3 rounded-2xl font-black text-sm"
-                  style={{ background: 'rgba(255,100,0,0.2)', border: '1px solid #FF6400', color: '#FFA040' }}>
-                  💪 Try Again
-                </button>
-              ) : null}
+              ) : (
+                <div className="flex gap-2">
+                  {feedback === 'wrong' && (
+                    <button onClick={handleTryAgain}
+                      className="px-4 py-2.5 rounded-2xl font-black text-xs"
+                      style={{ background: 'rgba(255,100,0,0.2)', border: '1px solid #FF6400', color: '#FFA040' }}>
+                      💪 Retry
+                    </button>
+                  )}
+                  <motion.button onClick={() => nextQuestion()}
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                    className="px-6 py-2.5 rounded-2xl font-black text-black text-sm"
+                    style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}>
+                    Next →
+                  </motion.button>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
