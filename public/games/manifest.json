@@ -1,0 +1,22 @@
+[
+  { "slug": "antura", "title": "Antura", "author": "Farádiga Labs", "built": false, "notes": "Unity project — build WebGL and copy into public/games/antura/" },
+  { "slug": "lightbot", "title": "Lightbot", "author": "Lightbot Inc.", "built": true, "category": "Programming", "ageRange": "8-14", "difficulty": "Beginner", "description": "Guide a robot to light up tiles using programming commands. Learn sequencing, loops, and problem solving!", "thumbnail": "/games/lightbot/img/favicon.ico", "url": "/games/lightbot/index.html", "tags": ["coding", "logic", "puzzle", "sequencing"], "skills": ["Computational Thinking", "Sequencing", "Problem Solving"] },
+  { "slug": "gcompris", "title": "GCompris", "author": "GCompris Team", "built": false },
+  { "slug": "minetest", "title": "Minetest", "author": "Minetest Devs", "built": false },
+  { "slug": "battlemath", "title": "BattleMath", "author": "Open Source", "built": false },
+  { "slug": "khan-academy-games", "title": "Khan Academy Games", "author": "Khan Academy", "built": false },
+  { "slug": "math-runner", "title": "Math Runner", "author": "Community", "built": false },
+  { "slug": "story-creator", "title": "Story Creator", "author": "Community", "built": false },
+  { "slug": "puzzle-world", "title": "Puzzle World", "author": "Community", "built": false },
+  { "slug": "typing-hero", "title": "Typing Hero", "author": "Community", "built": false },
+  { "slug": "spelling-bee", "title": "Spelling Bee", "author": "Community", "built": false },
+  { "slug": "phonics-fun", "title": "Phonics Fun", "author": "Community", "built": false },
+  { "slug": "color-match", "title": "Color Match", "author": "Community", "built": false },
+  { "slug": "shape-sorter", "title": "Shape Sorter", "author": "Community", "built": false },
+  { "slug": "word-search", "title": "Word Search", "author": "Community", "built": false },
+  { "slug": "memory-match", "title": "Memory Match", "author": "Community", "built": false },
+  { "slug": "science-lab", "title": "Science Lab", "author": "Community", "built": false },
+  { "slug": "geography-quest", "title": "Geography Quest", "author": "Community", "built": false },
+  { "slug": "coding-blocks", "title": "Coding Blocks", "author": "Community", "built": false },
+  { "slug": "antura-lite", "title": "Antura (lite demo)", "author": "Farádiga Labs", "built": false }
+]
