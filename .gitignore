@@ -23,6 +23,9 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# gcp
+gcp-service-account.json
+
 # misc
 .DS_Store
 *.pem
