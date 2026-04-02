@@ -8,7 +8,7 @@ import { getGradeGroup, getVoiceForGrade, detectGenderFromName } from '@/lib/tts
 
 // Lazy import to avoid circular-dep issues at module init time
 function getAudio() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // eslint-disable-next-line
   return (require('./audio') as { gameAudio: { duck: () => void; unduck: () => void } }).gameAudio;
 }
 

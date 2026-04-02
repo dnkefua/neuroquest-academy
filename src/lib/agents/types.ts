@@ -95,6 +95,43 @@ export interface AgentState {
   };
 }
 
+// LangGraph-compatible lesson state (used by StateGraph)
+export interface LessonGraphState {
+  // Core lesson context
+  lesson: LessonContent | null;
+  phase: LessonPhase;
+  currentSection: number;
+
+  // Student context
+  studentName: string;
+  studentGrade: number;
+  emotion: EmotionState;
+
+  // Output accumulators
+  narration: NarrationItem | null;
+  visual: VisualAction | null;
+  narrationHistory: NarrationItem[];
+  visualHistory: VisualAction[];
+
+  // Quiz state
+  quizQuestions: QuizQuestion[];
+  currentQuestionIndex: number;
+  quizScore: number;
+  wrongAnswerIndices: number[];
+
+  // Progress tracking
+  completedSections: number[];
+  timestamps: {
+    lessonStart: number;
+    phaseStart: number;
+    lastInteraction: number;
+  };
+
+  // Control flags
+  shouldBrainBreak: boolean;
+  error: string | null;
+}
+
 // Agent action types
 export type DirectorAction =
   | { type: 'START_LESSON'; lesson: LessonContent }
@@ -124,6 +161,27 @@ export interface AgentResponse {
   narration?: NarrationItem;
   visual?: VisualAction;
   nextState?: Partial<AgentState>;
+}
+
+// LangGraph node result type
+export interface LangGraphNodeResult {
+  narration?: NarrationItem | null;
+  visual?: VisualAction | null;
+  phase?: LessonPhase;
+  currentSection?: number;
+  emotion?: EmotionState;
+  shouldBrainBreak?: boolean;
+  error?: string | null;
+  quizQuestions?: QuizQuestion[];
+  currentQuestionIndex?: number;
+  quizScore?: number;
+  wrongAnswerIndices?: number[];
+  completedSections?: number[];
+  timestamps?: {
+    lessonStart: number;
+    phaseStart: number;
+    lastInteraction: number;
+  };
 }
 
 // Agent configuration
@@ -164,4 +222,24 @@ export const AGENT_CONFIGS: Record<AgentId, AgentConfig> = {
     personality: 'Fair, encouraging, provides clear feedback and explanations.',
     voiceSettings: { rate: 0.95, pitch: 1.0, emotion: 'neutral' },
   },
+};
+
+// Phase transition order
+export const PHASE_ORDER: LessonPhase[] = [
+  'intro',
+  'warmup',
+  'concept',
+  'demonstration',
+  'practice',
+  'deepen',
+  'quiz',
+  'complete',
+];
+
+// Emotion-based tone adjustments
+export const EMOTION_TONES: Record<EmotionState, { pace: 'slower' | 'normal' | 'faster'; encouragement: 'high' | 'medium' | 'low' }> = {
+  happy: { pace: 'normal', encouragement: 'medium' },
+  neutral: { pace: 'normal', encouragement: 'medium' },
+  anxious: { pace: 'slower', encouragement: 'high' },
+  frustrated: { pace: 'slower', encouragement: 'high' },
 };

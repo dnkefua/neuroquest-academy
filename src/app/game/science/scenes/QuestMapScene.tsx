@@ -27,7 +27,7 @@ export default function QuestMapScene() {
   useTTSCleanup();
 
   // Get grade from URL or use store's current grade
-  const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
+  const urlGrade = parseInt(searchParams?.get('grade') || '6', 10);
 
   // Set grade from URL inside useEffect to avoid calling state updates during render
   useEffect(() => {

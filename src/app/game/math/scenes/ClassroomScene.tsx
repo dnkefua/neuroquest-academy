@@ -10,7 +10,7 @@ const SUBJECTS = [
   { id: 'science', emoji: '🔬', label: 'Science',        sub: 'The Water Cycle',             color: '#14B8A6', glow: '#14B8A640', active: true  },
   { id: 'english', emoji: '📖', label: 'English',        sub: 'Coming soon…',                color: '#3B82F6', glow: '#3B82F640', active: false },
   { id: 'social',  emoji: '🤝', label: 'Social Skills',  sub: 'Coming soon…',                color: '#F97316', glow: '#F9731640', active: false },
-  { id: 'calm',    emoji: '💜', label: 'Calm Corner',    sub: 'Coming soon…',                color: '#EC4899', glow: '#EC489940', active: false },
+  { id: 'calm',    emoji: '💜', label: 'Calm Corner',    sub: 'Breathe · Ground · Reset',      color: '#EC4899', glow: '#EC489940', active: true },
 ];
 
 const BOB_DELAYS = ['0s', '0.6s', '1.2s', '1.8s', '2.4s'];
@@ -50,6 +50,7 @@ export default function ClassroomScene() {
     gameAudio.playTransition();
     if (id === 'math')    setScene('QUEST_MAP');
     else if (id === 'science') router.push('/game/science');
+    else if (id === 'calm') router.push('/calm-corner');
   }
 
   return (

@@ -101,6 +101,27 @@ export const useEconomyStore = create<EconomyState>()(
         return get().purchasedClues[key] ?? false;
       },
 
+      purchasedGames: [],
+
+      buyGame: (gameId, cost) => {
+        const state = get();
+        if (state.purchasedGames.includes(gameId)) return true;
+        if (state.walletCoins < cost) return false;
+        const tx: CoinTransaction = {
+          amount: cost, type: 'spend',
+          source: `game:${gameId}`,
+          timestamp: Date.now(),
+        };
+        set((s) => ({
+          walletCoins: s.walletCoins - cost,
+          purchasedGames: [...s.purchasedGames, gameId],
+          transactions: [tx, ...s.transactions].slice(0, 100),
+        }));
+        return true;
+      },
+
+      hasGame: (gameId) => get().purchasedGames.includes(gameId),
+
       reset: () => set(DEFAULT_STATE),
     }),
     {

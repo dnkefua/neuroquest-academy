@@ -103,9 +103,6 @@ export default function AuthPage() {
           <h1 className="font-nunito text-3xl font-black text-gray-800">NeuroQuest Academy</h1>
           <p className="text-gray-500 mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Where every mind is a universe ✨</p>
         </div>
-          <h1 className="font-nunito text-3xl font-black text-gray-800">NeuroQuest Academy</h1>
-          <p className="text-gray-500 mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Where every mind is a universe ✨</p>
-        </div>
 
         <div className="bg-white rounded-3xl p-6 border border-purple-50" style={{ boxShadow: '0 4px 24px rgba(108,99,255,0.12)' }}>
           <form className="space-y-4">

@@ -17,7 +17,7 @@ export default function MathGamePage() {
   const userGrade = useProgressStore(s => s.currentGrade)
 
   // Read grade from URL or use user's grade
-  const urlGrade = searchParams.get('grade')
+  const urlGrade = searchParams?.get('grade')
   const grade = urlGrade ? parseInt(urlGrade, 10) : userGrade
 
   useEffect(() => {

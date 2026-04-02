@@ -21,7 +21,7 @@ interface GameAppProps {
 export default function GameApp({ subject }: GameAppProps) {
   const searchParams = useSearchParams();
   const currentGrade = useProgressStore(s => s.currentGrade);
-  const urlGrade = searchParams.get('grade');
+  const urlGrade = searchParams?.get('grade');
   const grade = urlGrade ? parseInt(urlGrade, 10) : currentGrade;
 
   switch (subject) {

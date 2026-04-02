@@ -42,7 +42,7 @@ type QuizPhaseState = {
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const subjectId = params.subject as string;
+  const subjectId = params?.subject as string;
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [lesson, setLesson] = useState<LessonContent & { ibTopicKey?: string } | null>(null);

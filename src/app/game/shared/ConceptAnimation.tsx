@@ -303,7 +303,7 @@ function CircuitAnim({ c }: { c: string }) {
 
         {/* Light bulb */}
         <motion.g x="140" y="25">
-          <circle cx="160" cy="40" r="18" fill={isClosed ? '#FCD34D' : '#4B5563'} stroke="#9CA3AF" strokeWidth="2"
+          <motion.circle cx="160" cy="40" r="18" fill={isClosed ? "#FCD34D" : "#4B5563"} stroke="#9CA3AF" strokeWidth="2"
             animate={{ opacity: isClosed ? [0.6, 1, 0.6] : 0.5 }} transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }} />
           {isClosed && (
             <>
@@ -542,7 +542,7 @@ function GeometryAnim({ c }: { c: string }) {
 
         {/* Formula */}
         <motion.text x="160" y="35" fontSize="8" textAnchor="middle" fill="#FDE68A" fontWeight="bold"
-          animate={{ opacity: highlight ? 1 : 0.5 }}>a² + b² = c²</text>
+          animate={{ opacity: highlight ? 1 : 0.5 }}>a² + b² = c²</motion.text>
       </svg>
       <p className="text-[8px] text-blue-200 mt-0.5">?? Click sides to highlight</p>
     </div>

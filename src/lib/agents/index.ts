@@ -4,12 +4,12 @@
  * This module provides a unified API for the multi-agent system inspired by OpenMAIC.
  * Agents work together to deliver interactive, personalized learning experiences.
  *
- * Architecture:
+ * Architecture (LangGraph-backed):
  * ┌─────────────────────────────────────────────────────────────┐
  * │                    Director Agent                           │
- * │  - Manages lesson flow                                      │
+ * │  - Manages lesson flow via LangGraph StateGraph             │
  * │  - Coordinates agent turns                                  │
- * │  - Handles state transitions                                 │
+ * │  - Handles state transitions with conditional edges         │
  * └─────────────────────────────────────────────────────────────┘
  *                              │
  *        ┌─────────────────────┼─────────────────────┐
@@ -20,6 +20,15 @@
  * │ - Introduces  │    │ - Animates      │    │ - Evaluates  │
  * │ - Encourages  │    │ - Simulations   │    │ - Explains   │
  * └───────────────┘    └───────────────┘    └───────────────┘
+ *
+ * LangGraph Structure:
+ *   START -> introNode -> warmupNode -> conceptNode -> demonstrationNode
+ *         -> practiceNode -> deepenNode -> quizNode -> completeNode -> END
+ *
+ *   Conditional edges at each phase node:
+ *     - frustrated/anxious -> brainBreakNode -> back to phase progression
+ *     - normal -> routeToNextPhase -> next phase node
+ *     - complete -> completeNode -> END
  *
  * Usage:
  * ```typescript
@@ -68,11 +77,23 @@ export { TeacherAgent, getTeacher } from './teacher';
 export { ExplainerAgent, getExplainer, resetExplainer } from './explainer';
 export { QuizAgent, getQuiz, resetQuiz } from './quiz';
 
+// Export LangGraph integration
+export {
+  getLessonGraph,
+  resetLessonGraph,
+  createInitialGraphState,
+  advanceLessonGraph,
+  runLessonToPhase,
+  LessonGraphState,
+  type LessonGraphStateType,
+} from './graph';
+
 // Import agent singletons for orchestrator
 import { DirectorAgent, getDirector, resetDirector } from './director';
 import { TeacherAgent, getTeacher } from './teacher';
 import { ExplainerAgent, getExplainer, resetExplainer } from './explainer';
 import { QuizAgent, getQuiz, resetQuiz } from './quiz';
+import { advanceLessonGraph, createInitialGraphState, type LessonGraphStateType } from './graph';
 import type { AgentState, AgentResponse, LessonPhase, StudentProfile } from './types';
 import type { LessonContent } from '@/types';
 
@@ -80,7 +101,7 @@ import type { LessonContent } from '@/types';
  * AgentOrchestrator - High-level API for coordinating agents
  *
  * This class provides a simplified interface for common agent operations
- * without needing to manage each agent individually.
+ * using the LangGraph-backed DirectorAgent.
  */
 export class AgentOrchestrator {
   private director: DirectorAgent;
@@ -88,6 +109,7 @@ export class AgentOrchestrator {
   private explainer: ExplainerAgent;
   private quiz: QuizAgent;
   private state: AgentState | null = null;
+  private graphState: Partial<LessonGraphStateType> | null = null;
 
   constructor() {
     this.director = getDirector();
@@ -103,6 +125,9 @@ export class AgentOrchestrator {
     // Reset all agents for fresh start
     resetDirector();
     this.director = getDirector();
+
+    // Initialize graph state
+    this.graphState = createInitialGraphState(lesson, student);
 
     // Initialize director with lesson
     const response = this.director.startLesson(lesson, student);
@@ -120,11 +145,32 @@ export class AgentOrchestrator {
   }
 
   /**
-   * Advance to next phase/section
+   * Get current LangGraph state
+   */
+  getGraphState(): Partial<LessonGraphStateType> | null {
+    return this.graphState;
+  }
+
+  /**
+   * Advance to next phase/section (synchronous, backward-compatible)
    */
   advance(): AgentResponse | null {
     const response = this.director.advancePhase();
     this.state = this.director.getState();
+    return response;
+  }
+
+  /**
+   * Advance to next phase using LangGraph state machine (async)
+   */
+  async advanceWithLangGraph(): Promise<AgentResponse | null> {
+    if (!this.graphState) {
+      return this.advance();
+    }
+
+    const response = await this.director.advanceWithLangGraph();
+    this.state = this.director.getState();
+    this.graphState = this.director.getState() as unknown as Partial<LessonGraphStateType>;
     return response;
   }
 

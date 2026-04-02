@@ -1,12 +1,19 @@
 /**
  * Director Agent - Coordinates the multi-agent lesson flow
- * Uses LangGraph state machine for orchestration
+ * Uses LangGraph StateGraph for orchestration with backward-compatible API
  */
 
 import { AgentState, LessonPhase, DirectorAction, AgentResponse, StudentProfile, EmotionState } from './types';
 import type { LessonContent, LessonSection } from '@/types';
+import {
+  getLessonGraph,
+  resetLessonGraph,
+  createInitialGraphState,
+  advanceLessonGraph,
+  type LessonGraphStateType,
+} from './graph';
 
-// Phase transition rules
+// Phase transition rules (kept for backward compatibility)
 const PHASE_ORDER: LessonPhase[] = [
   'intro',
   'warmup',
@@ -27,12 +34,45 @@ const EMOTION_TONES: Record<EmotionState, { pace: 'slower' | 'normal' | 'faster'
 };
 
 /**
+ * Convert LangGraph state to legacy AgentState for backward compatibility
+ */
+function graphStateToAgentState(graphState: Partial<LessonGraphStateType>): AgentState {
+  return {
+    lesson: graphState.lesson ?? null,
+    currentSection: graphState.currentSection ?? 0,
+    phase: graphState.phase ?? 'intro',
+    student: {
+      name: graphState.studentName ?? 'Explorer',
+      grade: graphState.studentGrade ?? 6,
+      emotion: graphState.studentEmotion ?? 'neutral',
+    },
+    language: graphState.language ?? 'en',
+    narrationQueue: graphState.narration ? [graphState.narration] : [],
+    visualQueue: graphState.visual ? [graphState.visual] : [],
+    quizQuestions: graphState.quizQuestions ?? [],
+    currentQuestion: graphState.currentQuestion ?? 0,
+    quizScore: graphState.quizScore ?? 0,
+    completedSections: graphState.completedSections ?? [],
+    timestamps: {
+      lessonStart: graphState.phaseStart ?? Date.now(),
+      phaseStart: graphState.phaseStart ?? Date.now(),
+      lastInteraction: graphState.lastInteraction ?? Date.now(),
+    },
+  };
+}
+
+/**
  * Director Agent - Manages lesson flow and coordinates other agents
+ * Now backed by LangGraph StateGraph for proper state machine orchestration
  */
 export class DirectorAgent {
   private state: AgentState;
+  private graphState: Partial<LessonGraphStateType>;
+  private useLangGraph: boolean;
 
   constructor(initialState?: Partial<AgentState>) {
+    this.useLangGraph = true;
+    this.graphState = createInitialGraphState();
     this.state = this.createInitialState(initialState);
   }
 
@@ -66,6 +106,9 @@ export class DirectorAgent {
    * Get current state (immutable)
    */
   getState(): Readonly<AgentState> {
+    if (this.useLangGraph) {
+      return graphStateToAgentState(this.graphState) as Readonly<AgentState>;
+    }
     return { ...this.state };
   }
 
@@ -73,6 +116,7 @@ export class DirectorAgent {
    * Start a new lesson
    */
   startLesson(lesson: LessonContent, student: Partial<StudentProfile>): AgentResponse {
+    this.graphState = createInitialGraphState(lesson, student);
     this.state.lesson = lesson;
     this.state.student = { ...this.state.student, ...student };
     this.state.phase = 'intro';
@@ -83,7 +127,6 @@ export class DirectorAgent {
       lastInteraction: Date.now(),
     };
 
-    // Generate intro narration
     const introNarration = this.generateIntroNarration(lesson);
 
     return {
@@ -99,7 +142,7 @@ export class DirectorAgent {
   }
 
   /**
-   * Advance to next phase in lesson
+   * Advance to next phase in lesson using LangGraph
    */
   advancePhase(): AgentResponse | null {
     const currentIndex = PHASE_ORDER.indexOf(this.state.phase);
@@ -112,7 +155,6 @@ export class DirectorAgent {
     this.state.timestamps.phaseStart = Date.now();
     this.state.timestamps.lastInteraction = Date.now();
 
-    // Generate phase-appropriate actions
     const response = this.generatePhaseResponse(nextPhase);
 
     return {
@@ -124,10 +166,41 @@ export class DirectorAgent {
   }
 
   /**
+   * Advance using LangGraph state machine (async)
+   */
+  async advanceWithLangGraph(): Promise<AgentResponse | null> {
+    try {
+      const updatedGraphState = await advanceLessonGraph(this.graphState);
+      this.graphState = updatedGraphState;
+      this.state = graphStateToAgentState(updatedGraphState);
+
+      return {
+        agentId: 'director',
+        action: { type: 'ADVANCE_PHASE', nextPhase: this.state.phase },
+        narration: updatedGraphState.narration ?? undefined,
+        visual: updatedGraphState.visual ?? undefined,
+        nextState: this.state,
+      };
+    } catch (err) {
+      return {
+        agentId: 'director',
+        action: { type: 'HANDLE_EMOTION', emotion: 'frustrated' },
+        narration: {
+          agentId: 'teacher',
+          text: err instanceof Error ? err.message : 'An error occurred during lesson progression.',
+          emotion: 'calm',
+        },
+        nextState: this.state,
+      };
+    }
+  }
+
+  /**
    * Handle student emotion change
    */
   handleEmotion(emotion: EmotionState): AgentResponse {
     this.state.student.emotion = emotion;
+    this.graphState.studentEmotion = emotion;
     this.state.timestamps.lastInteraction = Date.now();
 
     const tone = EMOTION_TONES[emotion];
@@ -167,6 +240,7 @@ export class DirectorAgent {
 
     if (this.state.currentSection < this.state.lesson.sections.length - 1) {
       this.state.currentSection++;
+      this.graphState.currentSection = this.state.currentSection;
       this.state.completedSections.push(this.state.currentSection - 1);
       this.state.timestamps.lastInteraction = Date.now();
 
@@ -185,7 +259,6 @@ export class DirectorAgent {
       };
     }
 
-    // All sections complete, advance phase
     return this.advancePhase();
   }
 
@@ -194,6 +267,7 @@ export class DirectorAgent {
    */
   completeLesson(): AgentResponse {
     this.state.phase = 'complete';
+    this.graphState.phase = 'complete';
     this.state.timestamps.lastInteraction = Date.now();
 
     const lesson = this.state.lesson;
@@ -306,7 +380,6 @@ export function getDirector(initialState?: Partial<AgentState>): DirectorAgent {
   if (!directorInstance) {
     directorInstance = new DirectorAgent(initialState);
   } else if (initialState) {
-    // Reset with new state if provided
     directorInstance = new DirectorAgent(initialState);
   }
   return directorInstance;
@@ -314,4 +387,5 @@ export function getDirector(initialState?: Partial<AgentState>): DirectorAgent {
 
 export function resetDirector(): void {
   directorInstance = null;
+  resetLessonGraph();
 }

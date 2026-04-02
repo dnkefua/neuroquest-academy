@@ -43,7 +43,7 @@ export default function QuestMapScene() {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Get grade from URL or use store's current grade
-  const urlGrade = parseInt(searchParams.get('grade') || '6', 10);
+  const urlGrade = parseInt(searchParams?.get('grade') || '6', 10);
 
   // Set grade from URL if different
   useEffect(() => {

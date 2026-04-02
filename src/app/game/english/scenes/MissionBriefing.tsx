@@ -12,7 +12,7 @@ export default function MissionBriefing() {
   const { currentQuestId, setScene } = useEnglishStore();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const grade = parseInt(searchParams.get('grade') || '6', 10);
+  const grade = parseInt(searchParams?.get('grade') || '6', 10);
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   // Cleanup TTS on unmount
   useTTSCleanup();

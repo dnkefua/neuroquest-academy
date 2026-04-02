@@ -23,6 +23,20 @@
   }
   h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; }
   [dir="rtl"] { direction: rtl; text-align: right; }
+  [dir="rtl"] .text-left { text-align: right; }
+  [dir="rtl"] .text-right { text-align: left; }
+  [dir="rtl"] .ml-auto { margin-left: 0; margin-right: auto; }
+  [dir="rtl"] .mr-auto { margin-right: 0; margin-left: auto; }
+  [dir="rtl"] .ml-1 { margin-left: 0; margin-right: 0.25rem; }
+  [dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+  [dir="rtl"] .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+  [dir="rtl"] .mr-1 { margin-right: 0; margin-left: 0.25rem; }
+  [dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+  [dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+  [dir="rtl"] .gap-1, [dir="rtl"] .gap-2, [dir="rtl"] .gap-3,
+  [dir="rtl"] .gap-4, [dir="rtl"] .gap-5 { direction: rtl; }
+  [dir="rtl"] .card-3d:hover { transform: rotateY(5deg) rotateX(3deg) translateZ(10px) scale(1.02); }
+  [dir="rtl"] .realm-card:hover { transform: rotateY(6deg) rotateX(4deg) translateZ(16px) scale(1.02); }
 }
 
 @layer components {

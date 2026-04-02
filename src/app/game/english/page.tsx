@@ -14,17 +14,19 @@ const GameApp = dynamic(() => import('./GameApp'), {
 export default function EnglishGamePage() {
   const searchParams = useSearchParams()
   const setGrade = useEnglishStore(s => s.setGrade)
+  const setScene = useEnglishStore(s => s.setScene)
   const userGrade = useProgressStore(s => s.currentGrade)
 
   // Read grade from URL or use user's grade
-  const urlGrade = searchParams.get('grade')
+  const urlGrade = searchParams?.get('grade')
   const grade = urlGrade ? parseInt(urlGrade, 10) : userGrade
 
   useEffect(() => {
+    setScene('CLASSROOM')
     if (grade && hasQuestsForGrade(grade)) {
       setGrade(grade)
     }
-  }, [grade, setGrade])
+  }, [grade, setGrade, setScene])
 
   return <GameApp />
 }

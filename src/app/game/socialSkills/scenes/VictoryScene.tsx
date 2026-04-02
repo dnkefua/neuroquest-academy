@@ -14,7 +14,7 @@ export default function VictoryScene() {
   const { walletCoins } = useEconomyStore();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const grade = parseInt(searchParams.get('grade') || '1', 10);
+  const grade = parseInt(searchParams?.get('grade') || '1', 10);
 
   const isPerfect = score === questions.length;
   const totalQuestions = questions.length;

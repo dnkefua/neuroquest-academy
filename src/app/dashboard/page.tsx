@@ -9,6 +9,7 @@ import { getUserProfile, updateEmotion, logIntervention } from '@/lib/firestore'
 import { useProgressStore } from '@/store/progressStore';
 import type { UserProfile, EmotionKey } from '@/types';
 import { EMOTIONS, SUBJECTS } from '@/lib/constants';
+import { useTranslations } from '@/lib/translations';
 import BrainBreakModal from '@/components/BrainBreakModal';
 import WalletHUD from '@/components/ui/WalletHUD';
 import StreakClaim from '@/components/StreakClaim';
@@ -26,6 +27,7 @@ export default function DashboardPage() {
 
   const setCurrentGrade = useProgressStore(s => s.setCurrentGrade);
   const setUserName = useProgressStore(s => s.setUserName);
+  const t = useTranslations(profile?.language ?? 'EN');
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -33,7 +35,6 @@ export default function DashboardPage() {
       const p = await getUserProfile(user.uid);
       if (!p?.name) { router.replace('/onboarding'); return; }
       setProfile(p);
-      // Sync user's grade and name from profile to progress store
       if (p.grade && p.grade !== useProgressStore.getState().currentGrade) {
         setCurrentGrade(p.grade);
       }
@@ -55,9 +56,9 @@ export default function DashboardPage() {
       if (emotion === 'frustrated' || emotion === 'anxious') {
         await logIntervention(profile.uid, emotion);
         setShowBrainBreak(true);
-        toast('Taking a Brain Break will help! 🧠', { icon: '💜', duration: 3000 });
+        toast.success('taking_brain_break' as any, { icon: '💜', duration: 3000 });
       } else if (emotion === 'happy') {
-        toast("You're on fire! Keep going 🔥", { icon: '🎉', duration: 2000 });
+        toast.success("youre_on_fire" as any, { icon: '🎉', duration: 2000 });
       }
     } finally {
       setUpdatingEmotion(false);
@@ -86,7 +87,6 @@ export default function DashboardPage() {
     <div className="min-h-screen pb-12 relative" dir={isRTL ? 'rtl' : 'ltr'}
       style={{ background: 'linear-gradient(160deg, #F5F3FF 0%, #EEF9F8 50%, #FFF7ED 100%)' }}>
 
-      {/* Floating background blobs */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-64 h-64 rounded-full opacity-20"
           style={{ background: 'radial-gradient(circle, #8B5CF6, transparent)' }} />
@@ -96,7 +96,6 @@ export default function DashboardPage() {
           style={{ background: 'radial-gradient(circle, #F97316, transparent)' }} />
       </div>
 
-      {/* Header */}
       <header className="bg-white/70 backdrop-blur-md border-b border-purple-100 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -108,19 +107,18 @@ export default function DashboardPage() {
             {profile.role === 'parent' && (
               <button onClick={() => router.push('/parent')}
                 className="text-sm text-purple-600 font-nunito font-bold bg-purple-50 px-3 py-1.5 rounded-xl hover:bg-purple-100 transition-all">
-                👨‍👩‍👧 Parent View
+                {t('parent_view')}
               </button>
             )}
             <button onClick={() => signOut(auth).then(() => router.push('/auth'))}
               className="text-sm text-gray-400 font-dmsans hover:text-gray-600">
-              Sign out
+              {t('sign_out')}
             </button>
           </div>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-5">
-        {/* Hero greeting */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           className="card border-0 overflow-hidden relative"
           style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #14B8A6 100%)' }}>
@@ -128,17 +126,17 @@ export default function DashboardPage() {
             style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 0%, transparent 60%)' }} />
           <div className="relative">
             <h1 className="font-nunito text-2xl font-black text-white mb-1">
-              {isRTL ? `مرحباً بعودتك، ${profile.name}! 🌟` : `Welcome back, ${profile.name}! 🌟`}
+              {t('welcome_back_name')}, {profile.name}! 🌟
             </h1>
             <p className="text-purple-100 font-dmsans text-sm">
-              {isRTL ? 'أنت رائع — استمر في الاستكشاف! 🚀' : "Your classroom is ready — let's learn something amazing today! 🚀"}
+              {t('you_are_amazing')}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-4">
               <StreakClaim />
               <div className="flex items-center gap-1.5 bg-white/20 rounded-xl px-3 py-1.5">
                 <span>⭐</span>
-                <span className="font-nunito font-bold text-white text-sm">Level {level}</span>
+                <span className="font-nunito font-bold text-white text-sm">{t('level')} {level}</span>
               </div>
               <div className="flex items-center gap-1.5 bg-white/20 rounded-xl px-3 py-1.5">
                 <span>{currentEmotion.emoji}</span>
@@ -146,10 +144,9 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* XP Bar */}
             <div className="mt-4">
               <div className="flex justify-between text-xs text-purple-100 mb-1.5">
-                <span>{xpInLevel} XP</span><span>{XP_PER_LEVEL} XP to Level {level + 1}</span>
+                <span>{xpInLevel} XP</span><span>{XP_PER_LEVEL} XP {t('to_level')} {level + 1}</span>
               </div>
               <div className="w-full bg-white/20 rounded-full h-3 xp-bar">
                 <motion.div className="h-3 rounded-full bg-gradient-to-r from-yellow-300 to-orange-400"
@@ -161,10 +158,9 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Emotion widget */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card">
           <h2 className="font-nunito text-lg font-bold text-gray-800 mb-3">
-            {isRTL ? 'كيف تشعر الآن؟ 💭' : 'How are you feeling right now? 💭'}
+            {t('how_feeling_now')}
           </h2>
           <div className="grid grid-cols-4 gap-2">
             {EMOTIONS.map((e) => (
@@ -179,53 +175,61 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Brain Break */}
         <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
           onClick={() => setShowBrainBreak(true)}
           className="w-full card border-2 border-dashed border-teal-300 bg-teal-50 hover:bg-teal-100 transition-all active:scale-[0.99] text-center">
           <div className="text-4xl mb-2">🧘</div>
-          <h3 className="font-nunito text-lg font-black text-teal-700">Take a Brain Break!</h3>
-          <p className="text-sm text-teal-600 font-dmsans mt-1">Breathe · Move · Ground — reset your mind ✨</p>
+          <h3 className="font-nunito text-lg font-black text-teal-700">{t('brain_break')}</h3>
+          <p className="text-sm text-teal-600 font-dmsans mt-1">{t('breathe_move_ground')}</p>
         </motion.button>
 
-        {/* World Map — main navigation hub */}
         <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
           onClick={() => router.push('/world-map')}
-          className="w-full card border-0 text-left hover:scale-[1.01] active:scale-[0.99] transition-all overflow-hidden relative"
+          className={`w-full card border-0 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all overflow-hidden relative`}
           style={{ background: 'linear-gradient(135deg, #1a0d3e 0%, #0c1040 100%)', border: '1.5px solid rgba(139,92,246,0.4)' }}>
           <div className="absolute inset-0 pointer-events-none"
             style={{ background: 'radial-gradient(ellipse at 80% 50%, rgba(139,92,246,0.15) 0%, transparent 70%)' }} />
           <div className="relative flex items-center gap-4">
             <div className="text-4xl">🗺️</div>
             <div>
-              <h3 className="font-nunito text-lg font-black text-white">World Map</h3>
+              <h3 className="font-nunito text-lg font-black text-white">{t('world_map')}</h3>
               <p className="text-sm font-dmsans mt-0.5" style={{ color: 'rgba(139,92,246,0.8)' }}>
-                Grades 1–12 · All subjects · Coin economy 💰
+                {t('world_map_desc')}
               </p>
             </div>
-            <div className="ml-auto text-xs font-black px-3 py-1.5 rounded-xl"
+            <div className={`${isRTL ? 'mr-auto' : 'ml-auto'} text-xs font-black px-3 py-1.5 rounded-xl`}
               style={{ background: 'rgba(139,92,246,0.2)', color: '#8B5CF6', border: '1px solid rgba(139,92,246,0.3)' }}>
-              ⚔️ Explore
+              {t('explore')}
             </div>
           </div>
         </motion.button>
 
-        {/* Social Skills shortcut */}
         <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           onClick={() => router.push('/social-skills')}
-          className="w-full card border-0 bg-orange-50 text-left hover:scale-[1.01] active:scale-[0.99] transition-all card-3d">
+          className={`w-full card border-0 bg-orange-50 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all card-3d`}>
           <div className="flex items-center gap-4">
             <div className="text-4xl">🤝</div>
             <div>
-              <h3 className="font-nunito text-lg font-black text-orange-700">Social Skills Mini-Game</h3>
-              <p className="text-sm text-orange-600 font-dmsans mt-0.5">AI-powered social scenarios — earn XP! 🎮</p>
+              <h3 className="font-nunito text-lg font-black text-orange-700">{t('social_skills_game')}</h3>
+              <p className="text-sm text-orange-600 font-dmsans mt-0.5">{t('social_skills_desc')}</p>
             </div>
           </div>
         </motion.button>
 
-        {/* Realm Portals */}
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+          onClick={() => router.push('/calm-corner')}
+          className={`w-full card border-0 bg-gradient-to-r from-teal-50 to-purple-50 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all card-3d`}>
+          <div className="flex items-center gap-4">
+            <div className="text-4xl">🧘</div>
+            <div>
+              <h3 className="font-nunito text-lg font-black text-teal-700">{t('calm_corner')}</h3>
+              <p className="text-sm text-teal-600 font-dmsans mt-0.5">{t('calm_corner_desc')}</p>
+            </div>
+          </div>
+        </motion.button>
+
         <div>
-          <h2 className="font-nunito text-xl font-black text-gray-800 mb-4">🗺️ Choose Your Realm</h2>
+          <h2 className="font-nunito text-xl font-black text-gray-800 mb-4">{t('choose_your_realm')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {SUBJECTS.map((subject, i) => {
               const BOSS_COLORS: Record<string, string> = {
@@ -246,7 +250,7 @@ export default function DashboardPage() {
                     else if (subject.id === 'science') router.push('/game/science');
                     else router.push(`/lesson/${subject.id}`);
                   }}
-                  className="realm-card text-left overflow-hidden rounded-3xl cursor-pointer"
+                  className={`realm-card ${isRTL ? 'text-right' : 'text-left'} overflow-hidden rounded-3xl cursor-pointer`}
                   style={{
                     background: 'linear-gradient(135deg, #1a1040 0%, #0d1b3e 100%)',
                     border: `1.5px solid ${bossColor}44`,
@@ -267,7 +271,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="text-xs font-nunito font-black px-2 py-1 rounded-lg"
                         style={{ background: `${bossColor}22`, color: bossColor }}>
-                        ⚔️ Enter
+                        {t('enter_realm')}
                       </div>
                     </div>
                     <p className="text-xs text-gray-400 font-dmsans leading-relaxed">{subject.description}</p>
@@ -275,7 +279,7 @@ export default function DashboardPage() {
                       <div className="flex-1 bg-white/10 rounded-full h-1.5">
                         <div className="h-full rounded-full w-0" style={{ background: bossColor }} />
                       </div>
-                      <span className="text-xs text-gray-500 font-dmsans">IB Quest</span>
+                      <span className="text-xs text-gray-500 font-dmsans">{t('ib_quest')}</span>
                     </div>
                   </div>
                 </motion.button>

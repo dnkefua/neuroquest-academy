@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
-export type EnglishScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'QUIZ' | 'VICTORY';
+export type EnglishScene = 'CLASSROOM' | 'QUEST_MAP' | 'MISSION_BRIEFING' | 'QUIZ' | 'VICTORY';
 
 export interface EnglishQuestion {
   id: number;
@@ -23,16 +23,21 @@ interface EnglishState {
   currentGrade: number;
   currentQuestId: string;
   studentName: string;
+  goldCoins: number;
+  goldTarget: number;
   currentQuestion: number;
   questions: EnglishQuestion[];
   score: number;
   clueUsed: boolean[];
+  lessonComplete: boolean;
   xpEarned: number;
   setScene: (scene: EnglishScene) => void;
   setGrade: (grade: number) => void;
   loadQuest: (questId: string, grade: number) => void;
+  addGold: (amount: number) => void;
   answerQuestion: (correct: boolean) => void;
   openClue: (index: number) => void;
+  setStudentName: (name: string) => void;
   nextQuestion: () => void;
   reset: () => void;
 }
@@ -61,14 +66,17 @@ function toEnglishQuestion(q: GameQuest['questions'][0], index: number): English
 const DEFAULT_GRADE = 6;
 
 export const useEnglishStore = create<EnglishState>((set, get) => ({
-  scene: 'QUEST_MAP',
+  scene: 'CLASSROOM',
   currentGrade: DEFAULT_GRADE,
   currentQuestId: '',
   studentName: 'Reader',
+  goldCoins: 0,
+  goldTarget: 100,
   currentQuestion: 0,
   questions: [],
   score: 0,
   clueUsed: [],
+  lessonComplete: false,
   xpEarned: 0,
 
   setScene: (scene) => set({ scene }),
@@ -76,7 +84,6 @@ export const useEnglishStore = create<EnglishState>((set, get) => ({
   setGrade: (grade) => {
     const quests = getQuestsForGrade(grade);
     if (quests.length === 0) {
-      // Grade not available yet
       return;
     }
     const firstQuest = quests[0];
@@ -86,9 +93,11 @@ export const useEnglishStore = create<EnglishState>((set, get) => ({
       questions: firstQuest.questions.map((q, i) => toEnglishQuestion(q, i)),
       currentQuestion: 0,
       score: 0,
+      goldCoins: 0,
       clueUsed: new Array(firstQuest.questions.length).fill(false),
+      lessonComplete: false,
       xpEarned: 0,
-      scene: 'QUEST_MAP',
+      scene: 'CLASSROOM',
     });
   },
 
@@ -102,34 +111,42 @@ export const useEnglishStore = create<EnglishState>((set, get) => ({
       questions: quest.questions.map((q, i) => toEnglishQuestion(q, i)),
       currentQuestion: 0,
       score: 0,
+      goldCoins: 0,
       clueUsed: new Array(quest.questions.length).fill(false),
+      lessonComplete: false,
       xpEarned: 0,
       scene: 'MISSION_BRIEFING',
     });
   },
 
+  addGold: (amount) => set((s) => ({ goldCoins: Math.min(s.goldCoins + amount, s.goldTarget) })),
+
   answerQuestion: (correct) => set((s) => ({
     score: correct ? s.score + 1 : s.score,
-    xpEarned: correct ? s.xpEarned + 30 : s.xpEarned,
+    xpEarned: correct ? s.xpEarned + 64 : s.xpEarned,
   })),
 
   openClue: (index) => set((s) => {
     const c = [...s.clueUsed]; c[index] = true; return { clueUsed: c };
   }),
 
+  setStudentName: (name) => set({ studentName: name }),
+
   nextQuestion: () => set((s) => {
     const next = s.currentQuestion + 1;
-    if (next >= s.questions.length) return { scene: 'VICTORY' as EnglishScene };
+    if (next >= s.questions.length) return { lessonComplete: true, scene: 'VICTORY' as EnglishScene };
     return { currentQuestion: next };
   }),
 
-  reset: () => set({
+  reset: () => set((s) => ({
     scene: 'QUEST_MAP',
+    goldCoins: 0,
     currentQuestion: 0,
     score: 0,
-    clueUsed: [],
+    clueUsed: new Array(s.questions.length).fill(false),
+    lessonComplete: false,
     xpEarned: 0,
-  }),
+  })),
 }));
 
 // Export helper functions
