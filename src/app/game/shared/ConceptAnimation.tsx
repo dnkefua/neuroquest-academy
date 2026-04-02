@@ -302,9 +302,9 @@ function CircuitAnim({ c }: { c: string }) {
         <circle cx="90" cy="20" r="3" fill="#9CA3AF" />
 
         {/* Light bulb */}
-        <motion.g x="140" y="25">
-          <motion.circle cx="160" cy="40" r="18" fill={isClosed ? "#FCD34D" : "#4B5563"} stroke="#9CA3AF" strokeWidth="2"
-            animate={{ opacity: isClosed ? [0.6, 1, 0.6] : 0.5 }} transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }} />
+        <motion.g x="140" y="25"
+          animate={{ opacity: isClosed ? [0.6, 1, 0.6] : 0.5 }} transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}>
+          <circle cx="160" cy="40" r="18" fill={isClosed ? '#FCD34D' : '#4B5563'} stroke="#9CA3AF" strokeWidth="2" />
           {isClosed && (
             <>
               {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
