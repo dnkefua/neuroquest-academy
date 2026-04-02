@@ -86,7 +86,7 @@ export default function WorldMapPage() {
               ← Dashboard
             </button>
             <div className="w-px h-5 bg-white/20" />
-            <span className="text-2xl">🗺️</span>
+            <img src="/logo.png" alt="NeuroQuest" className="w-7 h-7 object-contain" />
             <span className="font-black text-white text-lg" style={{ fontFamily: 'Georgia, serif' }}>
               World Map
             </span>

@@ -100,7 +100,7 @@ export default function DashboardPage() {
       <header className="bg-white/70 backdrop-blur-md border-b border-purple-100 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-2xl">🧠</span>
+            <img src="/logo.png" alt="NeuroQuest" className="w-8 h-8 object-contain" />
             <span className="font-nunito font-black text-purple-700 text-lg">NeuroQuest</span>
           </div>
           <div className="flex items-center gap-3">

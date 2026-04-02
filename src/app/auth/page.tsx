@@ -97,7 +97,12 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-7xl mb-3">🧠</div>
+          <div className="flex justify-center mb-3">
+            <img src="/logo.png" alt="NeuroQuest Academy" className="w-20 h-20 object-contain" />
+          </div>
+          <h1 className="font-nunito text-3xl font-black text-gray-800">NeuroQuest Academy</h1>
+          <p className="text-gray-500 mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Where every mind is a universe ✨</p>
+        </div>
           <h1 className="font-nunito text-3xl font-black text-gray-800">NeuroQuest Academy</h1>
           <p className="text-gray-500 mt-1" style={{ fontFamily: 'DM Sans, sans-serif' }}>Where every mind is a universe ✨</p>
         </div>

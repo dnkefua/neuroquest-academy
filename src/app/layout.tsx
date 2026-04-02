@@ -5,6 +5,14 @@ import { Toaster } from 'react-hot-toast';
 export const metadata: Metadata = {
   title: 'NeuroQuest Academy',
   description: 'AI-powered adaptive learning for neurodiverse students',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-icon.png',
+    shortcut: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
