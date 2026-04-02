@@ -3,6 +3,7 @@
 // Falls back to browser TTS when Cloud TTS unavailable
 // v2: Fixed race conditions, echo, and added LRU cache
 
+import { useEffect } from 'react';
 import { getGradeGroup, getVoiceForGrade, detectGenderFromName } from '@/lib/tts-cache';
 
 // Lazy import to avoid circular-dep issues at module init time
@@ -388,18 +389,12 @@ class TTSEngine {
 
 export const gameTTS = new TTSEngine();
 
-/**
- * React hook for TTS cleanup on unmount.
- * Automatically stops TTS when component unmounts.
- *
- * @example
- * useTTSCleanup();
- * // or with dependency
- * useEffect(() => {
- *   gameTTS.speak(text);
- *   return useTTSCleanup();
- * }, [text]);
- */
-export function useTTSCleanup(): () => void {
-  return () => gameTTS.stop();
+/** Stop TTS on component unmount. Call at the top of any component that uses gameTTS. */
+export function useTTSCleanup(): void {
+  useEffect(() => () => gameTTS.stop(), []);
+}
+
+/** Strip parenthetical text from question strings — prevents TTS reading emoji alt-text like "(pointing finger up)". */
+export function stripParens(text: string): string {
+  return text.replace(/\s*\([^)]*\)/g, '').trim();
 }

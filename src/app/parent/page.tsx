@@ -8,7 +8,10 @@ import { auth } from '@/lib/firebase';
 import {
   getUserProfile, getRecentSessions, getEmotionLog,
   getWeeklyProgress, getSubjectMastery, getEmotionHeatmap,
+  approveQuest, dismissApprovalRequest,
 } from '@/lib/firestore';
+import { getGameQuests } from '@/lib/questData';
+import type { CurriculumSubject } from '@/types';
 import type { UserProfile } from '@/types';
 import { EMOTIONS } from '@/lib/constants';
 import { RANK_PROGRESSION } from '@/store/progressStore';
@@ -51,7 +54,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   socialSkills: 'Social Skills',
 };
 
-type ActiveTab = 'overview' | 'quests' | 'progress' | 'emotions' | 'sessions';
+type ActiveTab = 'overview' | 'quests' | 'progress' | 'emotions' | 'sessions' | 'unlock';
 
 export default function ParentPage() {
   const router = useRouter();
@@ -67,6 +70,8 @@ export default function ParentPage() {
   const [linking, setLinking] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
   const [childCompletedQuests, setChildCompletedQuests] = useState<string[]>([]);
+  const [childApprovedQuests, setChildApprovedQuests] = useState<string[]>([]);
+  const [togglingQuestId, setTogglingQuestId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -97,10 +102,8 @@ export default function ParentPage() {
     setWeeklyData(weekly as { week: string; math?: number; science?: number; english?: number; 'social-skills'?: number }[]);
     setMasteryData(mastery);
     setHeatmapData(heatmap);
-    // Get completed quests from child's profile
-    if (cp?.completedQuests) {
-      setChildCompletedQuests(cp.completedQuests);
-    }
+    if (cp?.completedQuests) setChildCompletedQuests(cp.completedQuests);
+    if (cp?.approvedQuestIds) setChildApprovedQuests(cp.approvedQuestIds);
   }
 
   async function handleLink() {
@@ -116,6 +119,24 @@ export default function ParentPage() {
       alert('Child account not found. Please check the UID.');
     } finally {
       setLinking(false);
+    }
+  }
+
+  async function handleToggleQuestApproval(questId: string) {
+    if (!profile?.childUid || togglingQuestId) return;
+    setTogglingQuestId(questId);
+    try {
+      if (childApprovedQuests.includes(questId)) {
+        const { updateDoc, doc, arrayRemove } = await import('firebase/firestore');
+        const { db } = await import('@/lib/firebase');
+        await updateDoc(doc(db, 'users', profile.childUid), { approvedQuestIds: arrayRemove(questId) });
+        setChildApprovedQuests(prev => prev.filter(id => id !== questId));
+      } else {
+        await approveQuest(profile.childUid, questId);
+        setChildApprovedQuests(prev => [...prev, questId]);
+      }
+    } finally {
+      setTogglingQuestId(null);
     }
   }
 
@@ -137,6 +158,7 @@ export default function ParentPage() {
   const TABS: { key: ActiveTab; label: string; icon: string }[] = [
     { key: 'overview', label: 'Overview', icon: '📊' },
     { key: 'quests', label: 'Quests', icon: '🗺️' },
+    { key: 'unlock', label: 'Unlock Topics', icon: '🔓' },
     { key: 'progress', label: 'Progress', icon: '📈' },
     { key: 'emotions', label: 'Emotions', icon: '💭' },
     { key: 'sessions', label: 'Sessions', icon: '📋' },
@@ -381,6 +403,75 @@ export default function ParentPage() {
                       No quests completed yet. Encourage {childProfile?.name} to start learning!
                     </p>
                   )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Unlock Topics Tab ── */}
+            {activeTab === 'unlock' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                <div className="card">
+                  <h3 className="font-nunito text-lg font-black text-gray-800 mb-1">🔓 Unlock Topics for {childProfile?.name}</h3>
+                  <p className="text-xs text-gray-500 font-dmsans mb-5">
+                    By default, quests unlock sequentially. Toggle any quest below to give your child direct access — perfect for jumping ahead or revisiting a topic.
+                  </p>
+                  {(['math', 'science', 'english', 'social', 'socialSkills'] as CurriculumSubject[]).map((subject) => {
+                    const grade = childProfile?.grade ?? 6;
+                    const quests = getGameQuests(grade, subject);
+                    if (quests.length === 0) return null;
+                    const subjectColor = SUBJECT_COLORS[subject] ?? '#8B5CF6';
+                    return (
+                      <div key={subject} className="mb-5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">
+                            {subject === 'math' ? '🔢' : subject === 'science' ? '🔬' : subject === 'english' ? '📖' : subject === 'social' ? '🌍' : '💜'}
+                          </span>
+                          <span className="font-nunito font-black text-sm text-gray-800">{SUBJECT_LABELS[subject] ?? subject}</span>
+                        </div>
+                        <div className="space-y-2">
+                          {quests.map((quest, idx) => {
+                            const isCompleted = childCompletedQuests.includes(quest.id);
+                            const isApproved = childApprovedQuests.includes(quest.id);
+                            const isAutoUnlocked = idx === 0 || childCompletedQuests.includes(quests[idx - 1].id);
+                            const isToggling = togglingQuestId === quest.id;
+                            return (
+                              <div key={quest.id}
+                                className="flex items-center justify-between px-3 py-2.5 rounded-xl border"
+                                style={{ borderColor: `${subjectColor}30`, background: isApproved ? `${subjectColor}08` : 'white' }}>
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-base flex-shrink-0">{isCompleted ? '✅' : isApproved ? '🔓' : isAutoUnlocked ? '🔑' : '🔒'}</span>
+                                  <div className="min-w-0">
+                                    <p className="font-nunito font-bold text-gray-800 text-xs truncate">{quest.title}</p>
+                                    <p className="text-[10px] text-gray-400 font-dmsans">
+                                      {isCompleted ? 'Completed' : isApproved ? 'Parent unlocked' : isAutoUnlocked ? 'Naturally unlocked' : 'Locked'}
+                                    </p>
+                                  </div>
+                                </div>
+                                {!isCompleted && !isAutoUnlocked && (
+                                  <button
+                                    onClick={() => handleToggleQuestApproval(quest.id)}
+                                    disabled={isToggling}
+                                    className="flex-shrink-0 ml-2 px-3 py-1 rounded-lg text-xs font-nunito font-bold transition-all disabled:opacity-50"
+                                    style={{
+                                      background: isApproved ? `${subjectColor}20` : '#F3F4F6',
+                                      color: isApproved ? subjectColor : '#6B7280',
+                                      border: `1px solid ${isApproved ? subjectColor + '60' : '#E5E7EB'}`,
+                                    }}>
+                                    {isToggling ? '⏳' : isApproved ? 'Lock' : 'Unlock'}
+                                  </button>
+                                )}
+                                {(isCompleted || isAutoUnlocked) && (
+                                  <span className="flex-shrink-0 ml-2 text-xs text-gray-400 font-dmsans">
+                                    {isCompleted ? 'Done' : 'Open'}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

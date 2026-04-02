@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSocialSkillsStore } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
 import { useEconomyStore } from '@/store/economyStore';
-import { gameTTS, useTTSCleanup } from '../../shared/tts';
+import { gameTTS, useTTSCleanup, stripParens } from '../../shared/tts';
 import { gameAudio } from '../../shared/audio';
-import QuestBanner from '../../shared/QuestBanner';
+import ConceptAnimation from '../../shared/ConceptAnimation';
 import { getGameQuestById } from '@/lib/questData';
 
 const C1 = '#EC4899', C2 = '#8B5CF6';
@@ -26,12 +26,16 @@ export default function QuizScene() {
   const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
 
   useEffect(() => {
-    setSelected(null); setShowResult(false); setShowClue(false);
+    setSelected(null);
+    setShowResult(false);
+    setShowClue(false);
   }, [currentQuestion]);
 
   useEffect(() => {
-    if (question) { gameTTS.speak(question.question); return () => gameTTS.stop(); }
-  }, [question]);
+    if (!ttsOn || !question) return;
+    gameTTS.speak(stripParens(question.question));
+    return () => gameTTS.stop();
+  }, [currentQuestion, ttsOn]);
 
   if (!question) return (
     <div className="h-dvh flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f0a1f, #1a0f2d)' }}>
@@ -102,7 +106,7 @@ export default function QuizScene() {
 
           {/* Scrollable content */}
           <div className="flex-1 min-h-0 overflow-y-auto px-3 pt-2.5 pb-1">
-            <QuestBanner subject="socialSkills" questTitle={quest?.title} color1={C1} color2={C2} />
+            <ConceptAnimation subject="socialSkills" questTitle={quest?.title} color1={C1} color2={C2} />
 
             {question.narrative && (
               <p className="text-gray-300 text-xs mb-2 text-center italic line-clamp-2 leading-snug">

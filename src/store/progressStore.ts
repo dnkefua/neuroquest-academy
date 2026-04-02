@@ -36,6 +36,7 @@ interface ProgressState {
   currentProgramme: Programme;
   userName: string; // For TTS voice gender detection
   completedQuests: string[];
+  approvedQuestIds: string[]; // Parent-unlocked quests
   bossesDefeated: string[];
   gradesCompleted: number[];
   badges: Record<string, boolean>;
@@ -53,6 +54,7 @@ interface ProgressState {
   updateMastery: (subject: string, pct: number) => void;
   getQuestComplete: (questId: string) => boolean;
   getGradeProgress: (grade: number, totalQuests: number) => number;
+  setApprovedQuestIds: (ids: string[]) => void;
   reset: () => void;
 }
 
@@ -61,6 +63,7 @@ const DEFAULT_STATE = {
   currentProgramme: 'PYP' as Programme,
   userName: '' as string,
   completedQuests: [] as string[],
+  approvedQuestIds: [] as string[],
   bossesDefeated: [] as string[],
   gradesCompleted: [] as number[],
   badges: {} as Record<string, boolean>,
@@ -129,6 +132,8 @@ export const useProgressStore = create<ProgressState>()(
         const completed = get().completedQuests.filter(id => id.startsWith(`g${grade}-`)).length;
         return Math.round((completed / totalQuests) * 100);
       },
+
+      setApprovedQuestIds: (ids) => set({ approvedQuestIds: ids }),
 
       reset: () => set(DEFAULT_STATE),
     }),

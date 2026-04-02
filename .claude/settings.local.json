@@ -14,7 +14,21 @@
       "Bash(grep -c \"id: ''g[0-9]*-math''\" src/curriculum/data/grades*.ts)",
       "Bash(grep \"id: ''g[0-9]*-math''\" src/curriculum/data/grades*.ts)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(node -e \":*)",
+      "Bash(findstr :300)",
+      "Bash(taskkill /F /PID 10032 /PID 22416 /PID 8908 /PID 17692 /PID 31704 /PID 21460 /PID 34112 /PID 3148 /PID 17524)",
+      "Bash(powershell -Command \"Get-Process | Where-Object { $_ProcessName -like ''*node*'' } | Stop-Process -Force\")",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(wc -l src/app/game/*/scenes/QuizScene.tsx)",
+      "Bash(gcloud --version)",
+      "Bash(gcloud config:*)",
+      "Bash(gcloud services:*)",
+      "Bash(gcloud builds:*)",
+      "Bash(gcloud run:*)",
+      "Bash(find 'c:\\\\Users\\\\A2Z\\\\OneDrive\\\\Documents\\\\NDN Analytics\\\\NeuroQuest\\\\src\\\\components\\\\simulations' -type f -name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js)",
+      "Bash(find 'c:\\\\Users\\\\A2Z\\\\OneDrive\\\\Documents\\\\NDN Analytics\\\\NeuroQuest\\\\src\\\\components\\\\explainer' -type f -name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js)"
     ]
   }
 }

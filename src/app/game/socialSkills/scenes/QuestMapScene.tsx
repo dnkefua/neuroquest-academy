@@ -13,7 +13,7 @@ interface QuestMapSceneProps {
 
 export default function QuestMapScene({ grade }: QuestMapSceneProps) {
   const { setGrade, setScene, currentQuestId } = useSocialSkillsStore();
-  const { completedQuests } = useProgressStore();
+  const { completedQuests, approvedQuestIds } = useProgressStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function QuestMapScene({ grade }: QuestMapSceneProps) {
 
           {quests.map((quest, index) => {
             const isCompleted = completedQuests.includes(quest.id);
-            const isLocked = index > 0 && !completedQuests.includes(quests[index - 1].id);
+            const isLocked = index > 0 && !completedQuests.includes(quests[index - 1].id) && !approvedQuestIds.includes(quest.id);
 
             return (
               <motion.button

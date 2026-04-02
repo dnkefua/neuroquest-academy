@@ -35,7 +35,7 @@ const GRADE_NAMES: Record<number, { programme: string; topic: string }> = {
 
 export default function QuestMapScene() {
   const { loadQuest, currentQuestId, currentGrade, setGrade } = useEnglishStore();
-  const { completedQuests } = useProgressStore();
+  const { completedQuests, approvedQuestIds } = useProgressStore();
   const walletCoins = useEconomyStore(s => s.walletCoins);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,10 +57,10 @@ export default function QuestMapScene() {
   const quests = getQuests(activeGrade);
   const gradeInfo = GRADE_NAMES[activeGrade] || { programme: 'IB', topic: 'English' };
 
-  // A quest is unlocked if it's the first one, or the previous one is completed
+  // A quest is unlocked if it's the first one, the previous one is completed, or a parent approved it
   function isUnlocked(index: number) {
     if (index === 0) return true;
-    return completedQuests.includes(quests[index - 1]?.id || '');
+    return completedQuests.includes(quests[index - 1]?.id || '') || approvedQuestIds.includes(quests[index]?.id || '');
   }
 
   function isCompleted(questId: string) {

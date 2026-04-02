@@ -17,7 +17,7 @@ const LOCATION_ICONS: Record<LocationType, string> = {
 
 export default function QuestMapScene() {
   const { loadQuest, currentQuestId, currentGrade, setGrade } = useScienceStore();
-  const { completedQuests } = useProgressStore();
+  const { completedQuests, approvedQuestIds } = useProgressStore();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
@@ -47,10 +47,10 @@ export default function QuestMapScene() {
     topic: firstQuest?.subtitle || firstQuest?.title?.split(' ').slice(0, 3).join(' ') || 'Science',
   };
 
-  // A quest is unlocked if it's the first one, or the previous one is completed
+  // A quest is unlocked if it's the first one, the previous one is completed, or a parent approved it
   function isUnlocked(index: number) {
     if (index === 0) return true;
-    return completedQuests.includes(quests[index - 1].id);
+    return completedQuests.includes(quests[index - 1].id) || approvedQuestIds.includes(quests[index].id);
   }
 
   function isCompleted(questId: string) {

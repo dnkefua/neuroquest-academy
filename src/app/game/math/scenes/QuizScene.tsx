@@ -2,10 +2,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
-import { gameTTS, useTTSCleanup } from '../../shared/tts';
+import { gameTTS, useTTSCleanup, stripParens } from '../../shared/tts';
 import { useEconomyStore } from '@/store/economyStore';
 import ClueBox from '../components/ui/ClueBox';
-import QuestBanner from '../../shared/QuestBanner';
+import ConceptAnimation from '../../shared/ConceptAnimation';
 import { getGameQuestById } from '@/lib/questData';
 
 const GRADE_THEMES: Record<number, { name: string; emoji: string; color1: string; color2: string }> = {
@@ -37,12 +37,16 @@ export default function QuizScene() {
   const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
 
   useEffect(() => {
-    setSelected(null); setAnswered(false); setFeedback(null);
+    setSelected(null);
+    setAnswered(false);
+    setFeedback(null);
   }, [currentQuestion]);
 
   useEffect(() => {
-    if (q) { gameTTS.speak(`${theme.name} asks: ${q.question}`); return () => gameTTS.stop(); }
-  }, [currentQuestion, q, theme.name]);
+    if (!ttsOn || !q) return;
+    gameTTS.speak(`${theme.name} asks: ${stripParens(q.question)}`);
+    return () => gameTTS.stop();
+  }, [currentQuestion, ttsOn]);
 
   function handleConfirm() {
     if (selected === null) return;
@@ -110,9 +114,9 @@ export default function QuizScene() {
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto">
-            {/* Banner */}
+            {/* Animation */}
             <div className="px-3 pt-3">
-              <QuestBanner subject="math" questTitle={quest?.title} color1={theme.color1} color2={theme.color2} />
+              <ConceptAnimation subject="math" questTitle={quest?.title} color1={theme.color1} color2={theme.color2} />
             </div>
 
             {/* Narrator */}

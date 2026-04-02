@@ -6,6 +6,7 @@ import { useScienceStore, getQuestById } from '../store/gameStore';
 import { SCIENCE_MISSION_DIALOGUE } from '../data/scienceData';
 import { gameAudio } from '../../shared/audio';
 import { gameTTS, useTTSCleanup } from '../../shared/tts';
+import CountdownBar from '../../shared/CountdownBar';
 
 export default function ScienceMissionBriefing() {
   const setScene = useScienceStore(s => s.setScene);
@@ -51,6 +52,7 @@ export default function ScienceMissionBriefing() {
     const currentLine = SCIENCE_MISSION_DIALOGUE[lineIndex];
     gameTTS.afterSpeak(currentLine ?? '', () => setLineIndex(i => i + 1), 3000);
   }, [lineIndex, titleDone]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   return (
     <div className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 py-8"
@@ -196,6 +198,9 @@ export default function ScienceMissionBriefing() {
               </div>
             ))}
             <div className="w-full h-px bg-sky-700/40 my-4" />
+
+            <CountdownBar seconds={5} color1="#38BDF8" color2="#0EA5E9" active={showCard} />
+
             <div className="flex gap-3 mt-2">
               <button onClick={() => { gameAudio.playTransition(); setScene('CLOUD_TEACHING'); }}
                 className="flex-1 py-4 rounded-2xl font-black text-black text-base transition-all hover:scale-105 active:scale-95"

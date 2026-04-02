@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getQuestById } from '../store/gameStore';
 import { useProgressStore } from '@/store/progressStore';
 import { gameTTS, useTTSCleanup } from '../../shared/tts';
+import CountdownBar from '../../shared/CountdownBar';
 
 // Grade display info
 const GRADE_INFO: Record<number, { programme: string; topic: string }> = {
@@ -76,6 +77,7 @@ export default function MissionBriefing() {
     // Shorter fallback delay for quick progression
     gameTTS.afterSpeak(line, () => setLineIndex(i => i + 1), 1500);
   }, [lineIndex, missionDialogue]);
+
 
   return (
     <div className="w-full h-screen relative overflow-hidden flex flex-col items-center justify-center"
@@ -172,6 +174,9 @@ export default function MissionBriefing() {
               </div>
             ))}
             <div className="w-full h-px bg-yellow-700/40 my-4" />
+
+            <CountdownBar seconds={5} color1="#FFD700" color2="#FFA500" active={showCard} />
+
             <div className="flex gap-3 mt-2">
               <button onClick={() => { gameTTS.stop(); setScene(currentGrade === 6 ? 'PIRATE_ENCOUNTER' : 'QUIZ'); }}
                 className="flex-1 py-4 rounded-2xl font-black text-black text-base transition-all hover:scale-105 active:scale-95"

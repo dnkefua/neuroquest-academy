@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useEnglishStore, getQuestById } from '../store/gameStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { gameTTS, useTTSCleanup } from '../../shared/tts';
+import CountdownBar from '../../shared/CountdownBar';
 import { gameAudio } from '../../shared/audio';
 import { useEffect, useState } from 'react';
 
@@ -13,7 +14,6 @@ export default function MissionBriefing() {
   const searchParams = useSearchParams();
   const grade = parseInt(searchParams.get('grade') || '6', 10);
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
-
   // Cleanup TTS on unmount
   useTTSCleanup();
 
@@ -103,6 +103,8 @@ export default function MissionBriefing() {
               <p className="text-gray-400 text-xs">Your Guide</p>
             </div>
           </div>
+
+          <CountdownBar seconds={5} color1={quest.color} color2="#EF4444" />
 
           {/* Start button */}
           <motion.button

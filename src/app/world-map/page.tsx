@@ -19,7 +19,7 @@ export default function WorldMapPage() {
   const [userName, setUserName] = useState('Explorer');
   const [selectedGrade, setSelectedGrade] = useState<GradeRank | null>(null);
 
-  const { currentGrade, gradesCompleted, getGradeProgress } = useProgressStore();
+  const { currentGrade, gradesCompleted, getGradeProgress, setApprovedQuestIds } = useProgressStore();
   const walletCoins = useEconomyStore(s => s.walletCoins);
 
   useEffect(() => {
@@ -28,6 +28,7 @@ export default function WorldMapPage() {
       if (!user) { router.replace('/auth'); return; }
       const p = await getUserProfile(user.uid);
       if (p?.name) setUserName(p.name);
+      if (p?.approvedQuestIds?.length) setApprovedQuestIds(p.approvedQuestIds);
     });
     return () => unsub();
   }, [router]);

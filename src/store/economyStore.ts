@@ -27,6 +27,7 @@ interface EconomyState {
   cluesPurchased: number;
   transactions: CoinTransaction[];
   purchasedClues: Record<string, boolean>;  // key: `${questId}:${questionIndex}`
+  purchasedGames: string[];  // game IDs bought from the market
 
   // Actions
   earnCoins: (amount: number, source: string) => void;
@@ -34,6 +35,8 @@ interface EconomyState {
   buyClue: (questId: string, questionIndex: number, cost: number) => boolean;
   canAffordClue: (cost: number) => boolean;
   hasClue: (questId: string, questionIndex: number) => boolean;
+  buyGame: (gameId: string, cost: number) => boolean;
+  hasGame: (gameId: string) => boolean;
   reset: () => void;
 }
 

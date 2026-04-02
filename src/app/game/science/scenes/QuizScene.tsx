@@ -5,9 +5,9 @@ import { useScienceStore } from '../store/gameStore';
 import { getGameQuestById } from '@/lib/questData';
 import ScienceClueBox from '../components/ui/ClueBox';
 import VialCounter from '../components/ui/VialCounter';
-import QuestBanner from '../../shared/QuestBanner';
+import ConceptAnimation from '../../shared/ConceptAnimation';
 import { gameAudio } from '../../shared/audio';
-import { gameTTS, useTTSCleanup } from '../../shared/tts';
+import { gameTTS, useTTSCleanup, stripParens } from '../../shared/tts';
 
 export default function ScienceQuizScene() {
   const { questions, currentQuestion, score, vialsCollected, currentQuestId, currentGrade, answerQuestion, collectVial, nextQuestion } = useScienceStore();
@@ -28,13 +28,17 @@ export default function ScienceQuizScene() {
   function toggleTTS() { setTtsOn(gameTTS.toggle()); }
 
   useEffect(() => {
-    setSelected(null); setAnswered(false); setFeedback(null); setJustFilledVial(null);
+    setSelected(null);
+    setAnswered(false);
+    setFeedback(null);
+    setJustFilledVial(null);
   }, [currentQuestion]);
 
   useEffect(() => {
-    gameTTS.speak(`${q.spirit} says: ${q.narrative}. Question: ${q.question}`);
+    if (!ttsOn || !q) return;
+    gameTTS.speak(`${q.spirit} says: ${stripParens(q.narrative)}. Question: ${stripParens(q.question)}`);
     return () => gameTTS.stop();
-  }, [currentQuestion, q.spirit, q.narrative, q.question]);
+  }, [currentQuestion, ttsOn]);
 
   function handleConfirm() {
     if (selected === null) return;
@@ -102,9 +106,9 @@ export default function ScienceQuizScene() {
           {/* Scrollable inner */}
           <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
 
-            {/* Topic banner */}
+            {/* Topic animation */}
             <div className="px-3 pt-3 flex-shrink-0">
-              <QuestBanner subject="science" questTitle={questTitle} color1={q.spiritColor} color2="#0EA5E9" />
+              <ConceptAnimation subject="science" questTitle={questTitle} color1={q.spiritColor} color2="#0EA5E9" />
             </div>
 
             {/* Spirit narrator */}
