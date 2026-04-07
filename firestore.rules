@@ -2,38 +2,46 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can only read/write their own profile
+    // Helper: is the requester a parent with this child linked?
+    function isLinkedParent(childUid) {
+      let parentDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return request.auth != null
+        && parentDoc.role == 'parent'
+        && (
+          // Multi-child array (new)
+          (parentDoc.keys().hasAny(['childUids']) && childUid in parentDoc.childUids)
+          ||
+          // Single-child string (legacy)
+          (parentDoc.keys().hasAny(['childUid']) && parentDoc.childUid == childUid)
+        );
+    }
+
+    // Users collection
     match /users/{uid} {
+      // Owner can read/write their own profile
       allow read, write: if request.auth != null && request.auth.uid == uid;
 
-      // Students can only write to their own subcollections
+      // Parents can read their linked child's profile
+      allow read: if isLinkedParent(uid);
+
+      // Allow authenticated parents to query users by email to find students
+      // (collection-level query for findStudentByEmail)
+      allow list: if request.auth != null
+        && request.resource == null
+        && resource.data.role == 'student';
+
+      // Subcollections — owner access
       match /emotionLog/{entryId} {
         allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read: if isLinkedParent(uid);
       }
       match /interventionLog/{entryId} {
         allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read: if isLinkedParent(uid);
       }
       match /sessions/{sessionId} {
         allow read, write: if request.auth != null && request.auth.uid == uid;
-      }
-    }
-
-    // Parents can read their linked child's data
-    match /users/{childUid} {
-      allow read: if request.auth != null &&
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.childUid == childUid &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'parent';
-
-      match /emotionLog/{entryId} {
-        allow read: if request.auth != null &&
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.childUid == childUid;
-      }
-      match /sessions/{sessionId} {
-        allow read: if request.auth != null &&
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.childUid == childUid;
+        allow read: if isLinkedParent(uid);
       }
     }
   }
