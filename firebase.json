@@ -4,6 +4,7 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "cleanUrls": true,
     "trailingSlash": false,
+    "predeploy": ["npm run build:firebase"],
     "headers": [
       {
         "source": "**",
