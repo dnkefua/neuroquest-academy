@@ -13,12 +13,17 @@ export interface UserProfile {
   createdAt: string;
   lastActiveDate?: string;
   childUid?: string;
+  childUids?: string[];           // Multi-child support
   // Class system
   studentClass?: StudentClass;
   approvedQuestIds: string[];
   pendingApprovals: string[];
   // Completed quests tracking
   completedQuests?: string[];
+  // Live activity tracking
+  lastActiveQuest?: string;       // e.g. "g6-math-1"
+  lastActiveSubject?: string;     // e.g. "math"
+  lastActiveTimestamp?: string;   // ISO timestamp
 }
 
 export type EmotionKey = 'happy' | 'neutral' | 'frustrated' | 'anxious';
@@ -167,4 +172,128 @@ export interface CoinTransaction {
   type: 'earn' | 'spend';
   source: string;
   timestamp: number;
+}
+
+// ── Skill Tree (Phase 1: Quest Architecture) ──────────────────────────────────
+
+export type SkillNodeType = 'quest' | 'boss' | 'milestone' | 'branch' | 'capstone';
+export type SkillNodeStatus = 'locked' | 'available' | 'in-progress' | 'completed' | 'mastered';
+export type CognitiveDomain = 'memory' | 'logic' | 'linguistics' | 'spatial' | 'attention' | 'processing-speed';
+
+export interface SkillNode {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: SkillNodeType;
+  subject: CurriculumSubject;
+  grade: number;
+  programme: Programme;
+  emoji: string;
+  color: string;
+  position: { x: number; y: number };
+  prerequisites: string[];
+  questIds: string[];
+  xpReward: number;
+  coinReward: number;
+  estimatedMinutes: number;
+  description: string;
+  fogRevealed: boolean;
+  status: SkillNodeStatus;
+  masteryScore: number;
+  attempts: number;
+  lastAttempted?: string;
+  bestScore?: number;
+}
+
+export interface SkillTreeEdge {
+  from: string;
+  to: string;
+  type: 'prerequisite' | 'optional' | 'branch';
+}
+
+export interface SkillTreeData {
+  id: string;
+  name: string;
+  programme: Programme;
+  grade: number;
+  subject: CurriculumSubject;
+  nodes: SkillNode[];
+  edges: SkillTreeEdge[];
+}
+
+// ── Cognitive Baseline (Dynamic Neuro-Mapping) ────────────────────────────────
+
+export interface CognitiveProfile {
+  domains: Record<CognitiveDomain, number>;
+  lastUpdated: string;
+  assessmentCount: number;
+  strengths: CognitiveDomain[];
+  weaknesses: CognitiveDomain[];
+  learningStyle: 'visual' | 'auditory' | 'kinesthetic' | 'mixed';
+  preferredPace: 'slow' | 'moderate' | 'fast';
+  attentionSpanMinutes: number;
+  frustrationThreshold: number;
+}
+
+export interface CognitiveAssessment {
+  id: string;
+  date: string;
+  domain: CognitiveDomain;
+  score: number;
+  maxScore: number;
+  timeTakenMs: number;
+  questionsAttempted: number;
+  questionsCorrect: number;
+}
+
+// ── Daily Rewards & Power-Ups (Morning Ritual) ────────────────────────────────
+
+export type PowerUpType = 'double-xp' | 'double-coins' | 'free-clue' | 'focus-boost' | 'streak-shield' | 'brain-break-pass';
+
+export interface PowerUp {
+  id: PowerUpType;
+  name: string;
+  emoji: string;
+  description: string;
+  color: string;
+  duration: 'session' | '1h' | '24h';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+}
+
+export interface DailyReward {
+  day: number;
+  powerUp: PowerUpType;
+  coins: number;
+  xp: number;
+  claimed: boolean;
+  claimDate?: string;
+}
+
+export interface ActivePowerUp {
+  type: PowerUpType;
+  activatedAt: string;
+  expiresAt: string;
+  remaining: boolean;
+}
+
+// ── Predictive Analytics (Future-Pathing) ─────────────────────────────────────
+
+export interface PredictiveInsight {
+  domain: CognitiveDomain | CurriculumSubject;
+  currentMastery: number;
+  predictedMastery30d: number;
+  predictedMastery90d: number;
+  trajectory: 'rising' | 'stable' | 'declining';
+  estimatedMasteryDate?: string;
+  isStrength: boolean;
+  isFocusArea: boolean;
+}
+
+export interface CareerReadiness {
+  field: string;
+  emoji: string;
+  alignment: number;
+  requiredSkills: string[];
+  missingSkills: string[];
+  readiness: 'exploring' | 'developing' | 'ready' | 'expert';
 }

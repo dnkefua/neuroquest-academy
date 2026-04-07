@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { auth } from '@/lib/firebase';
 import {
   getUserProfile, getRecentSessions, getEmotionLog,
   getWeeklyProgress, getSubjectMastery, getEmotionHeatmap,
-  approveQuest, dismissApprovalRequest,
+  approveQuest, findStudentByEmail, addChildToParent,
+  removeChildFromParent,
 } from '@/lib/firestore';
 import { getGameQuests } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
@@ -38,12 +39,21 @@ interface EmotionEntry {
   timestamp: string;
 }
 
+interface ChildData {
+  profile: UserProfile;
+  sessions: Session[];
+  emotionLog: EmotionEntry[];
+  weeklyData: { week: string; math?: number; science?: number; english?: number; 'social-skills'?: number }[];
+  masteryData: { subject: string; value: number }[];
+  heatmapData: { day: string; emotion: string; count: number }[];
+}
+
 const SUBJECT_COLORS: Record<string, string> = {
   math: '#8B5CF6',
   science: '#14B8A6',
   english: '#3B82F6',
-  'social-skills': '#F97316',
-  'emotional-regulation': '#EC4899',
+  social: '#F97316',
+  socialSkills: '#EC4899',
 };
 
 const SUBJECT_LABELS: Record<string, string> = {
@@ -54,40 +64,26 @@ const SUBJECT_LABELS: Record<string, string> = {
   socialSkills: 'Social Skills',
 };
 
+const SUBJECT_EMOJIS: Record<string, string> = {
+  math: '🔢', science: '🔬', english: '📖', social: '🌍', socialSkills: '💜',
+};
+
 type ActiveTab = 'overview' | 'quests' | 'progress' | 'emotions' | 'sessions' | 'unlock';
 
 export default function ParentPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [childProfile, setChildProfile] = useState<UserProfile | null>(null);
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [emotionLog, setEmotionLog] = useState<EmotionEntry[]>([]);
-  const [weeklyData, setWeeklyData] = useState<{ week: string; math?: number; science?: number; english?: number; 'social-skills'?: number }[]>([]);
-  const [masteryData, setMasteryData] = useState<{ subject: string; value: number }[]>([]);
-  const [heatmapData, setHeatmapData] = useState<{ day: string; emotion: string; count: number }[]>([]);
+  const [children, setChildren] = useState<ChildData[]>([]);
+  const [selectedChildIdx, setSelectedChildIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [linkUid, setLinkUid] = useState('');
+  const [linkEmail, setLinkEmail] = useState('');
   const [linking, setLinking] = useState(false);
+  const [linkError, setLinkError] = useState('');
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
-  const [childCompletedQuests, setChildCompletedQuests] = useState<string[]>([]);
-  const [childApprovedQuests, setChildApprovedQuests] = useState<string[]>([]);
   const [togglingQuestId, setTogglingQuestId] = useState<string | null>(null);
+  const [showAddChild, setShowAddChild] = useState(false);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) { router.replace('/auth'); return; }
-      const p = await getUserProfile(user.uid);
-      if (!p?.name) { router.replace('/onboarding'); return; }
-      if (p.role !== 'parent') { router.replace('/dashboard'); return; }
-      setProfile(p);
-      if (p.childUid) await loadChildData(p.childUid);
-      setLoading(false);
-    });
-    return () => unsub();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
-
-  async function loadChildData(childUid: string) {
+  const loadChildData = useCallback(async (childUid: string): Promise<ChildData | null> => {
     const [cp, s, e, weekly, mastery, heatmap] = await Promise.all([
       getUserProfile(childUid),
       getRecentSessions(childUid),
@@ -96,44 +92,91 @@ export default function ParentPage() {
       getSubjectMastery(childUid),
       getEmotionHeatmap(childUid),
     ]);
-    setChildProfile(cp);
-    setSessions(s as Session[]);
-    setEmotionLog(e as EmotionEntry[]);
-    setWeeklyData(weekly as { week: string; math?: number; science?: number; english?: number; 'social-skills'?: number }[]);
-    setMasteryData(mastery);
-    setHeatmapData(heatmap);
-    if (cp?.completedQuests) setChildCompletedQuests(cp.completedQuests);
-    if (cp?.approvedQuestIds) setChildApprovedQuests(cp.approvedQuestIds);
-  }
+    if (!cp) return null;
+    return {
+      profile: cp,
+      sessions: s as Session[],
+      emotionLog: e as EmotionEntry[],
+      weeklyData: weekly as ChildData['weeklyData'],
+      masteryData: mastery,
+      heatmapData: heatmap,
+    };
+  }, []);
 
-  async function handleLink() {
-    if (!profile || !linkUid.trim()) return;
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) { router.replace('/auth'); return; }
+      const p = await getUserProfile(user.uid);
+      if (!p?.name) { router.replace('/onboarding'); return; }
+      if (p.role !== 'parent') { router.replace('/dashboard'); return; }
+      setProfile(p);
+
+      // Load all children (multi-child support with backward compat)
+      const childIds = p.childUids?.length ? p.childUids : (p.childUid ? [p.childUid] : []);
+      const childDataList = await Promise.all(childIds.map(loadChildData));
+      setChildren(childDataList.filter((c): c is ChildData => c !== null));
+      setLoading(false);
+    });
+    return () => unsub();
+  }, [router, loadChildData]);
+
+  async function handleLinkByEmail() {
+    if (!profile || !linkEmail.trim()) return;
     setLinking(true);
+    setLinkError('');
     try {
-      const { updateDoc, doc } = await import('firebase/firestore');
-      const { db } = await import('@/lib/firebase');
-      await updateDoc(doc(db, 'users', profile.uid), { childUid: linkUid.trim() });
-      setProfile({ ...profile, childUid: linkUid.trim() } as UserProfile);
-      await loadChildData(linkUid.trim());
+      const student = await findStudentByEmail(linkEmail.trim());
+      if (!student) {
+        setLinkError('No student account found with that email.');
+        return;
+      }
+      // Check not already linked
+      const existingIds = children.map(c => c.profile.uid);
+      if (existingIds.includes(student.uid)) {
+        setLinkError(`${student.name} is already linked!`);
+        return;
+      }
+      await addChildToParent(profile.uid, student.uid);
+      const childData = await loadChildData(student.uid);
+      if (childData) {
+        setChildren(prev => [...prev, childData]);
+        setSelectedChildIdx(children.length);
+      }
+      setLinkEmail('');
+      setShowAddChild(false);
+      setProfile(prev => prev ? { ...prev, childUids: [...(prev.childUids ?? []), student.uid] } : prev);
     } catch {
-      alert('Child account not found. Please check the UID.');
+      setLinkError('Failed to link. Please try again.');
     } finally {
       setLinking(false);
     }
   }
 
+  async function handleRemoveChild(childUid: string) {
+    if (!profile) return;
+    await removeChildFromParent(profile.uid, childUid);
+    setChildren(prev => prev.filter(c => c.profile.uid !== childUid));
+    setSelectedChildIdx(0);
+  }
+
   async function handleToggleQuestApproval(questId: string) {
-    if (!profile?.childUid || togglingQuestId) return;
+    const child = children[selectedChildIdx];
+    if (!child || togglingQuestId) return;
     setTogglingQuestId(questId);
     try {
-      if (childApprovedQuests.includes(questId)) {
+      const childApproved = child.profile.approvedQuestIds ?? [];
+      if (childApproved.includes(questId)) {
         const { updateDoc, doc, arrayRemove } = await import('firebase/firestore');
         const { db } = await import('@/lib/firebase');
-        await updateDoc(doc(db, 'users', profile.childUid), { approvedQuestIds: arrayRemove(questId) });
-        setChildApprovedQuests(prev => prev.filter(id => id !== questId));
+        await updateDoc(doc(db, 'users', child.profile.uid), { approvedQuestIds: arrayRemove(questId) });
+        setChildren(prev => prev.map((c, i) => i === selectedChildIdx
+          ? { ...c, profile: { ...c.profile, approvedQuestIds: childApproved.filter(id => id !== questId) } }
+          : c));
       } else {
-        await approveQuest(profile.childUid, questId);
-        setChildApprovedQuests(prev => [...prev, questId]);
+        await approveQuest(child.profile.uid, questId);
+        setChildren(prev => prev.map((c, i) => i === selectedChildIdx
+          ? { ...c, profile: { ...c.profile, approvedQuestIds: [...childApproved, questId] } }
+          : c));
       }
     } finally {
       setTogglingQuestId(null);
@@ -148,12 +191,27 @@ export default function ParentPage() {
     );
   }
 
+  const child = children[selectedChildIdx] ?? null;
+  const childProfile = child?.profile ?? null;
+  const sessions = child?.sessions ?? [];
+  const emotionLog = child?.emotionLog ?? [];
+  const weeklyData = child?.weeklyData ?? [];
+  const masteryData = child?.masteryData ?? [];
+  const heatmapData = child?.heatmapData ?? [];
+  const childCompletedQuests = childProfile?.completedQuests ?? [];
+  const childApprovedQuests = childProfile?.approvedQuestIds ?? [];
+
   const chartData = sessions.slice(0, 7).reverse().map((s) => ({
     name: s.subject.replace(/-/g, ' ').slice(0, 8),
     score: s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0,
     subject: s.subject,
     xp: s.xpEarned,
   }));
+
+  // Check if child is currently active (within last 10 minutes)
+  const isChildActive = childProfile?.lastActiveTimestamp
+    ? (Date.now() - new Date(childProfile.lastActiveTimestamp).getTime()) < 10 * 60 * 1000
+    : false;
 
   const TABS: { key: ActiveTab; label: string; icon: string }[] = [
     { key: 'overview', label: 'Overview', icon: '📊' },
@@ -172,6 +230,12 @@ export default function ParentPage() {
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           <span className="text-2xl">👨‍👩‍👧</span>
           <span className="font-nunito font-black text-gray-800">Parent Dashboard</span>
+          {children.length > 0 && (
+            <button onClick={() => setShowAddChild(true)}
+              className="ml-2 text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg font-nunito font-bold hover:bg-purple-200 transition-all">
+              + Add Child
+            </button>
+          )}
           <button onClick={() => router.push('/dashboard')}
             className="ml-auto text-sm text-gray-500 font-dmsans hover:text-gray-700 transition-colors">
             My Dashboard →
@@ -180,45 +244,124 @@ export default function ParentPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {!profile?.childUid ? (
-          /* ── Link Child Account ── */
+        {children.length === 0 ? (
+          /* ── No Children Linked ── */
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             className="card text-center max-w-md mx-auto">
             <div className="text-5xl mb-4">🔗</div>
             <h2 className="font-nunito text-xl font-black text-gray-800 mb-2">Link Your Child&apos;s Account</h2>
             <p className="font-dmsans text-gray-500 text-sm mb-6">
-              Enter your child&apos;s User ID to view their progress and emotional wellbeing.
+              Enter your child&apos;s email address to view their progress and emotional wellbeing.
             </p>
             <input
-              value={linkUid}
-              onChange={(e) => setLinkUid(e.target.value)}
-              placeholder="Child's User ID..."
-              className="input-field mb-4"
+              value={linkEmail}
+              onChange={(e) => { setLinkEmail(e.target.value); setLinkError(''); }}
+              placeholder="Child's email address..."
+              type="email"
+              className="input-field mb-3"
             />
+            {linkError && <p className="text-red-500 text-xs font-dmsans mb-3">{linkError}</p>}
             <button
-              onClick={handleLink}
-              disabled={linking || !linkUid.trim()}
+              onClick={handleLinkByEmail}
+              disabled={linking || !linkEmail.trim()}
               className="w-full bg-purple-600 text-white font-nunito font-black py-3 rounded-2xl hover:bg-purple-700 transition-all disabled:opacity-50">
-              {linking ? '⏳ Linking...' : '🔗 Link Account'}
+              {linking ? '⏳ Searching...' : '🔗 Link by Email'}
             </button>
           </motion.div>
         ) : (
           <>
+            {/* ── Child Selector (multi-child) ── */}
+            {children.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {children.map((c, i) => (
+                  <button key={c.profile.uid}
+                    onClick={() => setSelectedChildIdx(i)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl font-nunito font-bold text-sm whitespace-nowrap transition-all ${
+                      selectedChildIdx === i
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-white text-gray-600 hover:bg-purple-50 border border-gray-100'
+                    }`}>
+                    <span className="text-lg">{c.profile.currentEmotion === 'happy' ? '😊' : c.profile.currentEmotion === 'frustrated' ? '😤' : c.profile.currentEmotion === 'anxious' ? '😰' : '😐'}</span>
+                    {c.profile.name}
+                    <span className="text-xs opacity-70">Gr {c.profile.grade}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* ── Add Child Modal ── */}
+            <AnimatePresence>
+              {showAddChild && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                  className="card border-purple-200 border-2 overflow-hidden">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-nunito font-black text-gray-800">Add Another Child</h3>
+                    <button onClick={() => { setShowAddChild(false); setLinkError(''); }} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      value={linkEmail}
+                      onChange={(e) => { setLinkEmail(e.target.value); setLinkError(''); }}
+                      placeholder="Child's email address..."
+                      type="email"
+                      className="input-field flex-1"
+                    />
+                    <button onClick={handleLinkByEmail} disabled={linking || !linkEmail.trim()}
+                      className="bg-purple-600 text-white font-nunito font-bold px-5 py-2 rounded-xl hover:bg-purple-700 disabled:opacity-50 transition-all text-sm">
+                      {linking ? '⏳' : '🔗 Link'}
+                    </button>
+                  </div>
+                  {linkError && <p className="text-red-500 text-xs font-dmsans mt-2">{linkError}</p>}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* ── Child Summary Hero ── */}
             {childProfile && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} key={childProfile.uid}
                 className="card border-0 overflow-hidden relative"
                 style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #14B8A6 100%)' }}>
                 <div className="absolute inset-0 opacity-10"
                   style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 0%, transparent 60%)' }} />
                 <div className="relative">
-                  <h2 className="font-nunito text-2xl font-black text-white mb-1">
-                    {childProfile.name}&apos;s Learning Journey 🌟
-                  </h2>
-                  <p className="text-purple-100 text-sm font-dmsans">
-                    Grade {childProfile.grade} · {childProfile.language === 'AR' ? 'Arabic' : 'English'} · IB Curriculum
-                  </p>
-                  <div className="flex flex-wrap gap-3 mt-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h2 className="font-nunito text-2xl font-black text-white mb-1">
+                        {childProfile.name}&apos;s Learning Journey 🌟
+                      </h2>
+                      <p className="text-purple-100 text-sm font-dmsans">
+                        Grade {childProfile.grade} · {childProfile.language === 'AR' ? 'Arabic' : 'English'} · IB Curriculum
+                      </p>
+                    </div>
+                    {children.length > 1 && (
+                      <button onClick={() => handleRemoveChild(childProfile.uid)}
+                        className="text-white/50 hover:text-white/80 text-xs font-dmsans transition-colors"
+                        title="Unlink child">
+                        Unlink
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Live Activity Indicator */}
+                  {isChildActive && childProfile.lastActiveSubject && (
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                      className="mt-3 flex items-center gap-2 bg-white/20 rounded-xl px-3 py-2 border border-white/20">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400" />
+                      </span>
+                      <span className="font-nunito font-bold text-white text-sm">
+                        Currently playing: {SUBJECT_LABELS[childProfile.lastActiveSubject] ?? childProfile.lastActiveSubject}
+                      </span>
+                      {childProfile.lastActiveQuest && (
+                        <span className="text-purple-200 text-xs font-dmsans">
+                          ({childProfile.lastActiveQuest})
+                        </span>
+                      )}
+                    </motion.div>
+                  )}
+
+                  <div className="flex flex-wrap gap-3 mt-3">
                     <div className="flex items-center gap-1.5 bg-white/20 rounded-xl px-3 py-1.5">
                       <span>⭐</span>
                       <span className="font-nunito font-bold text-white text-sm">{childProfile.xp} XP</span>
@@ -237,6 +380,14 @@ export default function ParentPage() {
                       <span>📚</span>
                       <span className="font-nunito font-bold text-white text-sm">{sessions.length} sessions</span>
                     </div>
+                    {childProfile.pendingApprovals && childProfile.pendingApprovals.length > 0 && (
+                      <div className="flex items-center gap-1.5 bg-red-500/30 rounded-xl px-3 py-1.5 border border-red-300/30">
+                        <span>🔔</span>
+                        <span className="font-nunito font-bold text-white text-sm">
+                          {childProfile.pendingApprovals.length} pending
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -317,10 +468,9 @@ export default function ParentPage() {
                 <div className="card">
                   <h3 className="font-nunito text-lg font-black text-gray-800 mb-1">🗺️ Quest Completion by Grade</h3>
                   <p className="text-xs text-gray-500 font-dmsans mb-4">
-                    {childProfile?.name}'s progress through each grade level
+                    {childProfile?.name}&apos;s progress through each grade level
                   </p>
 
-                  {/* Grade Progress Grid */}
                   <div className="space-y-3">
                     {RANK_PROGRESSION.map((rank) => {
                       const subjects = getAvailableSubjectsForGrade(rank.grade);
@@ -362,15 +512,13 @@ export default function ParentPage() {
                 <div className="card">
                   <h3 className="font-nunito text-lg font-black text-gray-800 mb-4">📚 Quests by Subject</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {['math', 'science', 'english', 'social', 'socialSkills'].map((subject) => {
+                    {(['math', 'science', 'english', 'social', 'socialSkills'] as const).map((subject) => {
                       const completed = childCompletedQuests.filter(q => q.includes(`-${subject}-`) || q.includes(`-${subject}q`)).length;
                       const color = SUBJECT_COLORS[subject] ?? '#8B5CF6';
                       return (
                         <div key={subject} className="p-3 rounded-xl border text-center"
                           style={{ borderColor: `${color}40`, background: `${color}10` }}>
-                          <div className="text-2xl mb-1">
-                            {subject === 'math' ? '🔢' : subject === 'science' ? '🔬' : subject === 'english' ? '📖' : subject === 'social' ? '🌍' : '💜'}
-                          </div>
+                          <div className="text-2xl mb-1">{SUBJECT_EMOJIS[subject]}</div>
                           <p className="font-nunito font-bold text-sm" style={{ color }}>
                             {SUBJECT_LABELS[subject] ?? subject}
                           </p>
@@ -415,6 +563,25 @@ export default function ParentPage() {
                   <p className="text-xs text-gray-500 font-dmsans mb-5">
                     By default, quests unlock sequentially. Toggle any quest below to give your child direct access — perfect for jumping ahead or revisiting a topic.
                   </p>
+
+                  {/* Pending Approvals */}
+                  {childProfile?.pendingApprovals && childProfile.pendingApprovals.length > 0 && (
+                    <div className="mb-5 p-3 rounded-xl bg-amber-50 border border-amber-200">
+                      <h4 className="font-nunito font-bold text-amber-800 text-sm mb-2">🔔 Pending Requests from {childProfile.name}</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {childProfile.pendingApprovals.map(questId => (
+                          <div key={questId} className="flex items-center gap-2 bg-white rounded-lg px-3 py-1.5 border border-amber-200">
+                            <span className="text-xs font-nunito font-bold text-gray-700">{questId}</span>
+                            <button onClick={() => handleToggleQuestApproval(questId)}
+                              className="text-xs bg-green-500 text-white px-2 py-0.5 rounded font-bold hover:bg-green-600">
+                              Approve
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {(['math', 'science', 'english', 'social', 'socialSkills'] as CurriculumSubject[]).map((subject) => {
                     const grade = childProfile?.grade ?? 6;
                     const quests = getGameQuests(grade, subject);
@@ -423,9 +590,7 @@ export default function ParentPage() {
                     return (
                       <div key={subject} className="mb-5">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg">
-                            {subject === 'math' ? '🔢' : subject === 'science' ? '🔬' : subject === 'english' ? '📖' : subject === 'social' ? '🌍' : '💜'}
-                          </span>
+                          <span className="text-lg">{SUBJECT_EMOJIS[subject]}</span>
                           <span className="font-nunito font-black text-sm text-gray-800">{SUBJECT_LABELS[subject] ?? subject}</span>
                         </div>
                         <div className="space-y-2">
@@ -544,7 +709,6 @@ export default function ParentPage() {
                   )}
                 </div>
 
-                {/* Wellbeing tip */}
                 <div className="card bg-teal-50 border-teal-100">
                   <h3 className="font-nunito font-black text-teal-800 mb-2">💡 Wellbeing Tip</h3>
                   <p className="text-sm text-teal-700 font-dmsans leading-relaxed">

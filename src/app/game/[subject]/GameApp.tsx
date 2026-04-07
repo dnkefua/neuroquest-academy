@@ -4,10 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import { useProgressStore } from '@/store/progressStore';
 import type { CurriculumSubject } from '@/types';
 import dynamic from 'next/dynamic';
+import QuestGuide from '@/components/quest-guide/QuestGuide';
 
-// Dynamically import each subject's GameApp so this route properly renders
-// the game for any subject (avoiding a blank screen when the static export
-// overwrites subject-specific pages with this [subject] route).
 const MathGameApp = dynamic(() => import('../math/GameApp'), { ssr: false });
 const ScienceGameApp = dynamic(() => import('../science/GameApp'), { ssr: false });
 const EnglishGameApp = dynamic(() => import('../english/GameApp'), { ssr: false });
@@ -24,12 +22,20 @@ export default function GameApp({ subject }: GameAppProps) {
   const urlGrade = searchParams?.get('grade');
   const grade = urlGrade ? parseInt(urlGrade, 10) : currentGrade;
 
+  let GameComponent;
   switch (subject) {
-    case 'math':        return <MathGameApp />;
-    case 'science':     return <ScienceGameApp />;
-    case 'english':     return <EnglishGameApp />;
-    case 'social':      return <SocialGameApp grade={grade} />;
-    case 'socialSkills': return <SocialSkillsGameApp grade={grade} />;
-    default:            return null;
+    case 'math':        GameComponent = <MathGameApp />; break;
+    case 'science':     GameComponent = <ScienceGameApp />; break;
+    case 'english':     GameComponent = <EnglishGameApp />; break;
+    case 'social':      GameComponent = <SocialGameApp grade={grade} />; break;
+    case 'socialSkills': GameComponent = <SocialSkillsGameApp grade={grade} />; break;
+    default:            GameComponent = null;
   }
+
+  return (
+    <div className="relative">
+      {GameComponent}
+      <QuestGuide currentSubject={subject} />
+    </div>
+  );
 }

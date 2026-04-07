@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
 import { gameTTS, useTTSCleanup, stripParens } from '../../shared/tts';
 import { useEconomyStore } from '@/store/economyStore';
+import { useDailyRewardStore } from '@/store/dailyRewardStore';
+import { useSkillTreeStore } from '@/store/skillTreeStore';
+import MicroSprintTimer from '@/components/micro-sprint/MicroSprintTimer';
 import ClueBox from '../components/ui/ClueBox';
 import ConceptAnimation from '../../shared/ConceptAnimation';
 import { getGameQuestById } from '@/lib/questData';
@@ -25,7 +28,7 @@ const GRADE_THEMES: Record<number, { name: string; emoji: string; color1: string
 
 export default function QuizScene() {
   const { questions, currentQuestion, score, answerQuestion, nextQuestion, currentGrade, currentQuestId } = useGameStore();
-  const { earnCoins } = useEconomyStore();
+  const { earnCoinsWithMultiplier } = useEconomyStore();
   const q = questions[currentQuestion];
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
@@ -54,7 +57,7 @@ export default function QuizScene() {
     setAnswered(true);
     setFeedback(correct ? 'correct' : 'wrong');
     answerQuestion(correct);
-    if (correct) earnCoins(30, 'correct_answer');
+    if (correct) earnCoinsWithMultiplier(30, 'correct_answer');
   }
 
   function handleNext() {
@@ -70,6 +73,14 @@ export default function QuizScene() {
   );
 
   return (
+    <MicroSprintTimer
+      maxMinutes={10}
+      onComplete={() => {
+        if (currentQuestion < questions.length - 1) {
+          nextQuestion();
+        }
+      }}
+    >
     <div className="h-dvh overflow-hidden flex flex-col items-center px-3 py-2"
       style={{ background: `linear-gradient(180deg, ${theme.color1}12 0%, ${theme.color2}12 100%)` }}>
 
@@ -219,5 +230,6 @@ export default function QuizScene() {
         </motion.div>
       </AnimatePresence>
     </div>
+    </MicroSprintTimer>
   );
 }

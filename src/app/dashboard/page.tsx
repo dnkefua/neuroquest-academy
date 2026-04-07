@@ -7,12 +7,14 @@ import { motion } from 'framer-motion';
 import { auth } from '@/lib/firebase';
 import { getUserProfile, updateEmotion, logIntervention } from '@/lib/firestore';
 import { useProgressStore } from '@/store/progressStore';
+import { useDailyRewardStore } from '@/store/dailyRewardStore';
 import type { UserProfile, EmotionKey } from '@/types';
 import { EMOTIONS, SUBJECTS } from '@/lib/constants';
 import { useTranslations } from '@/lib/translations';
 import BrainBreakModal from '@/components/BrainBreakModal';
 import WalletHUD from '@/components/ui/WalletHUD';
 import StreakClaim from '@/components/StreakClaim';
+import DailyRewardChest from '@/components/daily-reward/DailyRewardChest';
 import { gameTTS } from '@/app/game/shared/tts';
 import toast from 'react-hot-toast';
 
@@ -23,10 +25,12 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBrainBreak, setShowBrainBreak] = useState(false);
+  const [showRewardChest, setShowRewardChest] = useState(false);
   const [updatingEmotion, setUpdatingEmotion] = useState(false);
 
   const setCurrentGrade = useProgressStore(s => s.setCurrentGrade);
   const setUserName = useProgressStore(s => s.setUserName);
+  const canClaimReward = useDailyRewardStore(s => s.canClaimToday());
   const t = useTranslations(profile?.language ?? 'EN');
 
   useEffect(() => {
@@ -43,6 +47,11 @@ export default function DashboardPage() {
         gameTTS.setUserName(p.name);
       }
       setLoading(false);
+
+      const rewardStore = useDailyRewardStore.getState();
+      if (rewardStore.canClaimToday()) {
+        setTimeout(() => setShowRewardChest(true), 800);
+      }
     });
     return () => unsub();
   }, [router, setCurrentGrade, setUserName]);
@@ -104,6 +113,22 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <WalletHUD compact />
+            <button onClick={() => router.push('/analytics')}
+              className="text-sm text-purple-600 font-nunito font-bold bg-purple-50 px-3 py-1.5 rounded-xl hover:bg-purple-100 transition-all">
+              📊 Analytics
+            </button>
+            <button onClick={() => router.push('/social-hub')}
+              className="text-sm text-blue-600 font-nunito font-bold bg-blue-50 px-3 py-1.5 rounded-xl hover:bg-blue-100 transition-all">
+              👥 Social
+            </button>
+            <button onClick={() => router.push('/biosync')}
+              className="text-sm text-teal-600 font-nunito font-bold bg-teal-50 px-3 py-1.5 rounded-xl hover:bg-teal-100 transition-all">
+              🔗 Bio-Sync
+            </button>
+            <button onClick={() => router.push('/curriculum')}
+              className="text-sm text-orange-600 font-nunito font-bold bg-orange-50 px-3 py-1.5 rounded-xl hover:bg-orange-100 transition-all">
+              📖 Curriculum
+            </button>
             {profile.role === 'parent' && (
               <button onClick={() => router.push('/parent')}
                 className="text-sm text-purple-600 font-nunito font-bold bg-purple-50 px-3 py-1.5 rounded-xl hover:bg-purple-100 transition-all">
@@ -176,6 +201,48 @@ export default function DashboardPage() {
         </motion.div>
 
         <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          onClick={() => router.push('/skill-tree')}
+          className={`w-full card border-0 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all overflow-hidden relative`}
+          style={{ background: 'linear-gradient(135deg, #1a0d3e 0%, #0c1040 100%)', border: '1.5px solid rgba(139,92,246,0.4)' }}>
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 80% 50%, rgba(139,92,246,0.15) 0%, transparent 70%)' }} />
+          <div className="relative flex items-center gap-4">
+            <div className="text-4xl">🗺️</div>
+            <div>
+              <h3 className="font-nunito text-lg font-black text-white">Skill Tree</h3>
+              <p className="text-sm font-dmsans mt-0.5" style={{ color: 'rgba(139,92,246,0.8)' }}>
+                Explore your quest map with dependencies and fog of war
+              </p>
+            </div>
+            <div className={`${isRTL ? 'mr-auto' : 'ml-auto'} text-xs font-black px-3 py-1.5 rounded-xl`}
+              style={{ background: 'rgba(139,92,246,0.2)', color: '#8B5CF6', border: '1px solid rgba(139,92,246,0.3)' }}>
+              Explore
+            </div>
+          </div>
+        </motion.button>
+
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+          onClick={() => router.push('/cognitive-baseline')}
+          className={`w-full card border-0 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all overflow-hidden relative`}
+          style={{ background: 'linear-gradient(135deg, #0c1040 0%, #1a0d3e 100%)', border: '1.5px solid rgba(6,182,212,0.4)' }}>
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(6,182,212,0.15) 0%, transparent 70%)' }} />
+          <div className="relative flex items-center gap-4">
+            <div className="text-4xl">🧠</div>
+            <div>
+              <h3 className="font-nunito text-lg font-black text-white">Cognitive Baseline</h3>
+              <p className="text-sm font-dmsans mt-0.5" style={{ color: 'rgba(6,182,212,0.8)' }}>
+                Discover your brain strengths in 10 minutes
+              </p>
+            </div>
+            <div className={`${isRTL ? 'mr-auto' : 'ml-auto'} text-xs font-black px-3 py-1.5 rounded-xl`}
+              style={{ background: 'rgba(6,182,212,0.2)', color: '#06B6D4', border: '1px solid rgba(6,182,212,0.3)' }}>
+              Assess
+            </div>
+          </div>
+        </motion.button>
+
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           onClick={() => setShowBrainBreak(true)}
           className="w-full card border-2 border-dashed border-teal-300 bg-teal-50 hover:bg-teal-100 transition-all active:scale-[0.99] text-center">
           <div className="text-4xl mb-2">🧘</div>
@@ -183,7 +250,7 @@ export default function DashboardPage() {
           <p className="text-sm text-teal-600 font-dmsans mt-1">{t('breathe_move_ground')}</p>
         </motion.button>
 
-        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
           onClick={() => router.push('/world-map')}
           className={`w-full card border-0 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all overflow-hidden relative`}
           style={{ background: 'linear-gradient(135deg, #1a0d3e 0%, #0c1040 100%)', border: '1.5px solid rgba(139,92,246,0.4)' }}>
@@ -204,7 +271,7 @@ export default function DashboardPage() {
           </div>
         </motion.button>
 
-        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}
           onClick={() => router.push('/social-skills')}
           className={`w-full card border-0 bg-orange-50 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all card-3d`}>
           <div className="flex items-center gap-4">
@@ -216,7 +283,7 @@ export default function DashboardPage() {
           </div>
         </motion.button>
 
-        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }}
           onClick={() => router.push('/calm-corner')}
           className={`w-full card border-0 bg-gradient-to-r from-teal-50 to-purple-50 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all card-3d`}>
           <div className="flex items-center gap-4">
@@ -224,6 +291,27 @@ export default function DashboardPage() {
             <div>
               <h3 className="font-nunito text-lg font-black text-teal-700">{t('calm_corner')}</h3>
               <p className="text-sm text-teal-600 font-dmsans mt-0.5">{t('calm_corner_desc')}</p>
+            </div>
+          </div>
+        </motion.button>
+
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}
+          onClick={() => router.push('/game-market')}
+          className={`w-full card border-0 ${isRTL ? 'text-right' : 'text-left'} hover:scale-[1.01] active:scale-[0.99] transition-all overflow-hidden relative`}
+          style={{ background: 'linear-gradient(135deg, #1a0d3e 0%, #2d1060 50%, #0d1b3e 100%)', border: '1.5px solid rgba(236,72,153,0.3)' }}>
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(236,72,153,0.1) 0%, transparent 70%)' }} />
+          <div className="relative flex items-center gap-4">
+            <div className="text-4xl">🏪</div>
+            <div>
+              <h3 className="font-nunito text-lg font-black text-white">Game Market</h3>
+              <p className="text-sm font-dmsans mt-0.5" style={{ color: 'rgba(236,72,153,0.8)' }}>
+                Spend coins on fun educational games!
+              </p>
+            </div>
+            <div className={`${isRTL ? 'mr-auto' : 'ml-auto'} text-xs font-black px-3 py-1.5 rounded-xl`}
+              style={{ background: 'rgba(236,72,153,0.2)', color: '#EC4899', border: '1px solid rgba(236,72,153,0.3)' }}>
+              Shop
             </div>
           </div>
         </motion.button>
@@ -290,6 +378,21 @@ export default function DashboardPage() {
       </div>
 
       {showBrainBreak && <BrainBreakModal onClose={() => setShowBrainBreak(false)} />}
+      <DailyRewardChest isOpen={showRewardChest} onClose={() => setShowRewardChest(false)} />
+
+      <footer className="max-w-4xl mx-auto px-4 py-8 mt-8 border-t border-gray-200">
+        <div className="text-center space-y-2">
+          <p className="text-xs text-gray-500">
+            NeuroQuest Academy is a Supplementary Learning Adventure. Matriculation is through your accredited educational institution.
+          </p>
+          <p className="text-xs text-gray-400">
+            Data processed in accordance with UAE Data Protection Law 2026 · Biometric data stored locally only
+          </p>
+          <p className="text-xs text-gray-400">
+            © {new Date().getFullYear()} NeuroQuest Nexus · Built for neurodiverse learners 🧠
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

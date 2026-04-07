@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Match - NeuroQuest</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(160deg, #0f0a2e, #1a1145, #0d1b3e);
+    color: white; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; overflow-x: hidden;
+  }
+  .header {
+    padding: 16px; text-align: center; width: 100%;
+    background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(139,92,246,0.2);
+  }
+  .header h1 { font-size: 1.4rem; font-weight: 900; }
+  .header .subtitle { font-size: 0.75rem; color: #a78bfa; margin-top: 2px; }
+  .stats {
+    display: flex; gap: 16px; justify-content: center; padding: 12px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 12px; padding: 8px 16px; text-align: center;
+  }
+  .stat-val { font-size: 1.2rem; font-weight: 900; color: #c084fc; }
+  .stat-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; }
+  .grid {
+    display: grid; gap: 10px; padding: 16px; max-width: 480px; width: 100%;
+  }
+  .card {
+    aspect-ratio: 1; border-radius: 16px; cursor: pointer;
+    background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(99,102,241,0.1));
+    border: 2px solid rgba(139,92,246,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; transition: all 0.3s ease; position: relative;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .card:hover { transform: scale(1.03); border-color: rgba(139,92,246,0.6); }
+  .card:active { transform: scale(0.97); }
+  .card.flipped {
+    background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(20,184,166,0.15));
+    border-color: rgba(34,197,94,0.5);
+  }
+  .card.matched {
+    background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(20,184,166,0.2));
+    border-color: rgba(34,197,94,0.6); opacity: 0.7; pointer-events: none;
+  }
+  .card .face { opacity: 0; transition: opacity 0.2s; font-size: 2.2rem; }
+  .card.flipped .face, .card.matched .face { opacity: 1; }
+  .card .back { position: absolute; font-size: 1.5rem; opacity: 0.4; }
+  .card.flipped .back, .card.matched .back { opacity: 0; }
+  .menu, .win {
+    text-align: center; padding: 40px 20px; max-width: 400px;
+  }
+  .menu h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+  .menu p { color: #9ca3af; font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5; }
+  .btn {
+    display: inline-block; padding: 12px 32px; border-radius: 16px;
+    font-weight: 800; font-size: 0.9rem; border: none; cursor: pointer;
+    color: white; transition: all 0.2s; margin: 6px;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:active { transform: scale(0.95); }
+  .btn-purple { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
+  .btn-teal { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+  .btn-small { padding: 8px 20px; font-size: 0.8rem; }
+  .difficulty-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .win h2 { font-size: 2rem; margin-bottom: 12px; }
+  .win .score { font-size: 3rem; font-weight: 900; color: #c084fc; }
+  .win .detail { color: #9ca3af; font-size: 0.85rem; margin: 12px 0; }
+  .stars { font-size: 2rem; margin: 8px 0; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🧠 Memory Match</h1>
+  <div class="subtitle">Flip cards to find matching pairs!</div>
+</div>
+
+<div id="app"></div>
+
+<script>
+const EMOJI_SETS = {
+  animals: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🦁','🐯','🐸'],
+  food:    ['🍎','🍕','🍔','🌮','🍩','🍦','🍪','🧁','🥑','🍇','🥕','🌽'],
+  space:   ['🚀','🌟','🌙','☀️','🪐','👽','🛸','🌍','⭐','🌈','☄️','🔭'],
+  science: ['🧪','🔬','⚗️','🧬','💡','🔋','🧲','🌡️','💎','🪨','🌊','🌋'],
+};
+
+let state = { screen: 'menu' };
+const app = document.getElementById('app');
+
+function render() {
+  if (state.screen === 'menu') renderMenu();
+  else if (state.screen === 'game') renderGame();
+  else if (state.screen === 'win') renderWin();
+}
+
+function renderMenu() {
+  app.innerHTML = `
+    <div class="menu">
+      <div style="font-size:4rem;margin-bottom:12px">🧠</div>
+      <h2>Memory Match</h2>
+      <p>Test your memory by flipping cards and finding matching pairs. Fewer moves = higher score!</p>
+      <p style="font-size:0.8rem;color:#c084fc;font-weight:700;margin-bottom:16px">Choose difficulty:</p>
+      <div class="difficulty-btns">
+        <button class="btn btn-teal" onclick="startGame(4)">Easy<br><span style="font-size:0.7rem;opacity:0.7">4x3 (6 pairs)</span></button>
+        <button class="btn btn-purple" onclick="startGame(6)">Medium<br><span style="font-size:0.7rem;opacity:0.7">4x4 (8 pairs)</span></button>
+        <button class="btn btn-purple" onclick="startGame(8)">Hard<br><span style="font-size:0.7rem;opacity:0.7">5x4 (10 pairs)</span></button>
+      </div>
+    </div>`;
+}
+
+function startGame(pairs) {
+  const setKey = Object.keys(EMOJI_SETS)[Math.floor(Math.random() * Object.keys(EMOJI_SETS).length)];
+  const emojis = EMOJI_SETS[setKey].slice(0, pairs);
+  const cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+  const cols = pairs <= 6 ? 3 : pairs <= 8 ? 4 : 5;
+  state = {
+    screen: 'game', cards, cols, pairs,
+    flipped: [], matched: [], moves: 0, startTime: Date.now(), locked: false,
+  };
+  render();
+}
+
+function renderGame() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const matchedPairs = state.matched.length / 2;
+  app.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="stat-val">${state.moves}</div><div class="stat-label">Moves</div></div>
+      <div class="stat"><div class="stat-val">${matchedPairs}/${state.pairs}</div><div class="stat-label">Pairs</div></div>
+      <div class="stat"><div class="stat-val">${elapsed}s</div><div class="stat-label">Time</div></div>
+      <button class="btn btn-small btn-purple" onclick="state={screen:'menu'};render();">Quit</button>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(${state.cols},1fr)">
+      ${state.cards.map((emoji, i) => {
+        const isFlipped = state.flipped.includes(i) || state.matched.includes(i);
+        const isMatched = state.matched.includes(i);
+        return `<div class="card${isFlipped ? ' flipped' : ''}${isMatched ? ' matched' : ''}" onclick="flipCard(${i})">
+          <span class="back">?</span>
+          <span class="face">${emoji}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function flipCard(i) {
+  if (state.locked || state.flipped.includes(i) || state.matched.includes(i)) return;
+  state.flipped.push(i);
+  if (state.flipped.length === 2) {
+    state.moves++;
+    state.locked = true;
+    const [a, b] = state.flipped;
+    if (state.cards[a] === state.cards[b]) {
+      state.matched.push(a, b);
+      state.flipped = [];
+      state.locked = false;
+      if (state.matched.length === state.cards.length) {
+        state.endTime = Date.now();
+        state.screen = 'win';
+      }
+    } else {
+      setTimeout(() => { state.flipped = []; state.locked = false; render(); }, 800);
+    }
+  }
+  render();
+}
+
+function renderWin() {
+  const time = Math.floor((state.endTime - state.startTime) / 1000);
+  const perfect = state.pairs;
+  const ratio = perfect / state.moves;
+  const stars = ratio >= 0.9 ? 3 : ratio >= 0.6 ? 2 : 1;
+  const score = Math.max(0, Math.round((1000 * ratio) - (time * 2)));
+  app.innerHTML = `
+    <div class="win">
+      <div style="font-size:4rem;margin-bottom:8px">🎉</div>
+      <h2>You Won!</h2>
+      <div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <div class="score">${score}</div>
+      <div class="detail">
+        ${state.moves} moves · ${time}s · ${state.pairs} pairs
+      </div>
+      <button class="btn btn-teal" onclick="startGame(${state.pairs})">Play Again</button>
+      <button class="btn btn-purple" onclick="state={screen:'menu'};render();">Menu</button>
+    </div>`;
+}
+
+// Timer update
+setInterval(() => { if (state.screen === 'game') render(); }, 1000);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Hero - NeuroQuest</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(160deg, #0f0a2e, #1a1145, #0d1b3e);
+    color: white; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; overflow-x: hidden;
+  }
+  .header {
+    padding: 14px; text-align: center; width: 100%;
+    background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(236,72,153,0.2);
+  }
+  .header h1 { font-size: 1.3rem; font-weight: 900; }
+  .header .sub { font-size: 0.7rem; color: #f9a8d4; margin-top: 2px; }
+  .stats {
+    display: flex; gap: 12px; justify-content: center; padding: 10px; flex-wrap: wrap;
+  }
+  .stat {
+    background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.3);
+    border-radius: 10px; padding: 6px 14px; text-align: center;
+  }
+  .stat-val { font-size: 1.1rem; font-weight: 900; color: #f9a8d4; }
+  .stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; }
+  .menu { text-align: center; padding: 40px 20px; max-width: 400px; }
+  .menu h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+  .menu p { color: #9ca3af; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
+  .btn {
+    display: inline-block; padding: 12px 32px; border-radius: 16px;
+    font-weight: 800; font-size: 0.9rem; border: none; cursor: pointer;
+    color: white; transition: all 0.2s; margin: 6px;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:active { transform: scale(0.95); }
+  .btn-pink { background: linear-gradient(135deg, #EC4899, #DB2777); }
+  .btn-teal { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+  .btn-purple { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
+  .typing-area {
+    max-width: 600px; width: 100%; padding: 20px; text-align: center;
+  }
+  .word-display {
+    background: rgba(236,72,153,0.1); border: 2px solid rgba(236,72,153,0.3);
+    border-radius: 20px; padding: 24px; margin-bottom: 16px; min-height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-weight: 900; letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .word-display .typed { color: #4ADE80; }
+  .word-display .cursor { color: #FFD700; text-decoration: underline; }
+  .word-display .remaining { color: rgba(255,255,255,0.3); }
+  .word-display .wrong { color: #EF4444; text-decoration: underline wavy; }
+  .input-area {
+    position: relative; margin-bottom: 12px;
+  }
+  .input-area input {
+    width: 100%; padding: 14px 20px; border-radius: 16px;
+    background: rgba(236,72,153,0.1); border: 2px solid rgba(236,72,153,0.3);
+    color: white; font-size: 1.2rem; font-weight: 700; text-align: center;
+    outline: none; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .input-area input:focus { border-color: rgba(236,72,153,0.6); }
+  .falling-words {
+    position: relative; width: 100%; max-width: 500px; height: 300px;
+    border: 2px solid rgba(236,72,153,0.2); border-radius: 20px;
+    overflow: hidden; background: rgba(0,0,0,0.2); margin-bottom: 12px;
+  }
+  .falling-word {
+    position: absolute; font-weight: 800; font-size: 1rem; padding: 4px 10px;
+    border-radius: 8px; white-space: nowrap; transition: top 0.1s linear;
+  }
+  .falling-word.active {
+    background: rgba(236,72,153,0.3); border: 1px solid rgba(236,72,153,0.5);
+  }
+  .falling-word.default {
+    background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.3);
+    color: rgba(255,255,255,0.7);
+  }
+  .combo {
+    position: fixed; top: 40%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 2.5rem; font-weight: 900; pointer-events: none;
+    animation: comboAnim 0.8s ease-out forwards; z-index: 100;
+  }
+  @keyframes comboAnim {
+    0% { opacity: 1; transform: translate(-50%,-50%) scale(0.5); }
+    50% { transform: translate(-50%,-50%) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%,-80%) scale(1); }
+  }
+  .gameover { text-align: center; padding: 40px 20px; }
+  .gameover h2 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
+  .gameover .score { font-size: 3rem; font-weight: 900; color: #f9a8d4; }
+  .gameover .detail { color: #9ca3af; font-size: 0.85rem; margin: 12px 0; }
+  .speed-meter {
+    width: 100%; max-width: 300px; height: 8px; background: rgba(255,255,255,0.1);
+    border-radius: 4px; margin: 4px auto; overflow: hidden;
+  }
+  .speed-fill {
+    height: 100%; border-radius: 4px; transition: width 0.3s;
+    background: linear-gradient(90deg, #EC4899, #8B5CF6);
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>⌨️ Typing Hero</h1>
+  <div class="sub">Type the falling words before they reach the bottom!</div>
+</div>
+<div id="app"></div>
+
+<script>
+const WORD_POOLS = {
+  easy: ['cat', 'dog', 'sun', 'hat', 'run', 'big', 'red', 'cup', 'pen', 'box', 'map', 'fun', 'hot', 'ice', 'top', 'fly', 'bee', 'egg', 'fox', 'owl'],
+  medium: ['apple', 'brain', 'cloud', 'dream', 'earth', 'flame', 'ghost', 'heart', 'light', 'magic', 'ocean', 'piano', 'queen', 'river', 'storm', 'tiger', 'water', 'zebra', 'orbit', 'pixel'],
+  hard: ['algorithm', 'butterfly', 'chemistry', 'democracy', 'ecosystem', 'frequency', 'geography', 'histogram', 'invisible', 'juxtapose', 'knowledge', 'labyrinth', 'magnetism', 'neutrino', 'orchestra', 'photosynthesis', 'quadratic', 'revolution', 'telescope', 'universal'],
+};
+
+let state = { screen: 'menu' };
+let animFrame;
+const app = document.getElementById('app');
+
+function render() {
+  cancelAnimationFrame(animFrame);
+  if (state.screen === 'menu') renderMenu();
+  else if (state.screen === 'game') renderGame();
+  else if (state.screen === 'gameover') renderGameOver();
+}
+
+function renderMenu() {
+  app.innerHTML = `
+    <div class="menu">
+      <div style="font-size:4rem;margin-bottom:12px">⌨️</div>
+      <h2>Typing Hero</h2>
+      <p>Words fall from the top of the screen. Type them before they reach the bottom! Faster typing = more points. Build combos for bonus multipliers!</p>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+        <button class="btn btn-teal" onclick="startGame('easy')">Easy<br><span style="font-size:0.7rem;opacity:0.7">Short words, slow speed</span></button>
+        <button class="btn btn-pink" onclick="startGame('medium')">Medium<br><span style="font-size:0.7rem;opacity:0.7">5-letter words, moderate</span></button>
+        <button class="btn btn-purple" onclick="startGame('hard')">Hard<br><span style="font-size:0.7rem;opacity:0.7">Long words, fast speed</span></button>
+      </div>
+    </div>`;
+}
+
+function startGame(difficulty) {
+  const speeds = { easy: 0.3, medium: 0.5, hard: 0.7 };
+  const intervals = { easy: 3000, medium: 2200, hard: 1600 };
+  state = {
+    screen: 'game', difficulty,
+    words: [], typed: '', score: 0, combo: 0, maxCombo: 0,
+    lives: 5, wordsTyped: 0, charsTyped: 0,
+    speed: speeds[difficulty], spawnInterval: intervals[difficulty],
+    startTime: Date.now(), lastSpawn: 0, pool: [...WORD_POOLS[difficulty]],
+    showCombo: null,
+  };
+  render();
+  gameLoop();
+}
+
+function spawnWord() {
+  const word = state.pool[Math.floor(Math.random() * state.pool.length)];
+  const maxX = 400;
+  state.words.push({
+    text: word.toUpperCase(),
+    x: Math.floor(Math.random() * maxX) + 20,
+    y: -30,
+    active: false,
+  });
+}
+
+function gameLoop() {
+  if (state.screen !== 'game') return;
+  const now = Date.now();
+
+  // Spawn new words
+  if (now - state.lastSpawn > state.spawnInterval) {
+    spawnWord();
+    state.lastSpawn = now;
+    // Speed up over time
+    state.speed += 0.002;
+    state.spawnInterval = Math.max(800, state.spawnInterval - 5);
+  }
+
+  // Move words down
+  state.words.forEach(w => { w.y += state.speed; });
+
+  // Check for words reaching bottom (300px = container height)
+  const escaped = state.words.filter(w => w.y > 280);
+  if (escaped.length > 0) {
+    state.lives -= escaped.length;
+    state.combo = 0;
+    state.words = state.words.filter(w => w.y <= 280);
+  }
+
+  if (state.lives <= 0) {
+    state.lives = 0;
+    state.endTime = Date.now();
+    state.screen = 'gameover';
+    render();
+    return;
+  }
+
+  renderGameView();
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+function renderGameView() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const wpm = elapsed > 0 ? Math.round((state.charsTyped / 5) / (elapsed / 60)) : 0;
+
+  // Find active word (first word that starts with typed text)
+  let activeIdx = -1;
+  if (state.typed) {
+    activeIdx = state.words.findIndex(w => w.text.startsWith(state.typed.toUpperCase()));
+  }
+  state.words.forEach((w, i) => { w.active = i === activeIdx; });
+
+  app.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="stat-val">${state.score}</div><div class="stat-label">Score</div></div>
+      <div class="stat"><div class="stat-val">${'❤️'.repeat(Math.min(state.lives, 5))}${'🖤'.repeat(Math.max(0, 5 - state.lives))}</div><div class="stat-label">Lives</div></div>
+      <div class="stat"><div class="stat-val">${state.combo}🔥</div><div class="stat-label">Combo</div></div>
+      <div class="stat"><div class="stat-val">${wpm}</div><div class="stat-label">WPM</div></div>
+    </div>
+    <div class="speed-meter"><div class="speed-fill" style="width:${Math.min(100, wpm)}%"></div></div>
+    <div class="typing-area">
+      <div class="falling-words" id="fw">
+        ${state.words.map(w => `
+          <div class="falling-word ${w.active ? 'active' : 'default'}"
+            style="left:${Math.min(w.x, 380)}px;top:${w.y}px">
+            ${w.active
+              ? `<span class="typed">${w.text.slice(0, state.typed.length)}</span><span class="cursor">${w.text[state.typed.length] || ''}</span><span class="remaining">${w.text.slice(state.typed.length + 1)}</span>`
+              : w.text}
+          </div>`).join('')}
+        <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#EF4444,#F97316);border-radius:2px;opacity:0.5"></div>
+      </div>
+      <div class="input-area">
+        <input type="text" id="typingInput" value="${state.typed}" placeholder="Type here..."
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      </div>
+      <button class="btn btn-purple" style="padding:6px 16px;font-size:0.7rem" onclick="cancelAnimationFrame(animFrame);state={screen:'menu'};render();">Quit</button>
+    </div>
+    ${state.showCombo ? `<div class="combo" style="color:${state.combo >= 5 ? '#FFD700' : '#EC4899'}">${state.combo}x Combo!</div>` : ''}`;
+
+  const input = document.getElementById('typingInput');
+  input.focus();
+  input.addEventListener('input', handleTyping);
+}
+
+function handleTyping(e) {
+  const val = e.target.value;
+  state.typed = val;
+
+  // Check if completed a word
+  const matchIdx = state.words.findIndex(w => w.text === val.toUpperCase());
+  if (matchIdx !== -1) {
+    const word = state.words[matchIdx];
+    state.words.splice(matchIdx, 1);
+    state.combo++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+    state.wordsTyped++;
+    state.charsTyped += word.text.length;
+    const multiplier = state.combo >= 10 ? 5 : state.combo >= 5 ? 3 : state.combo >= 3 ? 2 : 1;
+    state.score += word.text.length * 10 * multiplier;
+    state.typed = '';
+    if (state.combo >= 3) {
+      state.showCombo = true;
+      setTimeout(() => { state.showCombo = null; }, 800);
+    }
+  }
+}
+
+function renderGameOver() {
+  const time = Math.floor((state.endTime - state.startTime) / 1000);
+  const wpm = time > 0 ? Math.round((state.charsTyped / 5) / (time / 60)) : 0;
+  const stars = state.score >= 500 ? 3 : state.score >= 200 ? 2 : 1;
+  app.innerHTML = `
+    <div class="gameover" style="padding-top:40px">
+      <div style="font-size:4rem;margin-bottom:8px">⌨️</div>
+      <h2>Game Over!</h2>
+      <div style="font-size:2rem;margin:8px 0">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <div class="score">${state.score}</div>
+      <div class="detail">
+        ${state.wordsTyped} words · ${wpm} WPM · ${time}s · Max combo: ${state.maxCombo}🔥
+      </div>
+      <button class="btn btn-teal" onclick="startGame('${state.difficulty}')">Play Again</button>
+      <button class="btn btn-purple" onclick="state={screen:'menu'};render();">Menu</button>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>

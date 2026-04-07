@@ -2,8 +2,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { CoinTransaction } from '@/types';
+import { useDailyRewardStore } from './dailyRewardStore';
 
-// ── Coin rates by programme ───────────────────────────────────────────────────
 export const COIN_TABLE = {
   PYP: { correct: 20, boss: 50,  clue_cost: 5  },
   MYP: { correct: 30, boss: 75,  clue_cost: 10 },
@@ -18,25 +18,24 @@ export const BONUS_COINS = {
   clueFreeMultiplier:  1.5,
 } as const;
 
-// ── Store ─────────────────────────────────────────────────────────────────────
-
 interface EconomyState {
   totalCoins: number;
   walletCoins: number;
   coinsSpentOnClues: number;
   cluesPurchased: number;
   transactions: CoinTransaction[];
-  purchasedClues: Record<string, boolean>;  // key: `${questId}:${questionIndex}`
-  purchasedGames: string[];  // game IDs bought from the market
+  purchasedClues: Record<string, boolean>;
+  purchasedGames: string[];
 
-  // Actions
   earnCoins: (amount: number, source: string) => void;
+  earnCoinsWithMultiplier: (baseAmount: number, source: string) => void;
   spendCoins: (amount: number, source: string) => boolean;
   buyClue: (questId: string, questionIndex: number, cost: number) => boolean;
   canAffordClue: (cost: number) => boolean;
   hasClue: (questId: string, questionIndex: number) => boolean;
   buyGame: (gameId: string, cost: number) => boolean;
   hasGame: (gameId: string) => boolean;
+  getCoinMultiplier: () => number;
   reset: () => void;
 }
 
@@ -63,6 +62,13 @@ export const useEconomyStore = create<EconomyState>()(
         }));
       },
 
+      earnCoinsWithMultiplier: (baseAmount, source) => {
+        const multiplier = useDailyRewardStore.getState().getMultiplier('coins');
+        const actualAmount = Math.round(baseAmount * multiplier);
+        const label = multiplier > 1 ? `${source} (x${multiplier})` : source;
+        get().earnCoins(actualAmount, label);
+      },
+
       spendCoins: (amount, source) => {
         const { walletCoins } = get();
         if (walletCoins < amount) return false;
@@ -77,7 +83,21 @@ export const useEconomyStore = create<EconomyState>()(
       buyClue: (questId, questionIndex, cost) => {
         const key = `${questId}:${questionIndex}`;
         const state = get();
-        if (state.purchasedClues[key]) return true;  // already bought
+        if (state.purchasedClues[key]) return true;
+        const dailyReward = useDailyRewardStore.getState();
+        if (dailyReward.useFreeClue()) {
+          const tx: CoinTransaction = {
+            amount: 0, type: 'earn',
+            source: `free-clue:${questId}:${questionIndex}`,
+            timestamp: Date.now(),
+          };
+          set((s) => ({
+            purchasedClues: { ...s.purchasedClues, [key]: true },
+            cluesPurchased: s.cluesPurchased + 1,
+            transactions: [tx, ...s.transactions].slice(0, 100),
+          }));
+          return true;
+        }
         if (state.walletCoins < cost) return false;
         const tx: CoinTransaction = {
           amount: cost, type: 'spend',
@@ -94,7 +114,11 @@ export const useEconomyStore = create<EconomyState>()(
         return true;
       },
 
-      canAffordClue: (cost) => get().walletCoins >= cost,
+      canAffordClue: (cost) => {
+        const state = get();
+        const dailyReward = useDailyRewardStore.getState();
+        return state.walletCoins >= cost || dailyReward.useFreeClue();
+      },
 
       hasClue: (questId, questionIndex) => {
         const key = `${questId}:${questionIndex}`;
@@ -122,6 +146,8 @@ export const useEconomyStore = create<EconomyState>()(
 
       hasGame: (gameId) => get().purchasedGames.includes(gameId),
 
+      getCoinMultiplier: () => useDailyRewardStore.getState().getMultiplier('coins'),
+
       reset: () => set(DEFAULT_STATE),
     }),
     {
@@ -142,6 +168,7 @@ export const useEconomyStore = create<EconomyState>()(
         coinsSpentOnClues: s.coinsSpentOnClues,
         cluesPurchased: s.cluesPurchased,
         purchasedClues: s.purchasedClues,
+        purchasedGames: s.purchasedGames,
       }),
     }
   )

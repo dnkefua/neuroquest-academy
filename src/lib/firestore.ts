@@ -224,6 +224,53 @@ export async function linkChildToParent(parentUid: string, childUid: string) {
   await updateDoc(doc(db, 'users', parentUid), { childUid });
 }
 
+// Multi-child: add child by UID to childUids array
+export async function addChildToParent(parentUid: string, childUid: string) {
+  await updateDoc(doc(db, 'users', parentUid), {
+    childUids: arrayUnion(childUid),
+    // Also keep childUid for backward compat (first child)
+    childUid: childUid,
+  });
+}
+
+// Multi-child: remove child
+export async function removeChildFromParent(parentUid: string, childUid: string) {
+  await updateDoc(doc(db, 'users', parentUid), {
+    childUids: arrayRemove(childUid),
+  });
+}
+
+// Find student by email (for parent linking)
+export async function findStudentByEmail(email: string): Promise<UserProfile | null> {
+  const q = query(
+    collection(db, 'users'),
+    where('email', '==', email.trim().toLowerCase()),
+    where('role', '==', 'student'),
+    limit(1),
+  );
+  const snap = await getDocs(q);
+  if (snap.empty) return null;
+  return snap.docs[0].data() as UserProfile;
+}
+
+/* ── Activity Tracking ── */
+
+export async function updateActiveQuest(uid: string, questId: string, subject: string) {
+  await updateDoc(doc(db, 'users', uid), {
+    lastActiveQuest: questId,
+    lastActiveSubject: subject,
+    lastActiveTimestamp: new Date().toISOString(),
+  });
+}
+
+export async function clearActiveQuest(uid: string) {
+  await updateDoc(doc(db, 'users', uid), {
+    lastActiveQuest: '',
+    lastActiveSubject: '',
+    lastActiveTimestamp: '',
+  });
+}
+
 /* ── Class & Quest Approval System ── */
 
 // Request approval for a quest (student side)

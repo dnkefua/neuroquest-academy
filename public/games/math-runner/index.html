@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Runner - NeuroQuest</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(160deg, #0f0a2e, #1a1145, #0d1b3e);
+    color: white; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; overflow: hidden; user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .header {
+    padding: 12px; text-align: center; width: 100%;
+    background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(139,92,246,0.2);
+    z-index: 10; position: relative;
+  }
+  .header h1 { font-size: 1.2rem; font-weight: 900; }
+  .stats {
+    display: flex; gap: 12px; justify-content: center; padding: 8px;
+    flex-wrap: wrap; z-index: 10; position: relative;
+  }
+  .stat {
+    background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 10px; padding: 6px 14px; text-align: center;
+  }
+  .stat-val { font-size: 1.1rem; font-weight: 900; color: #c084fc; }
+  .stat-label { font-size: 0.6rem; color: #9ca3af; text-transform: uppercase; }
+  canvas { display: block; touch-action: none; }
+  .menu, .gameover {
+    text-align: center; padding: 40px 20px; max-width: 400px;
+  }
+  .menu h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+  .menu p { color: #9ca3af; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; }
+  .btn {
+    display: inline-block; padding: 14px 36px; border-radius: 16px;
+    font-weight: 800; font-size: 1rem; border: none; cursor: pointer;
+    color: white; transition: all 0.2s; margin: 6px;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:active { transform: scale(0.95); }
+  .btn-purple { background: linear-gradient(135deg, #8B5CF6, #6366F1); }
+  .btn-teal { background: linear-gradient(135deg, #14B8A6, #0D9488); }
+  .btn-green { background: linear-gradient(135deg, #22C55E, #16A34A); }
+  .btn-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
+  .gameover .score { font-size: 3rem; font-weight: 900; color: #c084fc; }
+  .gameover .detail { color: #9ca3af; font-size: 0.85rem; margin: 12px 0; }
+  .question-box {
+    background: rgba(139,92,246,0.2); border: 2px solid rgba(139,92,246,0.4);
+    border-radius: 20px; padding: 16px 24px; margin: 12px auto; max-width: 380px;
+    text-align: center;
+  }
+  .question-text { font-size: 1.4rem; font-weight: 900; margin-bottom: 12px; }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .answer-btn {
+    padding: 12px; border-radius: 12px; font-weight: 800; font-size: 1.1rem;
+    border: 2px solid rgba(139,92,246,0.3); background: rgba(139,92,246,0.1);
+    color: white; cursor: pointer; transition: all 0.15s;
+  }
+  .answer-btn:hover { background: rgba(139,92,246,0.25); border-color: rgba(139,92,246,0.6); }
+  .answer-btn:active { transform: scale(0.95); }
+  .answer-btn.correct { background: rgba(34,197,94,0.3); border-color: #22C55E; }
+  .answer-btn.wrong { background: rgba(239,68,68,0.3); border-color: #EF4444; }
+  .runner-area { flex: 1; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; }
+  .lives { font-size: 1.2rem; }
+  .streak-bonus {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 2rem; font-weight: 900; color: #FFD700; pointer-events: none;
+    animation: floatUp 1s ease-out forwards; z-index: 100;
+  }
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%,-120%) scale(1.5); }
+  }
+  .progress-bar {
+    width: 100%; max-width: 380px; height: 6px; background: rgba(255,255,255,0.1);
+    border-radius: 3px; margin: 8px auto 0; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 3px; transition: width 0.3s;
+    background: linear-gradient(90deg, #8B5CF6, #14B8A6);
+  }
+  .difficulty-label {
+    font-size: 0.7rem; text-align: center; margin-top: 4px;
+    color: #a78bfa; font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🏃 Math Runner</h1>
+</div>
+<div id="app"></div>
+
+<script>
+let state = { screen: 'menu' };
+const app = document.getElementById('app');
+
+function render() {
+  if (state.screen === 'menu') renderMenu();
+  else if (state.screen === 'game') renderGame();
+  else if (state.screen === 'gameover') renderGameOver();
+}
+
+function renderMenu() {
+  app.innerHTML = `
+    <div class="menu">
+      <div style="font-size:4rem;margin-bottom:12px">🏃</div>
+      <h2>Math Runner</h2>
+      <p>Solve math problems as fast as you can! Each correct answer scores points. Wrong answers cost a life. The questions get harder as you go!</p>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+        <button class="btn btn-teal" onclick="startGame('easy')">Easy<br><span style="font-size:0.7rem;opacity:0.7">Addition & Subtraction</span></button>
+        <button class="btn btn-purple" onclick="startGame('medium')">Medium<br><span style="font-size:0.7rem;opacity:0.7">+ Multiplication</span></button>
+        <button class="btn btn-red" onclick="startGame('hard')">Hard<br><span style="font-size:0.7rem;opacity:0.7">+ Division & Bigger Numbers</span></button>
+      </div>
+    </div>`;
+}
+
+function generateQuestion(difficulty, streak) {
+  const escalation = Math.floor(streak / 5);
+  let a, b, op, answer, options;
+
+  if (difficulty === 'easy') {
+    const ops = ['+', '-'];
+    op = ops[Math.floor(Math.random() * ops.length)];
+    const max = 20 + escalation * 10;
+    a = Math.floor(Math.random() * max) + 1;
+    b = Math.floor(Math.random() * Math.min(a, max)) + 1;
+    answer = op === '+' ? a + b : a - b;
+  } else if (difficulty === 'medium') {
+    const ops = ['+', '-', '*'];
+    op = ops[Math.floor(Math.random() * ops.length)];
+    if (op === '*') {
+      a = Math.floor(Math.random() * (10 + escalation * 2)) + 2;
+      b = Math.floor(Math.random() * (10 + escalation)) + 2;
+      answer = a * b;
+    } else {
+      const max = 50 + escalation * 15;
+      a = Math.floor(Math.random() * max) + 10;
+      b = Math.floor(Math.random() * Math.min(a, max)) + 1;
+      answer = op === '+' ? a + b : a - b;
+    }
+  } else {
+    const ops = ['+', '-', '*', '/'];
+    op = ops[Math.floor(Math.random() * ops.length)];
+    if (op === '/') {
+      b = Math.floor(Math.random() * (8 + escalation)) + 2;
+      answer = Math.floor(Math.random() * (10 + escalation)) + 2;
+      a = b * answer;
+    } else if (op === '*') {
+      a = Math.floor(Math.random() * (12 + escalation * 3)) + 2;
+      b = Math.floor(Math.random() * (12 + escalation)) + 2;
+      answer = a * b;
+    } else {
+      const max = 100 + escalation * 25;
+      a = Math.floor(Math.random() * max) + 20;
+      b = Math.floor(Math.random() * Math.min(a, max)) + 1;
+      answer = op === '+' ? a + b : a - b;
+    }
+  }
+
+  // Generate wrong answers close to the correct one
+  const wrongSet = new Set();
+  while (wrongSet.size < 3) {
+    let wrong = answer + (Math.floor(Math.random() * 10) - 5);
+    if (wrong !== answer && wrong >= 0) wrongSet.add(wrong);
+    if (wrongSet.size < 3) {
+      wrong = answer + (Math.floor(Math.random() * 20) - 10);
+      if (wrong !== answer && wrong >= 0) wrongSet.add(wrong);
+    }
+  }
+
+  options = [...wrongSet].slice(0, 3).concat(answer).sort(() => Math.random() - 0.5);
+
+  return { question: `${a} ${op === '*' ? 'x' : op} ${b}`, answer, options };
+}
+
+function startGame(difficulty) {
+  const q = generateQuestion(difficulty, 0);
+  state = {
+    screen: 'game', difficulty, score: 0, lives: 3, streak: 0, bestStreak: 0,
+    totalCorrect: 0, totalWrong: 0, startTime: Date.now(),
+    question: q.question, answer: q.answer, options: q.options,
+    feedback: null, feedbackTimeout: null,
+  };
+  render();
+}
+
+function handleAnswer(selected) {
+  if (state.feedback) return;
+  const correct = selected === state.answer;
+
+  if (correct) {
+    const streakBonus = state.streak >= 5 ? 5 : state.streak >= 3 ? 3 : 1;
+    state.score += 10 * streakBonus;
+    state.streak++;
+    state.totalCorrect++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    state.feedback = 'correct';
+  } else {
+    state.lives--;
+    state.streak = 0;
+    state.totalWrong++;
+    state.feedback = 'wrong';
+  }
+
+  render();
+
+  setTimeout(() => {
+    if (state.lives <= 0) {
+      state.screen = 'gameover';
+      state.endTime = Date.now();
+    } else {
+      const q = generateQuestion(state.difficulty, state.streak);
+      state.question = q.question;
+      state.answer = q.answer;
+      state.options = q.options;
+      state.feedback = null;
+    }
+    render();
+  }, correct ? 400 : 800);
+}
+
+function renderGame() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const diffLabel = state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1);
+  const levelProgress = (state.streak % 5) / 5 * 100;
+
+  app.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="stat-val">${state.score}</div><div class="stat-label">Score</div></div>
+      <div class="stat"><div class="stat-val lives">${'❤️'.repeat(state.lives)}${'🖤'.repeat(3-state.lives)}</div><div class="stat-label">Lives</div></div>
+      <div class="stat"><div class="stat-val">${state.streak}🔥</div><div class="stat-label">Streak</div></div>
+      <div class="stat"><div class="stat-val">${elapsed}s</div><div class="stat-label">Time</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${levelProgress}%"></div></div>
+    <div class="difficulty-label">${diffLabel} · Level ${Math.floor(state.streak / 5) + 1}</div>
+    ${state.streak > 0 && state.streak % 5 === 0 ? `<div class="streak-bonus">${state.streak} Streak! x${state.streak >= 5 ? 5 : 3}</div>` : ''}
+    <div class="question-box" style="${state.feedback === 'correct' ? 'border-color:#22C55E;' : state.feedback === 'wrong' ? 'border-color:#EF4444;' : ''}">
+      <div class="question-text">${state.question} = ?</div>
+      <div class="answers">
+        ${state.options.map(opt => {
+          let cls = 'answer-btn';
+          if (state.feedback && opt === state.answer) cls += ' correct';
+          else if (state.feedback === 'wrong' && opt !== state.answer) cls += ' wrong';
+          return `<button class="${cls}" onclick="handleAnswer(${opt})">${opt}</button>`;
+        }).join('')}
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:12px">
+      <button class="btn btn-purple" style="padding:8px 20px;font-size:0.75rem" onclick="state={screen:'menu'};render();">Quit</button>
+    </div>`;
+}
+
+function renderGameOver() {
+  const time = Math.floor((state.endTime - state.startTime) / 1000);
+  const stars = state.score >= 200 ? 3 : state.score >= 100 ? 2 : 1;
+  app.innerHTML = `
+    <div class="gameover" style="padding-top:40px">
+      <div style="font-size:4rem;margin-bottom:8px">🏁</div>
+      <h2 style="font-size:1.8rem;font-weight:900;margin-bottom:8px">Game Over!</h2>
+      <div style="font-size:2rem;margin:8px 0">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <div class="score">${state.score}</div>
+      <div class="detail">
+        ${state.totalCorrect} correct · ${state.totalWrong} wrong · ${time}s · Best streak: ${state.bestStreak}🔥
+      </div>
+      <button class="btn btn-teal" onclick="startGame('${state.difficulty}')">Play Again</button>
+      <button class="btn btn-purple" onclick="state={screen:'menu'};render();">Menu</button>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>

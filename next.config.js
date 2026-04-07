@@ -11,6 +11,12 @@ const nextConfig = {
     },
   },
   trailingSlash: process.env.NEXT_OUTPUT === 'static',
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.optimization.splitChunks = false;
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;
