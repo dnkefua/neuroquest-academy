@@ -24,7 +24,7 @@ export default function GamePlayerClient({ slug }: GamePlayerProps) {
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`/games/${slug}/index.html`, { method: 'HEAD' })
+    fetch(`/play/${slug}/index.html`, { method: 'HEAD' })
       .then(r => {
         if (cancelled) return;
         if (!r.ok) {
@@ -94,7 +94,7 @@ export default function GamePlayerClient({ slug }: GamePlayerProps) {
       <div className="flex-1 relative">
         <iframe
           id="game-frame"
-          src={`/games/${slug}/index.html`}
+          src={`/play/${slug}/index.html`}
           className="absolute inset-0 w-full h-full border-0"
           allowFullScreen
           sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups allow-forms"

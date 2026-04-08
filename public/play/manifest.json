@@ -8,7 +8,7 @@
     "ageRange": "8-14",
     "difficulty": "Beginner",
     "description": "Guide a robot to light up tiles using programming commands. Learn sequencing, loops, and problem solving!",
-    "thumbnail": "/games/lightbot/img/favicon.ico",
+    "thumbnail": "/play/lightbot/img/favicon.ico",
     "tags": ["coding", "logic", "puzzle", "sequencing"],
     "skills": ["Computational Thinking", "Sequencing", "Problem Solving"],
     "price": 0,

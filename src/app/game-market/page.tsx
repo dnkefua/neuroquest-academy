@@ -68,7 +68,7 @@ export default function GameMarketPage() {
   }, [router]);
 
   useEffect(() => {
-    fetch('/games/manifest.json')
+    fetch('/play/manifest.json')
       .then(r => r.json())
       .then(setGames)
       .catch(() => setGames([]));
