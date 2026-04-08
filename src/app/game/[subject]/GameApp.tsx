@@ -1,10 +1,13 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { useProgressStore } from '@/store/progressStore';
 import type { CurriculumSubject } from '@/types';
 import dynamic from 'next/dynamic';
 import QuestGuide from '@/components/quest-guide/QuestGuide';
+import MicroSprintTimer from '@/components/micro-sprint/MicroSprintTimer';
+import BrainBreakModal from '@/components/BrainBreakModal';
 
 const MathGameApp = dynamic(() => import('../math/GameApp'), { ssr: false });
 const ScienceGameApp = dynamic(() => import('../science/GameApp'), { ssr: false });
@@ -21,6 +24,7 @@ export default function GameApp({ subject }: GameAppProps) {
   const currentGrade = useProgressStore(s => s.currentGrade);
   const urlGrade = searchParams?.get('grade');
   const grade = urlGrade ? parseInt(urlGrade, 10) : currentGrade;
+  const [showBrainBreak, setShowBrainBreak] = useState(false);
 
   let GameComponent;
   switch (subject) {
@@ -34,8 +38,15 @@ export default function GameApp({ subject }: GameAppProps) {
 
   return (
     <div className="relative">
-      {GameComponent}
+      <MicroSprintTimer
+        maxMinutes={10}
+        onBreakSuggestion={() => setShowBrainBreak(true)}
+        onComplete={() => {}}
+      >
+        {GameComponent}
+      </MicroSprintTimer>
       <QuestGuide currentSubject={subject} />
+      {showBrainBreak && <BrainBreakModal onClose={() => setShowBrainBreak(false)} />}
     </div>
   );
 }
