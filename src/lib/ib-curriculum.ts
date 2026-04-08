@@ -53,11 +53,24 @@ export const IB_CURRICULUM: IBCurriculumMap = {
       },
       5: {
         framework: 'PYP',
-        unit: 'Decimals, Fractions & Volume',
-        topics: ['decimal operations to hundredths', 'fraction operations with unlike denominators', 'volume of rectangular prisms', 'coordinate plane introduction', 'order of operations'],
-        ibTopicKey: 'math-g5-decimals',
+        unit: 'Number Sense, Patterns, Geometry & Data',
+        topics: [
+          // Number Sense
+          'place value to millions', 'reading and writing large numbers', 'comparing and ordering numbers', 'rounding to nearest 10/100/1000', 'factors and multiples', 'prime and composite numbers', 'square numbers', 'cube numbers',
+          // Operations
+          'multi-digit addition', 'multi-digit subtraction', 'multi-digit multiplication (2-digit by 2-digit)', 'long division with 2-digit divisors', 'decimal addition and subtraction', 'decimal multiplication', 'decimal division',
+          // Fractions
+          'equivalent fractions', 'comparing fractions', 'adding fractions with unlike denominators', 'subtracting fractions with unlike denominators', 'mixed numbers and improper fractions', 'multiplying fractions by whole numbers',
+          // Measurement
+          'metric units of length', 'metric units of mass', 'metric units of capacity', 'perimeter of composite shapes', 'area of rectangles', 'volume of rectangular prisms',
+          // Geometry
+          'angles in triangles', 'classifying quadrilaterals', 'lines of symmetry', 'reflection and rotation', 'coordinate plane (first quadrant)', 'transformations',
+          // Data Handling
+          'line graphs', 'stem-and-leaf plots', 'mode, median, and mean', 'probability scale', 'outcome diagrams'
+        ],
+        ibTopicKey: 'math-g5-comprehensive',
         priorKnowledge: 'Students can multiply and divide multi-digit numbers.',
-        sampleProblems: ['3.45 + 2.7 = ?', '1/3 + 1/4 = ?', 'Find the volume of a box 5 × 3 × 2.'],
+        sampleProblems: ['Round 347,528 to the nearest thousand', 'Find the GCF of 24 and 36', 'Add: 3/4 + 2/5', 'Find volume: 5cm × 3cm × 2cm'],
       },
       6: {
         framework: 'PYP',
@@ -77,11 +90,24 @@ export const IB_CURRICULUM: IBCurriculumMap = {
       },
       8: {
         framework: 'MYP Year 2',
-        unit: 'Coordinate Geometry & Transformations',
-        topics: ['plotting points on a Cartesian grid (4 quadrants)', 'gradient (slope) of a line: rise over run', 'y-intercept and equation of a line y = mx + c', 'reflection across axes', 'translation using vectors'],
-        ibTopicKey: 'math-g8-coordinate-geom',
+        unit: 'Number, Algebra, Geometry, Statistics & Probability',
+        topics: [
+          // Number
+          'rational numbers on number line', 'integer operations', 'laws of exponents', 'negative exponents', 'scientific notation', 'square roots and cube roots', 'perfect squares', 'real number system',
+          // Algebra
+          'linear equations with variables on both sides', 'two-step equations', 'multi-step equations', 'equations with fractions', 'formula manipulation', 'patterns and sequences', 'arithmetic sequences', 'geometric sequences',
+          // Geometry
+          'Pythagorean theorem', 'Pythagorean triples', 'distance formula', 'midpoint formula', 'coordinates in all quadrants', 'gradient/slope calculation', 'gradient-intercept form y=mx+c', 'equations of parallel lines', 'equations of perpendicular lines',
+          // Transformations
+          'translation using vectors', 'reflection in x-axis and y-axis', 'rotation about origin', 'dilation and scale factor', 'combined transformations',
+          // Statistics
+          'frequency tables', 'grouped frequency tables', 'histograms', 'cumulative frequency', 'box-and-whisker plots', 'quartiles and interquartile range',
+          // Probability
+          'theoretical probability', 'experimental probability', 'complementary events', 'mutually exclusive events', 'independent events', 'tree diagrams', 'Venn diagrams'
+        ],
+        ibTopicKey: 'math-g8-comprehensive',
         priorKnowledge: 'Students can solve two-step linear equations.',
-        sampleProblems: ['Find the gradient of the line through (0,2) and (3,8).', 'Write the equation of a line with gradient 2 and y-intercept −1.', 'Reflect the point (3, −4) across the x-axis.'],
+        sampleProblems: ['Solve: 3x - 5 = 22', 'Find gradient between (2,3) and (6,15)', 'Calculate: 2³ × 2⁴', 'Find hypotenuse of right triangle with legs 3 and 4'],
       },
       9: {
         framework: 'MYP Year 3',
@@ -124,10 +150,10 @@ export const IB_CURRICULUM: IBCurriculumMap = {
       2:  { framework: 'PYP', unit: 'Habitats & Communities', topics: ['different types of habitats', 'how animals are adapted', 'simple food chains', 'human impact on habitats'], ibTopicKey: 'sci-g2-habitats', priorKnowledge: 'Students know basic needs of living things.', sampleProblems: ['Why do polar bears have thick fur?', 'Draw a food chain with 3 links.'] },
       3:  { framework: 'PYP', unit: 'Forces & Motion / Life Cycles', topics: ['pushes and pulls as forces', 'how forces affect motion', 'friction and its effects', 'life cycles of plants and animals'], ibTopicKey: 'sci-g3-forces', priorKnowledge: 'Students understand habitats and adaptations.', sampleProblems: ['What force slows down a rolling ball?', 'Compare the life cycle of a frog and a butterfly.'] },
       4:  { framework: 'PYP', unit: 'Energy & Earth Processes', topics: ['forms of energy: light sound heat electrical', 'energy transfer and transformation', 'rock types: igneous sedimentary metamorphic', 'weathering erosion and the rock cycle'], ibTopicKey: 'sci-g4-energy', priorKnowledge: 'Students understand forces and motion.', sampleProblems: ['How does sound energy travel?', 'How is sedimentary rock formed?'] },
-      5:  { framework: 'PYP', unit: 'Matter & Human Body Systems', topics: ['three states of matter', 'physical and chemical changes', 'mixtures and solutions', 'major body systems and their functions'], ibTopicKey: 'sci-g5-matter', priorKnowledge: 'Students know energy forms and rock types.', sampleProblems: ['Is melting ice a physical or chemical change?', 'What does the circulatory system do?'] },
+      5:  { framework: 'PYP', unit: 'Matter, Energy, Living Systems & Earth Science', topics: ['states of matter and particle theory', 'physical changes (melting, freezing, evaporation)', 'chemical changes (rusting, burning, cooking)', 'mixtures and solutions: separation techniques', 'density and buoyancy', 'energy forms and transfers', 'light and shadow', 'sound and hearing', 'forces: gravity, friction, magnetic', 'simple machines (lever, pulley, inclined plane)', 'human digestive system', 'circulatory and respiratory systems', 'skeletal and muscular systems', 'plant structures and functions', 'life cycles: reproduction in plants and animals', 'inheritance and traits', 'rock cycle and soil formation', 'water cycle', 'weather and climate', 'Earth resources and conservation'], ibTopicKey: 'sci-g5-comprehensive', priorKnowledge: 'Students know energy forms and rock types.', sampleProblems: ['Explain particle movement in solid, liquid, gas', 'What is the function of the heart?', 'How does a lever multiply force?'] },
       6:  { framework: 'PYP', unit: 'Forces & Motion', topics: ['contact and non-contact forces', 'gravity and weight vs mass', 'friction and air resistance', 'simple machines (lever, pulley)'], ibTopicKey: 'sci-g6-forces', priorKnowledge: 'Students understand push and pull forces.', sampleProblems: ['What is the difference between mass and weight?', 'How does a pulley make work easier?'] },
       7:  { framework: 'MYP Year 1', unit: 'Cells & Body Systems', topics: ['cell structure: nucleus, membrane, cytoplasm', 'plant vs animal cells', 'diffusion and osmosis', 'digestive and circulatory systems'], ibTopicKey: 'sci-g7-cells', priorKnowledge: 'Students know living organisms are made of cells.', sampleProblems: ['Label the parts of a plant cell.', 'Explain how diffusion works.'] },
-      8:  { framework: 'MYP Year 2', unit: 'Chemical Reactions & The Periodic Table', topics: ['elements compounds and mixtures', 'the periodic table: groups and periods', 'chemical vs physical changes', 'acids and bases: pH scale'], ibTopicKey: 'sci-g8-chemistry', priorKnowledge: 'Students understand states of matter.', sampleProblems: ['Is salt water an element compound or mixture?', 'What is the pH of a strong acid?'] },
+      8:  { framework: 'MYP Year 2', unit: 'Chemistry, Physics, Biology & Earth Science', topics: ['atomic structure: protons, neutrons, electrons', 'elements, compounds, and mixtures', 'periodic table: groups, periods, trends', 'chemical bonding: ionic and covalent', 'chemical formulas and equations', 'acids, bases, and the pH scale', 'indicators and neutralization', 'motion: speed, velocity, acceleration', 'Newton\'s three laws of motion', 'force, mass, and acceleration (F=ma)', 'momentum and conservation of momentum', 'work, energy, and power', 'kinetic and potential energy', 'thermal energy and heat transfer', 'waves: frequency, wavelength, amplitude', 'light and electromagnetic spectrum', 'sound waves and ultrasound', 'Earth: structure and layers', 'plate tectonics and continental drift', 'earthquakes and volcanoes', 'weathering, erosion, and deposition'], ibTopicKey: 'sci-g8-comprehensive', priorKnowledge: 'Students understand states of matter.', sampleProblems: ['What is the atomic number of carbon?', 'Calculate force using F=ma', 'Explain Newton\'s First Law', 'What causes an earthquake?'] },
       9:  { framework: 'MYP Year 3', unit: 'Genetics & Evolution', topics: ['DNA structure and function', 'dominant and recessive alleles', 'Punnett squares', 'natural selection and adaptation', 'evidence for evolution'], ibTopicKey: 'sci-g9-genetics', priorKnowledge: 'Students know cell structure and reproduction.', sampleProblems: ['Complete a Punnett square for Bb × Bb.', 'What evidence supports evolution?'] },
       10: { framework: 'MYP Year 4', unit: 'Energy & Electromagnetism', topics: ['energy types and conservation', 'Ohm\'s Law: V = IR', 'series vs parallel circuits', 'electromagnetic spectrum', 'renewable energy sources'], ibTopicKey: 'sci-g10-energy', priorKnowledge: 'Students can calculate speed and understand waves.', sampleProblems: ['Calculate voltage if I = 2A and R = 6Ω.', 'Compare series and parallel circuits.'] },
       11: { framework: 'DP Year 1', unit: 'Atomic Physics & Thermodynamics', topics: ['Bohr model and atomic orbitals', 'radioactivity: alpha beta gamma', 'thermodynamics: entropy and enthalpy', 'Le Chatelier\'s principle'], ibTopicKey: 'sci-g11-atomic', priorKnowledge: 'Students understand periodic table and chemical bonding.', sampleProblems: ['Describe the Bohr model of the atom.', 'What happens to equilibrium when temperature increases?'] },
