@@ -1,0 +1,343 @@
+﻿import re
+
+quest_str = r'''
+  // ─── GRADE 8 · SCIENCE: BIOLOGY ─────────────────────────────────────────
+  {
+    id: 'g8-science-biology',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'The Bio-Dome',
+    realmName: 'The Biosphere',
+    narrativeWorld: 'A massive, climate-controlled dome containing micro-ecosystems and giant cellular models. You must cure a mysterious ailments by understanding life at the microscopic level.',
+    characterTeacher: 'Dr. Helix',
+    teacherEmoji: '🧬',
+    theme: 'lab',
+    coinReward: 150,
+    boss: {
+      id: 'g8-sci-bio-boss',
+      title: 'The Pathogen',
+      villain: 'Virus Prime',
+      villainEmoji: '🦠',
+      narrative: 'A rapidly mutating virus is attacking the dome\'s central plant matrix. You must identify how the virus bypasses the cell membrane and how the cell can defend itself.',
+      question: 'Which organelle is primarily responsible for producing the energy needed by the cell to fight off an infection, and what is the process called?',
+      answer: 'The Mitochondria, and the process is Cellular Respiration.',
+      hints: [
+        'Think of the \"powerhouse\" of the cell.',
+        'This process takes glucose and oxygen to create ATP energy.',
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-sci-bio-q1',
+        narrative: 'You stumble upon a dying plant. Its cells are rigid but lack energy.',
+        question: 'Which of the following is found in plant cells but NOT in animal cells?',
+        equation: '',
+        options: ['Cell Wall', 'Mitochondria', 'Nucleus', 'Cell Membrane'],
+        correctIndex: 0,
+        clue: { title: 'Plant Cells vs Animal Cells', explanation: 'Plant cells have a rigid cell wall and chloroplasts. Animal cells do not.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-bio-q2',
+        narrative: 'A stream of water is moving rapidly across a membrane.',
+        question: 'What is the specific name for the diffusion of water molecules across a partially permeable membrane?',
+        equation: '',
+        options: ['Osmosis', 'Active Transport', 'Facilitated Diffusion', 'Transpiration'],
+        correctIndex: 0,
+        clue: { title: 'Movement of Water', explanation: 'Osmosis is specifically the movement of water from high concentration to low concentration across a membrane.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-bio-q3',
+        narrative: 'You need to restart the digestive matrix to feed the dome.',
+        question: 'In the human digestive system, where does the majority of nutrient absorption take place?',
+        equation: '',
+        options: ['Small Intestine', 'Stomach', 'Large Intestine', 'Liver'],
+        correctIndex: 0,
+        clue: { title: 'Human Digestive System', explanation: 'The stomach breaks down food, but the small intestine is lined with villi to absorb the nutrients into the blood.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-bio-q4',
+        narrative: 'The air purifiers are broken. You must rely on the plants.',
+        question: 'What is the word equation for photosynthesis?',
+        equation: '',
+        options: ['Carbon Dioxide + Water → Glucose + Oxygen', 'Glucose + Oxygen → Carbon Dioxide + Water', 'Water + Oxygen → Glucose + Carbon Dioxide', 'Glucose + Carbon Dioxide → Oxygen + Water'],
+        correctIndex: 0,
+        clue: { title: 'Photosynthesis', explanation: 'Plants take in CO2 and water (using light energy) to make their food (glucose) and release oxygen as a byproduct.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-bio-q5',
+        narrative: 'You observe blood cells fighting an intruder.',
+        question: 'Which component of blood is primarily responsible for fighting infections?',
+        equation: '',
+        options: ['White Blood Cells', 'Red Blood Cells', 'Platelets', 'Plasma'],
+        correctIndex: 0,
+        clue: { title: 'Components of Blood', explanation: 'White blood cells are the immune system\'s defense. Red blood cells carry oxygen. Platelets clot blood.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      }
+    ],
+  },
+  // ─── GRADE 8 · SCIENCE: CHEMISTRY ───────────────────────────────────────
+  {
+    id: 'g8-science-chemistry',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'The Alchemist\\'s Laboratory',
+    realmName: 'The Biosphere',
+    narrativeWorld: 'A bubbling, hissing laboratory filled with glowing liquids and periodic tables. You must master chemical reactions toforge new items.',
+    characterTeacher: 'Professor Beaker',
+    teacherEmoji: '🧪',
+    theme: 'lab',
+    coinReward: 150,
+    boss: {
+      id: 'g8-sci-chem-boss',
+      title: 'The Reactive Slime',
+      villain: 'Slime Mass',
+      villainEmoji: '☢️',
+      narrative: 'A gigantic acidic slime is dissolving the floor! You must neutralize it before it is too late.',
+      question: 'If the slime has a pH of 2, what kind of substance must you add to neutralize it, and what products will be formed?',
+      answer: 'Add a Base (or Alkali). The products will be a Salt and Water.',
+      hints: [
+        'A pH of 2 is highly acidic.',
+        'The opposite block of the pH scale neutralizes acids.',
+        'Acid + Base always yields Salt + Water.'
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-sci-chem-q1',
+        narrative: 'You find a block of pure iron resting next to a rusty sword.',
+        question: 'Which of the following is a chemical change?',
+        equation: '',
+        options: ['Iron rusting', 'Ice melting', 'Glass breaking', 'Water boiling'],
+        correctIndex: 0,
+        clue: { title: 'Chemical vs Physical Changes', explanation: 'Rusting creates a completely new substance (iron oxide), making it a chemical change. The others just change state or shape.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-chem-q2',
+        narrative: 'A periodic table flashes red on the wall, highlighting one specific box.',
+        question: 'What is the atomic number of an atom equivalent to?',
+        equation: '',
+        options: ['The number of protons', 'The number of neutrons', 'The total protons and neutrons', 'The atomic mass'],
+        correctIndex: 0,
+        clue: { title: 'Atomic Structure', explanation: 'The atomic number defines the element and is exactly equal to the number of protons in its nucleus.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-chem-q3',
+        narrative: 'To open a door, you must mix an acid and a carbonate.',
+        question: 'What gas is produced when an acid reacts with a metal carbonate?',
+        equation: '',
+        options: ['Carbon Dioxide', 'Hydrogen', 'Oxygen', 'Nitrogen'],
+        correctIndex: 0,
+        clue: { title: 'Reactions of Acids', explanation: 'Acid + Carbonate → Salt + Water + Carbon Dioxide. (Hint: \"Carbonate\" yields Carbon Dioxide).', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-chem-q4',
+        narrative: 'You are analyzing water (H₂O).',
+        question: 'Is water classified as an element, a compound, or a mixture?',
+        equation: '',
+        options: ['A compound', 'An element', 'A mixture', 'An ion'],
+        correctIndex: 0,
+        clue: { title: 'Elements, Compounds, Mixtures', explanation: 'Water consists of two different elements (Hydrogen and Oxygen) chemically bonded together, making it a compound.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-chem-q5',
+        narrative: 'A test tube bubbles over. You need to know if the substance is an acid or an alkali.',
+        question: 'If you test an unknown solution with Universal Indicator and it turns purple, what is it?',
+        equation: '',
+        options: ['A strong alkali', 'A strong acid', 'Neutral', 'A weak acid'],
+        correctIndex: 0,
+        clue: { title: 'The pH Scale', explanation: 'Universal indicator turns red for strong acids, green for neutral, and purple/blue for strong alkalis.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      }
+    ],
+  },
+  // ─── GRADE 8 · SCIENCE: PHYSICS ─────────────────────────────────────────
+  {
+    id: 'g8-science-physics',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'The Kinetic Core',
+    realmName: 'The Biosphere',
+    narrativeWorld: 'A massive mechanical core powered by momentum, pendulums, and light fractionators. Gravity behaves strangely here.',
+    characterTeacher: 'Sir Isaac',
+    teacherEmoji: '🍎',
+    theme: 'lab',
+    coinReward: 150,
+    boss: {
+      id: 'g8-sci-phys-boss',
+      title: 'The Magnetic Sentinel',
+      villain: 'Electromagnet',
+      villainEmoji: '🧲',
+      narrative: 'A massive electromagnet blocks your escape. You must construct a stronger electromagnet to pull open the iron doors.',
+      question: 'Name three ways you can increase the strength of an electromagnet.',
+      answer: 'Increase the current (voltage), add more coils (turns) of wire, and use a magnetic core (like iron).',
+      hints: [
+        'Think about the electricity flowing through the wire.',
+        'Consider the wire itself wrapped around the core.',
+        'What material is the core inside the wire made of?'
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-sci-phys-q1',
+        narrative: 'A gigantic boulder rolls toward you, but a spring mechanism stops it.',
+        question: 'Which of Newton\\'s Laws states that for every action, there is an equal and opposite reaction?',
+        equation: '',
+        options: ['Newton\\'s Third Law', 'Newton\\'s First Law', 'Newton\\'s Second Law', 'The Law of Gravity'],
+        correctIndex: 0,
+        clue: { title: 'Newton\\'s Laws of Motion', explanation: 'The 3rd Law is about action and reaction pairs. The 1st is inertia, and the 2nd is Force = mass × acceleration.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-phys-q2',
+        narrative: 'A laser beam is shot into a triangular glass prism.',
+        question: 'What is the splitting of white light into the colors of the rainbow called?',
+        equation: '',
+        options: ['Dispersion', 'Reflection', 'Absorption', 'Diffraction'],
+        correctIndex: 0,
+        clue: { title: 'Light and Waves', explanation: 'Dispersion happens because different colors of light bend (refract) by different amounts when passing through the glass.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-phys-q3',
+        narrative: 'You drop a heavy bowling ball and a light tennis ball from the exact same height in a vacuum.',
+        question: 'Which ball hits the ground first?',
+        equation: '',
+        options: ['They hit the ground at the exact same time', 'The bowling ball', 'The tennis ball', 'It depends on their volume'],
+        correctIndex: 0,
+        clue: { title: 'Gravity and Falling Objects', explanation: 'In a vacuum without air resistance, all objects accelerate towards the earth at the same rate (approx 9.8 m/s²), regardless of mass.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-phys-q4',
+        narrative: 'A swinging pendulum powers a clock in the distance.',
+        question: 'At the very top of the pendulum\\'s swing, which type of energy is at its MAXIMUM?',
+        equation: '',
+        options: ['Gravitational Potential Energy', 'Kinetic Energy', 'Thermal Energy', 'Elastic Potential Energy'],
+        correctIndex: 0,
+        clue: { title: 'Energy Conservation', explanation: 'At the top of the swing, the pendulum briefly stops moving (0 kinetic) but is at its highest point (max gravitational potential).', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-phys-q5',
+        narrative: 'You measure how fast a mining cart is moving.',
+        question: 'If a cart travels 60 meters in 12 seconds, what is its average speed?',
+        equation: 'Speed = Distance / Time',
+        options: ['5 m/s', '12 m/s', '72 m/s', '720 m/s'],
+        correctIndex: 0,
+        clue: { title: 'Speed Calculation', explanation: 'Speed = Distance ÷ Time. 60 ÷ 12 = 5 meters per second.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      }
+    ],
+  },
+  // ─── GRADE 8 · SCIENCE: ECOLOGY ─────────────────────────────────────────
+  {
+    id: 'g8-science-ecology',
+    grade: 8,
+    programme: 'MYP',
+    subject: 'science',
+    title: 'The Lost Oasis',
+    realmName: 'The Biosphere',
+    narrativeWorld: 'A dying greenhouse biome. The soil is parched and the predators are gone. You must balance the food web and resource cycles to save it.',
+    characterTeacher: 'Ranger Flora',
+    teacherEmoji: '🌍',
+    theme: 'nature',
+    coinReward: 150,
+    boss: {
+      id: 'g8-sci-eco-boss',
+      title: 'The Carbon Cloud',
+      villain: 'Smog Elemental',
+      villainEmoji: '🏭',
+      narrative: 'A thick, choking smog is destroying the oasis. You must initiate the carbon cycle to clean the atmosphere.',
+      question: 'Explain how carbon is removed from the atmosphere, and list two ways it is returned to the atmosphere.',
+      answer: 'Removed by Photosynthesis. Returned by Respiration and Combustion (burning).',
+      hints: [
+        'Plants take it in to make food.',
+        'Animals breathe it out.',
+        'Burning fossil fuels releases it rapidly.'
+      ],
+      coinReward: 75,
+    },
+    questions: [
+      {
+        id: 'g8-sci-eco-q1',
+        narrative: 'You find a food chain: Grass → Grasshopper → Frog → Snake.',
+        question: 'Which organism in the food chain is a secondary consumer?',
+        equation: '',
+        options: ['Frog', 'Grasshopper', 'Snake', 'Grass'],
+        correctIndex: 0,
+        clue: { title: 'Food Chains', explanation: 'Grass is the producer. Grasshopper is the primary consumer. Frog eats the primary consumer, making it secondary.', visual: 'diagram', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-eco-q2',
+        narrative: 'A flock of birds begins nesting near the remaining water source.',
+        question: 'What is the term for a group of organisms of the SAME species living in the same area?',
+        equation: '',
+        options: ['Population', 'Community', 'Ecosystem', 'Biome'],
+        correctIndex: 0,
+        clue: { title: 'Ecological Organization', explanation: 'Same species = Population. Multiple populations = Community. Community + abiotic factors = Ecosystem.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-eco-q3',
+        narrative: 'The temperature inside the oasis is rising uncontrollably.',
+        question: 'Which gas is the primary contributor to the enhanced greenhouse effect?',
+        equation: '',
+        options: ['Carbon Dioxide', 'Oxygen', 'Nitrogen', 'Argon'],
+        correctIndex: 0,
+        clue: { title: 'Greenhouse Gases', explanation: 'Carbon dioxide traps heat in the atmosphere. Methane is also strong, but CO2 is the most prominent human-induced greenhouse gas.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-eco-q4',
+        narrative: 'Dead leaves are piling up in the oasis without breaking down.',
+        question: 'Which type of organism is essential for breaking down dead organic matter and returning nutrients to the soil?',
+        equation: '',
+        options: ['Decomposers', 'Producers', 'Primary Consumers', 'Apex Predators'],
+        correctIndex: 0,
+        clue: { title: 'Decomposers', explanation: 'Decomposers (like fungi and bacteria) break down dead material, completing the nutrient cycle.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      },
+      {
+        id: 'g8-sci-eco-q5',
+        narrative: 'You are tasked with bringing a new species into the oasis to hunt the overpopulated grasshoppers.',
+        question: 'What is a species called when it is introduced to a new environment and causes harm by outcompeting native species?',
+        equation: '',
+        options: ['An Invasive Species', 'An Endangered Species', 'A Keystone Species', 'A Native Species'],
+        correctIndex: 0,
+        clue: { title: 'Invasive Species', explanation: 'Invasive species disrupt local ecosystems because they often have no natural predators in the new environment.', visual: 'text', cost: 10 },
+        coinsOnCorrect: 30,
+      }
+    ],
+  },
+'''
+
+filepath = r"src\curriculum\data\grades6-10.ts"
+
+with open(filepath, 'r', encoding='utf-8') as f:
+    text = f.read()
+
+pattern = r"(    ],\n  },\n\n)(\];\n\nexport const MYP_QUESTS_BY_GRADE)"
+
+if re.search(pattern, text):
+    new_text = re.sub(pattern, r"\g<1>" + quest_str + r"\n\g<2>", text)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(new_text)
+    print("Successfully injected the new science quests.")
+else:
+    print("Could not find the insertion point.")
+
