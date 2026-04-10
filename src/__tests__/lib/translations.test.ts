@@ -67,7 +67,7 @@ describe('useTranslations', () => {
 
     it('returns correct next button text in Arabic', () => {
       const t = useTranslations('AR')
-      expect(t('next')).toBe('التالي →')
+      expect(t('next')).toBe('← التالي')
     })
 
     it('returns correct dashboard text in Arabic', () => {

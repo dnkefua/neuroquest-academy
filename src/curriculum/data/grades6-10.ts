@@ -4427,9 +4427,9 @@ export const MYP_QUESTS: CurriculumQuest[] = [
   },
 
 
-  // ─── GRADE 8 · SCIENCE: BIOLOGY ─────────────────────────────────────────
+  // ─── GRADE 8 · SCIENCE: BIOLOGY 2 ─────────────────────────────────────────
   {
-    id: 'g8-science-biology',
+    id: 'g8-science-biology-2',
     grade: 8,
     programme: 'MYP',
     subject: 'science',
@@ -4588,9 +4588,9 @@ export const MYP_QUESTS: CurriculumQuest[] = [
       }
     ],
   },
-  // ─── GRADE 8 · SCIENCE: PHYSICS ─────────────────────────────────────────
+  // ─── GRADE 8 · SCIENCE: PHYSICS 2 ─────────────────────────────────────────
   {
-    id: 'g8-science-physics',
+    id: 'g8-science-physics-2',
     grade: 8,
     programme: 'MYP',
     subject: 'science',
