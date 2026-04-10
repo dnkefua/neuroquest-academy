@@ -91,7 +91,7 @@ export default function QuestMapScene() {
 
       {/* Header */}
       <div className="relative z-10 w-full max-w-lg flex items-center justify-between mb-6">
-        <button onClick={() => router.push('/game/math')}
+        <button onClick={() => router.push('/world-map')}
           className="text-sm font-bold text-gray-400 hover:text-white transition-all flex items-center gap-1">
           ← Back
         </button>
