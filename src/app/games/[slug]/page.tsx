@@ -5,6 +5,8 @@ export async function generateStaticParams() {
     { slug: 'lightbot' },
     { slug: 'memory-match' },
     { slug: 'math-runner' },
+    { slug: 'math-racer-3d' },
+    { slug: 'maze-pursuit-3d' },
     { slug: 'word-search' },
     { slug: 'typing-hero' },
   ];

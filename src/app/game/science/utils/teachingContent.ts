@@ -45,33 +45,21 @@ export function generateTeachingPanels(quest: GameQuest | null): TeachingPanel[]
 }
 
 function generateDynamicPanels(quest: GameQuest): TeachingPanel[] {
-  const panels: TeachingPanel[] = [];
+  const firstClue = quest.questions[0]?.clue;
+  const summary = quest.briefingDescription.slice(0, 120) + (quest.briefingDescription.length > 120 ? '...' : '');
+  const clueLine = firstClue?.example
+    ? firstClue.example.split('\n').filter(Boolean)[0]
+    : 'Watch the lab model, then answer the challenge.';
 
-  // Introduction panel with visual
-  panels.push({
+  return [{
     character: quest.teacherName,
     color: getSubjectColor(quest.subject),
     emoji: quest.teacherEmoji,
-    title: quest.title,
-    content: quest.briefingDescription.slice(0, 150) + (quest.briefingDescription.length > 150 ? '...' : ''),
+    title: firstClue?.title || quest.title,
+    content: `${summary}\n\nFocus point: ${clueLine}`,
     visual: 'topic-diagram',
     highlightStage: 'introduction',
-  });
-
-  // One concept panel from first question clue
-  if (quest.questions.length > 0 && quest.questions[0].clue) {
-    panels.push({
-      character: quest.teacherName,
-      color: getSubjectColor(quest.subject),
-      emoji: quest.teacherEmoji,
-      title: quest.questions[0].clue.title,
-      content: quest.questions[0].clue.example.slice(0, 200),
-      visual: 'concept',
-      highlightStage: 'concept',
-    });
-  }
-
-  return panels;
+  }];
 }
 
 function extractConceptsFromQuestions(questions: GameQuest['questions']): Array<{ title: string; explanation: string; type: string }> {

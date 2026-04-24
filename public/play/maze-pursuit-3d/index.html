@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maze Pursuit 3D - NeuroQuest</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #08110e; color: #fff; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; }
+    canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; touch-action: none; }
+    .hud { position: fixed; inset: 0; pointer-events: none; }
+    .top { position: absolute; top: 14px; left: 14px; right: 14px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+    .stat { border: 1px solid rgba(255,255,255,.14); background: rgba(5,13,12,.74); backdrop-filter: blur(12px); padding: 10px 12px; }
+    .label { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: .14em; }
+    .value { margin-top: 3px; font-size: 20px; font-weight: 900; }
+    .center, .question { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100vw - 30px)); border: 1px solid rgba(255,255,255,.16); background: rgba(5,13,12,.92); padding: 28px; box-shadow: 0 28px 90px rgba(0,0,0,.38); text-align: center; pointer-events: auto; }
+    .center h1, .question h2 { margin: 0; font-size: clamp(32px, 7vw, 58px); line-height: 1; }
+    .center p, .question p { color: #cbd5e1; line-height: 1.65; }
+    button { border: 0; padding: 12px 16px; background: #f8fafc; color: #071018; font-weight: 900; cursor: pointer; }
+    button.secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.22); }
+    .answers { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 18px; }
+    .answers button { min-height: 58px; background: rgba(255,255,255,.08); color: white; border: 1px solid rgba(255,255,255,.16); }
+    .question { display: none; text-align: left; }
+    .question h2 { font-size: clamp(24px, 5vw, 38px); }
+    .controls { position: absolute; right: 16px; bottom: 16px; width: 188px; height: 188px; pointer-events: auto; }
+    .controls button { position: absolute; width: 58px; height: 58px; background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(12px); font-size: 20px; }
+    #up { left: 65px; top: 0; } #left { left: 0; top: 65px; } #right { right: 0; top: 65px; } #down { left: 65px; bottom: 0; } #blink { left: 65px; top: 65px; background: rgba(20,184,166,.28); }
+    .toast { position: absolute; left: 50%; top: 104px; transform: translateX(-50%); border: 1px solid rgba(255,255,255,.16); background: rgba(5,13,12,.9); padding: 10px 14px; opacity: 0; transition: opacity .18s, transform .18s; font-weight: 900; }
+    .toast.show { opacity: 1; transform: translate(-50%, -6px); }
+    @media (max-width: 760px) {
+      .top { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .value { font-size: 16px; }
+      .controls { transform: scale(.84); transform-origin: right bottom; }
+      .answers { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="maze"></canvas>
+<div class="hud">
+  <div class="top">
+    <div class="stat"><div class="label">Level</div><div class="value" id="level">1</div></div>
+    <div class="stat"><div class="label">Coins</div><div class="value" id="coins">100</div></div>
+    <div class="stat"><div class="label">Blink</div><div class="value" id="blinkCount">0</div></div>
+    <div class="stat"><div class="label">Solved</div><div class="value" id="solved">0/3</div></div>
+    <div class="stat"><div class="label">Pursuers</div><div class="value" id="monsters">1</div></div>
+  </div>
+  <div class="toast" id="toast">Correct</div>
+  <div class="controls">
+    <button id="up" aria-label="up">^</button>
+    <button id="left" aria-label="left">&lt;</button>
+    <button id="right" aria-label="right">&gt;</button>
+    <button id="down" aria-label="down">v</button>
+    <button id="blink" aria-label="blink">B</button>
+  </div>
+  <div class="center" id="menu">
+    <h1>Maze Pursuit 3D</h1>
+    <p>Move through the garden maze, answer knowledge terminals, collect coins, and use blink powers before the pursuers drain your wallet.</p>
+    <button id="start">Enter maze</button>
+  </div>
+  <div class="question" id="question">
+    <div class="label">Knowledge terminal</div>
+    <h2 id="questionText">Question</h2>
+    <p id="questionDetail"></p>
+    <div class="answers" id="answers"></div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('maze');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0, dpr = 1;
+function resize() {
+  dpr = Math.max(1, Math.min(2, devicePixelRatio || 1));
+  W = innerWidth; H = innerHeight;
+  canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+addEventListener('resize', resize); resize();
+
+const ui = {
+  level: document.getElementById('level'),
+  coins: document.getElementById('coins'),
+  blink: document.getElementById('blinkCount'),
+  solved: document.getElementById('solved'),
+  monsters: document.getElementById('monsters'),
+  menu: document.getElementById('menu'),
+  question: document.getElementById('question'),
+  questionText: document.getElementById('questionText'),
+  questionDetail: document.getElementById('questionDetail'),
+  answers: document.getElementById('answers'),
+  toast: document.getElementById('toast')
+};
+
+const maps = [
+  {
+    name: 'Garden',
+    colors: { floor: '#123524', floor2: '#17462f', wall: '#2f7d45', wallTop: '#4ade80', exit: '#facc15' },
+    rows: [
+      '#############',
+      '#P..T....C.E#',
+      '#.###.#####.#',
+      '#...#.....#.#',
+      '###.#.###.#.#',
+      '#...#T#...#.#',
+      '#.#####.#.#.#',
+      '#.....#.#...#',
+      '#.###.#.###M#',
+      '#C..T.......#',
+      '#############'
+    ]
+  },
+  {
+    name: 'Crystal Grove',
+    colors: { floor: '#112c36', floor2: '#153d4a', wall: '#256d85', wallTop: '#67e8f9', exit: '#f97316' },
+    rows: [
+      '###############',
+      '#P..#...T....E#',
+      '#.#.#.#####.#.#',
+      '#.#...#...#.#.#',
+      '#.#####.#.#.#.#',
+      '#.....T.#...#M#',
+      '###.#########.#',
+      '#...#.....C...#',
+      '#.#.#.#####.###',
+      '#C#...T....M..#',
+      '###############'
+    ]
+  },
+  {
+    name: 'Night Labyrinth',
+    colors: { floor: '#21162a', floor2: '#2b1b38', wall: '#6d3f8f', wallTop: '#c084fc', exit: '#22c55e' },
+    rows: [
+      '#################',
+      '#P....#...T....E#',
+      '#####.#.#####.###',
+      '#.....#.....#...#',
+      '#.#########.###.#',
+      '#...T.....#...#M#',
+      '###.#####.###.#.#',
+      '#C..#...#.....#.#',
+      '#.###.#.#######.#',
+      '#.....#T....M...#',
+      '#.###########.#C#',
+      '#M............#.#',
+      '#################'
+    ]
+  }
+];
+
+const questions = [
+  { q: 'What is 5 - 10?', detail: 'Integer operations from Grade 8 Unit 1.', options: ['-5', '5', '-15', '15'], a: 0 },
+  { q: 'Solve 4x - 3 = 21.', detail: 'Balance both sides of the equation.', options: ['x = 6', 'x = 4', 'x = 24', 'x = 5'], a: 0 },
+  { q: 'Which is a chemical change?', detail: 'New substance or just a physical change?', options: ['Iron rusting', 'Ice melting', 'Glass breaking', 'Water boiling'], a: 0 },
+  { q: 'A cart travels 90 m in 15 s. Speed?', detail: 'Use speed = distance / time.', options: ['6 m/s', '15 m/s', '75 m/s', '105 m/s'], a: 0 },
+  { q: 'Acid + base produces what?', detail: 'Neutralisation reaction.', options: ['Salt and water', 'Oxygen only', 'Metal and acid', 'Carbon and heat'], a: 0 },
+  { q: 'What does a plan view show?', detail: 'Plans and elevations.', options: ['View from above', 'Front only', 'Side only', 'Inside only'], a: 0 },
+  { q: 'Wave speed formula?', detail: 'Use frequency and wavelength.', options: ['v = f x wavelength', 'v = mass x acceleration', 'v = distance + time', 'v = pH x acid'], a: 0 }
+];
+
+let state = null, last = 0, stepTimer = 0, shake = 0;
+const tileW = 66, tileH = 34, wallH = 56;
+
+function parseMap(levelIndex) {
+  const map = maps[levelIndex % maps.length];
+  const grid = map.rows.map(r => r.split(''));
+  const terminals = [], pickups = [], monsters = [];
+  let player = { x: 1, y: 1 };
+  let exit = { x: 1, y: 1 };
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      const c = grid[y][x];
+      if (c === 'P') { player = { x, y }; grid[y][x] = '.'; }
+      if (c === 'E') { exit = { x, y }; grid[y][x] = '.'; }
+      if (c === 'T') { terminals.push({ x, y, solved: false, q: questions[(x + y + levelIndex) % questions.length] }); grid[y][x] = '.'; }
+      if (c === 'C') { pickups.push({ x, y, taken: false }); grid[y][x] = '.'; }
+      if (c === 'M') { monsters.push({ x, y, px: x, py: y, cooldown: 0 }); grid[y][x] = '.'; }
+    }
+  }
+  while (monsters.length < levelIndex + 1) {
+    const open = randomOpen(grid);
+    monsters.push({ x: open.x, y: open.y, px: open.x, py: open.y, cooldown: 0 });
+  }
+  return { map, grid, player: { ...player, px: player.x, py: player.y }, exit, terminals, pickups, monsters };
+}
+
+function start() {
+  const data = parseMap(0);
+  state = { mode: 'play', level: 1, wallet: 100, blinks: 0, solved: 0, drain: 0, ...data };
+  ui.menu.style.display = 'none';
+  syncUi();
+}
+document.getElementById('start').addEventListener('click', start);
+
+function randomOpen(grid) {
+  const cells = [];
+  for (let y = 1; y < grid.length - 1; y++) for (let x = 1; x < grid[y].length - 1; x++) if (grid[y][x] !== '#') cells.push({ x, y });
+  return cells[Math.floor(Math.random() * cells.length)];
+}
+
+function isWall(x, y) {
+  return !state || y < 0 || y >= state.grid.length || x < 0 || x >= state.grid[y].length || state.grid[y][x] === '#';
+}
+
+function movePlayer(dx, dy) {
+  if (!state || state.mode !== 'play') return;
+  const nx = state.player.x + dx, ny = state.player.y + dy;
+  if (isWall(nx, ny)) { shake = .18; return; }
+  state.player.x = nx; state.player.y = ny;
+  state.player.px = nx; state.player.py = ny;
+  collectAndCheck();
+}
+
+function blink() {
+  if (!state || state.mode !== 'play' || state.blinks <= 0) return;
+  let target = randomOpen(state.grid);
+  let tries = 0;
+  while (tries++ < 60 && Math.abs(target.x - state.player.x) + Math.abs(target.y - state.player.y) < 5) target = randomOpen(state.grid);
+  state.player.x = target.x; state.player.y = target.y; state.player.px = target.x; state.player.py = target.y;
+  state.blinks--;
+  toast('Blink shifted');
+  syncUi();
+}
+
+document.getElementById('up').addEventListener('click', () => movePlayer(0,-1));
+document.getElementById('down').addEventListener('click', () => movePlayer(0,1));
+document.getElementById('left').addEventListener('click', () => movePlayer(-1,0));
+document.getElementById('right').addEventListener('click', () => movePlayer(1,0));
+document.getElementById('blink').addEventListener('click', blink);
+addEventListener('keydown', e => {
+  if (!state || state.mode !== 'play') return;
+  if (e.key === 'ArrowUp' || e.key.toLowerCase() === 'w') movePlayer(0,-1);
+  if (e.key === 'ArrowDown' || e.key.toLowerCase() === 's') movePlayer(0,1);
+  if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') movePlayer(-1,0);
+  if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') movePlayer(1,0);
+  if (e.key === ' ') blink();
+});
+
+function collectAndCheck() {
+  for (const coin of state.pickups) {
+    if (!coin.taken && coin.x === state.player.x && coin.y === state.player.y) {
+      coin.taken = true; state.wallet += 12; toast('+12 coins');
+    }
+  }
+  for (const terminal of state.terminals) {
+    if (!terminal.solved && terminal.x === state.player.x && terminal.y === state.player.y) {
+      ask(terminal);
+      return;
+    }
+  }
+  if (state.player.x === state.exit.x && state.player.y === state.exit.y) {
+    if (state.solved >= 3) nextLevel();
+    else toast('Solve 3 terminals first');
+  }
+  syncUi();
+}
+
+function ask(terminal) {
+  state.mode = 'question';
+  ui.question.style.display = 'block';
+  ui.questionText.textContent = terminal.q.q;
+  ui.questionDetail.textContent = terminal.q.detail;
+  ui.answers.innerHTML = '';
+  terminal.q.options.forEach((option, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = option;
+    btn.onclick = () => answer(terminal, index);
+    ui.answers.appendChild(btn);
+  });
+}
+
+function answer(terminal, index) {
+  const correct = index === terminal.q.a;
+  ui.question.style.display = 'none';
+  state.mode = 'play';
+  if (correct) {
+    terminal.solved = true;
+    state.solved++;
+    state.blinks++;
+    state.wallet += 25;
+    toast('Correct: blink power earned');
+  } else {
+    state.wallet = Math.max(0, state.wallet - 15);
+    toast('Incorrect: coins lost');
+  }
+  syncUi();
+}
+
+function nextLevel() {
+  state.level++;
+  if (state.level > 3) {
+    state.mode = 'done';
+    ui.menu.style.display = 'block';
+    ui.menu.innerHTML = `<h1>Maze Cleared</h1><p>Final coins: <b>${Math.floor(state.wallet)}</b><br>You completed the Grade 8 pursuit sequence.</p><button onclick="start()">Play again</button>`;
+    return;
+  }
+  const data = parseMap(state.level - 1);
+  state = { ...state, ...data, solved: 0, mode: 'play' };
+  toast('Level ' + state.level);
+  syncUi();
+}
+
+function syncUi() {
+  if (!state) return;
+  ui.level.textContent = state.level;
+  ui.coins.textContent = Math.max(0, Math.floor(state.wallet));
+  ui.blink.textContent = state.blinks;
+  ui.solved.textContent = state.solved + '/3';
+  ui.monsters.textContent = state.monsters.length;
+}
+
+function toast(text) {
+  ui.toast.textContent = text;
+  ui.toast.classList.add('show');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => ui.toast.classList.remove('show'), 900);
+}
+
+function bfs(monster) {
+  const start = `${monster.x},${monster.y}`;
+  const goal = `${state.player.x},${state.player.y}`;
+  const q = [{ x: monster.x, y: monster.y }];
+  const parent = new Map([[start, null]]);
+  const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+  for (let i = 0; i < q.length; i++) {
+    const cur = q[i];
+    if (`${cur.x},${cur.y}` === goal) break;
+    for (const [dx,dy] of dirs) {
+      const nx = cur.x + dx, ny = cur.y + dy, key = `${nx},${ny}`;
+      if (isWall(nx, ny) || parent.has(key)) continue;
+      parent.set(key, cur);
+      q.push({ x: nx, y: ny });
+    }
+  }
+  if (!parent.has(goal)) return null;
+  let cur = state.player;
+  let prev = null;
+  while (`${cur.x},${cur.y}` !== start) {
+    prev = cur;
+    cur = parent.get(`${cur.x},${cur.y}`);
+    if (!cur) return null;
+  }
+  return prev;
+}
+
+function update(dt) {
+  if (!state || state.mode !== 'play') return;
+  stepTimer += dt;
+  const monsterDelay = Math.max(.28, .72 - state.level * .08);
+  if (stepTimer >= monsterDelay) {
+    stepTimer = 0;
+    for (const m of state.monsters) {
+      const next = bfs(m);
+      if (next) { m.x = next.x; m.y = next.y; }
+    }
+  }
+  let caught = false;
+  for (const m of state.monsters) {
+    if (m.x === state.player.x && m.y === state.player.y) caught = true;
+  }
+  if (caught) {
+    state.wallet = Math.max(0, state.wallet - 24 * dt);
+    state.drain += dt;
+    if (state.drain > .4) { toast('Caught: coins draining'); state.drain = 0; }
+    if (state.wallet <= 0) gameOver();
+    syncUi();
+  }
+  shake = Math.max(0, shake - dt);
+}
+
+function gameOver() {
+  state.mode = 'done';
+  ui.menu.style.display = 'block';
+  ui.menu.innerHTML = `<h1>Coins Drained</h1><p>The maze reset after the pursuers caught you too long.</p><button onclick="start()">Try again</button>`;
+}
+
+function iso(x, y) {
+  const mapW = state.grid[0].length;
+  const ox = W / 2;
+  const oy = Math.max(150, H * .18) - state.grid.length * 5;
+  return { x: ox + (x - y) * tileW / 2, y: oy + (x + y) * tileH / 2 };
+}
+
+function diamond(x, y, w, h) {
+  ctx.beginPath();
+  ctx.moveTo(x, y - h / 2);
+  ctx.lineTo(x + w / 2, y);
+  ctx.lineTo(x, y + h / 2);
+  ctx.lineTo(x - w / 2, y);
+  ctx.closePath();
+}
+
+function drawWall(x, y, colors) {
+  const p = iso(x, y);
+  const topY = p.y - wallH;
+  diamond(p.x, topY, tileW, tileH);
+  ctx.fillStyle = colors.wallTop;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)';
+  ctx.stroke();
+  ctx.fillStyle = colors.wall;
+  ctx.beginPath();
+  ctx.moveTo(p.x - tileW/2, topY);
+  ctx.lineTo(p.x, topY + tileH/2);
+  ctx.lineTo(p.x, p.y + tileH/2);
+  ctx.lineTo(p.x - tileW/2, p.y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#102018';
+  ctx.beginPath();
+  ctx.moveTo(p.x + tileW/2, topY);
+  ctx.lineTo(p.x, topY + tileH/2);
+  ctx.lineTo(p.x, p.y + tileH/2);
+  ctx.lineTo(p.x + tileW/2, p.y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawToken(x, y, color, label, pulse) {
+  const p = iso(x, y);
+  const bob = Math.sin(performance.now() / 220 + x + y) * (pulse ? 5 : 1);
+  ctx.save();
+  ctx.translate(p.x, p.y - 25 + bob);
+  ctx.shadowColor = color; ctx.shadowBlur = pulse ? 22 : 10;
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#061018';
+  ctx.font = '900 12px system-ui';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(label, 0, 1);
+  ctx.restore();
+}
+
+function render() {
+  ctx.fillStyle = state ? state.map.colors.floor : '#08110e';
+  ctx.fillRect(0, 0, W, H);
+  if (!state) return;
+  const colors = state.map.colors;
+  ctx.save();
+  if (shake > 0) ctx.translate((Math.random() - .5) * 8, (Math.random() - .5) * 8);
+  for (let y = 0; y < state.grid.length; y++) {
+    for (let x = 0; x < state.grid[y].length; x++) {
+      const p = iso(x, y);
+      diamond(p.x, p.y, tileW, tileH);
+      ctx.fillStyle = (x + y) % 2 ? colors.floor : colors.floor2;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.05)';
+      ctx.stroke();
+      if (x === state.exit.x && y === state.exit.y) {
+        diamond(p.x, p.y, tileW * .72, tileH * .72);
+        ctx.fillStyle = colors.exit; ctx.fill();
+      }
+    }
+  }
+  for (let y = 0; y < state.grid.length; y++) {
+    for (let x = 0; x < state.grid[y].length; x++) {
+      for (const coin of state.pickups) if (!coin.taken && coin.x === x && coin.y === y) drawToken(x, y, '#facc15', 'C', true);
+      for (const t of state.terminals) if (!t.solved && t.x === x && t.y === y) drawToken(x, y, '#38bdf8', '?', true);
+      if (state.player.x === x && state.player.y === y) drawToken(x, y, '#60a5fa', 'A', true);
+      for (const m of state.monsters) if (m.x === x && m.y === y) drawToken(x, y, '#fb7185', '!', true);
+      if (state.grid[y][x] === '#') drawWall(x, y, colors);
+    }
+  }
+  ctx.restore();
+}
+
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(.05, (now - last) / 1000 || .016);
+  last = now;
+  update(dt);
+  render();
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

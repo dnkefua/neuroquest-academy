@@ -253,7 +253,7 @@ export default function WaterCycle3D({
   showLabels = true,
 }: WaterCycle3DProps) {
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 0, position: 'relative' }}>
       <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
         <WaterCycleScene
           activeStage={activeStage}
@@ -265,11 +265,13 @@ export default function WaterCycle3D({
       {/* Legend overlay */}
       <div style={{
         position: 'absolute',
-        bottom: 10,
-        left: 10,
+        bottom: 6,
+        left: 6,
+        right: 6,
         display: 'flex',
-        gap: 12,
-        fontSize: 12,
+        flexWrap: 'wrap',
+        gap: 6,
+        fontSize: 10,
         color: 'white',
       }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

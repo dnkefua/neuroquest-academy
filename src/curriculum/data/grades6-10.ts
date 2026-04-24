@@ -1,6 +1,7 @@
 import type { CurriculumQuest } from '@/types';
+import { GRADE_8_COMPLETE_QUESTS } from './grade8-complete';
 
-export const MYP_QUESTS: CurriculumQuest[] = [
+const LEGACY_MYP_QUESTS: CurriculumQuest[] = [
   // ─── GRADE 6 · MATH: Integers & Number Line ───────────────────────────────
   {
     id: 'g6-math',
@@ -4751,6 +4752,11 @@ export const MYP_QUESTS: CurriculumQuest[] = [
     ],
   },
 
+];
+
+export const MYP_QUESTS: CurriculumQuest[] = [
+  ...LEGACY_MYP_QUESTS.filter(q => q.grade !== 8),
+  ...GRADE_8_COMPLETE_QUESTS,
 ];
 
 export const MYP_QUESTS_BY_GRADE: Record<number, CurriculumQuest[]> = {

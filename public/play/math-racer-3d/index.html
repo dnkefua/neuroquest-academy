@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Velocity Quest 3D - NeuroQuest</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #071018; color: #fff; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; }
+    canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; touch-action: none; }
+    .hud { position: fixed; inset: 0; pointer-events: none; }
+    .topbar { position: absolute; top: 14px; left: 14px; right: 14px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+    .stat { border: 1px solid rgba(255,255,255,.14); background: rgba(6,14,24,.72); backdrop-filter: blur(12px); padding: 10px 12px; min-height: 58px; }
+    .label { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #94a3b8; }
+    .value { margin-top: 3px; font-weight: 900; font-size: 20px; color: #f8fafc; }
+    .question { position: absolute; top: 92px; right: 16px; width: min(360px, calc(100vw - 32px)); border: 1px solid rgba(250,204,21,.38); background: rgba(16,24,39,.86); box-shadow: 0 0 36px rgba(245,158,11,.16); padding: 16px; }
+    .question small { color: #facc15; text-transform: uppercase; letter-spacing: .16em; font-weight: 800; }
+    .question h2 { margin: 7px 0 0; font-size: clamp(28px, 6vw, 46px); line-height: 1; }
+    .message { position: absolute; left: 50%; top: 47%; transform: translate(-50%, -50%); min-width: min(520px, calc(100vw - 32px)); border: 1px solid rgba(255,255,255,.16); background: rgba(6,14,24,.9); padding: 28px; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,.35); pointer-events: auto; }
+    .message h1 { margin: 0; font-size: clamp(32px, 7vw, 58px); line-height: 1; }
+    .message p { color: #cbd5e1; line-height: 1.6; }
+    button { border: 0; background: #f8fafc; color: #071018; padding: 12px 18px; font-weight: 900; cursor: pointer; }
+    button.secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.24); }
+    .controls { position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; justify-content: space-between; pointer-events: auto; }
+    .controls button { width: 72px; height: 58px; font-size: 24px; background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(12px); }
+    .flash { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); padding: 10px 16px; background: rgba(6,14,24,.82); border: 1px solid rgba(255,255,255,.18); color: #fff; font-weight: 900; opacity: 0; transition: opacity .18s, transform .18s; }
+    .flash.show { opacity: 1; transform: translate(-50%, -6px); }
+    @media (max-width: 760px) {
+      .topbar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .stat { min-height: 50px; padding: 8px; }
+      .value { font-size: 16px; }
+      .question { top: 178px; left: 16px; right: 16px; width: auto; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div class="hud">
+  <div class="topbar">
+    <div class="stat"><div class="label">Speed</div><div class="value" id="speed">0</div></div>
+    <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
+    <div class="stat"><div class="label">Streak</div><div class="value" id="streak">0</div></div>
+    <div class="stat"><div class="label">Energy</div><div class="value" id="energy">100</div></div>
+    <div class="stat"><div class="label">Distance</div><div class="value" id="distance">0m</div></div>
+  </div>
+  <div class="question">
+    <small>Road sign</small>
+    <h2 id="questionText">5 - 10 = ?</h2>
+  </div>
+  <div class="flash" id="flash">Boost</div>
+  <div class="controls">
+    <button id="leftBtn" aria-label="left">&lt;</button>
+    <button id="rightBtn" aria-label="right">&gt;</button>
+  </div>
+  <div class="message" id="menu">
+    <h1>Velocity Quest 3D</h1>
+    <p>Choose the lane with the correct answer. Correct gates increase speed and multiplier. Wrong gates drain energy and slow the car.</p>
+    <button id="startBtn">Start race</button>
+    <button class="secondary" id="practiceBtn">Practice mode</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const hud = {
+  speed: document.getElementById('speed'),
+  score: document.getElementById('score'),
+  streak: document.getElementById('streak'),
+  energy: document.getElementById('energy'),
+  distance: document.getElementById('distance'),
+  question: document.getElementById('questionText'),
+  menu: document.getElementById('menu'),
+  flash: document.getElementById('flash'),
+};
+
+let W = 0, H = 0, dpr = 1;
+function resize() {
+  dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  W = innerWidth; H = innerHeight;
+  canvas.width = Math.floor(W * dpr);
+  canvas.height = Math.floor(H * dpr);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+addEventListener('resize', resize);
+resize();
+
+const bank = [
+  { q: '5 - 10', a: -5 },
+  { q: '4 + 3 x (8 - 5)^2', a: 31 },
+  { q: '2^3 x 2^4', a: 128 },
+  { q: '4x - 3 = 21', a: 6 },
+  { q: '5x + 2 = 2x + 17', a: 5 },
+  { q: '6x + 12 factor common number', a: 6 },
+  { q: 'Volume: 6 x 4 x 5', a: 120 },
+  { q: 'Speed: 90m / 15s', a: 6 },
+  { q: 'HCF of 36 and 48', a: 12 },
+  { q: 'Area triangle: b=12, h=7', a: 42 }
+];
+
+let state, last = 0, roadOffset = 0;
+function reset(practice) {
+  state = {
+    mode: 'play',
+    practice,
+    lane: 1,
+    laneTarget: 1,
+    speed: 120,
+    score: 0,
+    streak: 0,
+    energy: 100,
+    distance: 0,
+    finish: practice ? 999999 : 3000,
+    gate: makeGate(1.08),
+    particles: [],
+    rival: 0.24,
+  };
+  hud.menu.style.display = 'none';
+  updateHud();
+}
+
+function makeGate(z) {
+  const base = bank[Math.floor(Math.random() * bank.length)];
+  const wrong = new Set();
+  while (wrong.size < 2) {
+    const delta = [-12, -8, -5, -3, -2, 2, 3, 4, 5, 8, 10, 12][Math.floor(Math.random() * 12)];
+    if (base.a + delta !== base.a) wrong.add(base.a + delta);
+  }
+  const opts = [base.a, ...wrong].sort(() => Math.random() - 0.5);
+  hud.question.textContent = base.q + ' = ?';
+  return { z, q: base.q, answer: base.a, options: opts, checked: false };
+}
+
+function laneMove(dir) {
+  if (!state || state.mode !== 'play') return;
+  state.laneTarget = Math.max(0, Math.min(2, state.laneTarget + dir));
+}
+
+document.getElementById('leftBtn').addEventListener('click', () => laneMove(-1));
+document.getElementById('rightBtn').addEventListener('click', () => laneMove(1));
+document.getElementById('startBtn').addEventListener('click', () => reset(false));
+document.getElementById('practiceBtn').addEventListener('click', () => reset(true));
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') laneMove(-1);
+  if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') laneMove(1);
+  if ((e.key === 'Enter' || e.key === ' ') && (!state || state.mode !== 'play')) reset(false);
+});
+
+function project(x, z) {
+  const horizon = H * 0.28;
+  const t = Math.max(0, Math.min(1, z));
+  const depth = 1 - t;
+  const y = horizon + depth * depth * (H * 0.74);
+  const roadHalf = 62 + depth * depth * W * 0.43;
+  return { x: W / 2 + x * roadHalf, y, roadHalf, depth };
+}
+
+function roadX(lane, z) {
+  return project((lane - 1) * 0.55, z);
+}
+
+function flash(text, good) {
+  hud.flash.textContent = text;
+  hud.flash.style.borderColor = good ? 'rgba(34,197,94,.55)' : 'rgba(239,68,68,.55)';
+  hud.flash.style.color = good ? '#bbf7d0' : '#fecaca';
+  hud.flash.classList.add('show');
+  clearTimeout(flash._t);
+  flash._t = setTimeout(() => hud.flash.classList.remove('show'), 650);
+}
+
+function checkGate() {
+  const gate = state.gate;
+  if (gate.checked || gate.z > 0.07) return;
+  gate.checked = true;
+  const selected = gate.options[state.laneTarget];
+  const correct = selected === gate.answer;
+  if (correct) {
+    state.streak++;
+    state.score += 100 + state.streak * 25;
+    state.speed = Math.min(310, state.speed + 24 + state.streak * 2);
+    state.energy = Math.min(100, state.energy + 6);
+    flash('Correct boost +' + (100 + state.streak * 25), true);
+    burst('#22c55e');
+  } else {
+    state.streak = 0;
+    state.speed = Math.max(90, state.speed - 42);
+    state.energy = Math.max(0, state.energy - 18);
+    flash('Wrong lane: answer was ' + gate.answer, false);
+    burst('#ef4444');
+  }
+  setTimeout(() => { if (state && state.mode === 'play') state.gate = makeGate(1.08); }, 260);
+}
+
+function burst(color) {
+  for (let i = 0; i < 28; i++) {
+    state.particles.push({ x: W / 2, y: H * 0.72, vx: (Math.random() - .5) * 420, vy: -Math.random() * 380, life: .7, color });
+  }
+}
+
+function updateHud() {
+  hud.speed.textContent = Math.round(state.speed) + ' km/h';
+  hud.score.textContent = state.score;
+  hud.streak.textContent = state.streak;
+  hud.energy.textContent = Math.round(state.energy);
+  hud.distance.textContent = Math.floor(state.distance) + 'm';
+}
+
+function endRace(win) {
+  state.mode = 'done';
+  hud.menu.style.display = 'block';
+  hud.menu.innerHTML = `
+    <h1>${win ? 'Race Complete' : 'Energy Depleted'}</h1>
+    <p>Score: <b>${state.score}</b><br>Best streak: <b>${state.streak}</b><br>Distance: <b>${Math.floor(state.distance)}m</b></p>
+    <button onclick="reset(false)">Race again</button>
+    <button class="secondary" onclick="reset(true)">Practice</button>
+  `;
+}
+
+function drawSky(time) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#061018');
+  g.addColorStop(.45, '#102033');
+  g.addColorStop(1, '#13291d');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(255,255,255,.7)';
+  for (let i = 0; i < 70; i++) {
+    const x = (i * 181 + time * 8) % W;
+    const y = 24 + ((i * 73) % Math.max(120, H * .34));
+    ctx.globalAlpha = .15 + (i % 5) * .08;
+    ctx.fillRect(x, y, 2, 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawRoad() {
+  const horizon = H * .28;
+  const near = project(0, 0), far = project(0, 1);
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - far.roadHalf, far.y);
+  ctx.lineTo(W / 2 + far.roadHalf, far.y);
+  ctx.lineTo(W / 2 + near.roadHalf, H + 20);
+  ctx.lineTo(W / 2 - near.roadHalf, H + 20);
+  ctx.closePath();
+  ctx.fillStyle = '#202a37';
+  ctx.fill();
+  ctx.fillStyle = '#0f2f24';
+  ctx.fillRect(0, horizon, W / 2 - far.roadHalf, H);
+  ctx.fillRect(W / 2 + far.roadHalf, horizon, W, H);
+
+  for (let i = 0; i < 26; i++) {
+    const z = ((i / 26 + roadOffset) % 1);
+    const p = project(0, z);
+    const p2 = project(0, Math.min(1, z + .018));
+    const w = Math.max(2, 14 * p.depth);
+    ctx.fillStyle = 'rgba(248,250,252,.78)';
+    [-0.18, 0.18].forEach(x => {
+      const a = project(x, z), b = project(x, Math.min(1, z + .018));
+      ctx.beginPath();
+      ctx.moveTo(a.x - w / 2, a.y);
+      ctx.lineTo(a.x + w / 2, a.y);
+      ctx.lineTo(b.x + w / 3, b.y);
+      ctx.lineTo(b.x - w / 3, b.y);
+      ctx.fill();
+    });
+  }
+}
+
+function drawGate(gate) {
+  if (gate.checked) return;
+  for (let lane = 0; lane < 3; lane++) {
+    const p = roadX(lane, gate.z);
+    const boxW = Math.max(46, p.roadHalf * .28);
+    const boxH = Math.max(24, 58 * p.depth);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.fillStyle = lane === state.laneTarget ? 'rgba(250,204,21,.92)' : 'rgba(15,23,42,.9)';
+    ctx.strokeStyle = lane === state.laneTarget ? '#fef08a' : 'rgba(148,163,184,.8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(-boxW / 2, -boxH, boxW, boxH, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = lane === state.laneTarget ? '#111827' : '#fff';
+    ctx.font = `900 ${Math.max(14, 32 * p.depth)}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(gate.options[lane], 0, -boxH / 2);
+    ctx.restore();
+  }
+}
+
+function drawCar() {
+  state.lane += (state.laneTarget - state.lane) * .18;
+  const p = roadX(state.lane, .02);
+  const y = H * .78;
+  ctx.save();
+  ctx.translate(p.x, y);
+  ctx.shadowColor = '#ef4444';
+  ctx.shadowBlur = 24;
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.roundRect(-34, -60, 68, 102, 12);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#93c5fd';
+  ctx.fillRect(-24, -40, 48, 30);
+  ctx.fillStyle = '#05070a';
+  ctx.fillRect(-44, -42, 14, 30);
+  ctx.fillRect(30, -42, 14, 30);
+  ctx.fillRect(-44, 18, 14, 30);
+  ctx.fillRect(30, 18, 14, 30);
+  ctx.fillStyle = 'rgba(250,204,21,.88)';
+  ctx.beginPath();
+  ctx.moveTo(-22, -66); ctx.lineTo(22, -66); ctx.lineTo(36, -92); ctx.lineTo(-36, -92); ctx.fill();
+  ctx.restore();
+}
+
+function drawParticles(dt) {
+  for (const p of state.particles) {
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 640 * dt; p.life -= dt;
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, 5, 5);
+  }
+  ctx.globalAlpha = 1;
+  state.particles = state.particles.filter(p => p.life > 0);
+}
+
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(.033, (now - last) / 1000 || .016);
+  last = now;
+  const time = now / 1000;
+  drawSky(time);
+  if (!state || state.mode !== 'play') {
+    drawRoad();
+    return;
+  }
+  roadOffset = (roadOffset + dt * state.speed / 100) % 1;
+  state.distance += dt * state.speed / 2.2;
+  state.gate.z -= dt * state.speed / 760;
+  state.energy = Math.max(0, state.energy - dt * 1.6);
+  drawRoad();
+  drawGate(state.gate);
+  drawCar();
+  drawParticles(dt);
+  checkGate();
+  updateHud();
+  if (state.energy <= 0) endRace(false);
+  if (state.distance >= state.finish) endRace(true);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

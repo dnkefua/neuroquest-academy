@@ -7,10 +7,17 @@ interface MicroSprintTimerProps {
   maxMinutes?: number;
   onComplete?: () => void;
   onBreakSuggestion?: () => void;
+  compact?: boolean;
   children: React.ReactNode;
 }
 
-export default function MicroSprintTimer({ maxMinutes = 10, onComplete, onBreakSuggestion, children }: MicroSprintTimerProps) {
+export default function MicroSprintTimer({
+  maxMinutes = 10,
+  onComplete,
+  onBreakSuggestion,
+  compact = false,
+  children,
+}: MicroSprintTimerProps) {
   const [secondsRemaining, setSecondsRemaining] = useState(maxMinutes * 60);
   const [isRunning, setIsRunning] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -92,6 +99,42 @@ export default function MicroSprintTimer({ maxMinutes = 10, onComplete, onBreakS
   }, [handleResume]);
 
   const timerColor = isCritical ? '#EF4444' : isLow ? '#F59E0B' : '#8B5CF6';
+
+  if (compact) {
+    return (
+      <div className="relative h-full w-full overflow-hidden">
+        <div className="pointer-events-auto absolute right-3 top-3 z-40 rounded-2xl border border-white/10 bg-black/55 px-3 py-2 shadow-lg backdrop-blur-md">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">Sprint</p>
+          <p className="text-sm font-black" style={{ color: timerColor }}>
+            {minutes}:{seconds.toString().padStart(2, '0')}
+          </p>
+        </div>
+
+        <AnimatePresence>
+          {showWarning && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className={`absolute left-1/2 top-14 z-40 -translate-x-1/2 rounded-xl border px-4 py-2 text-xs font-bold shadow-lg backdrop-blur-md ${
+                isCritical
+                  ? 'border-red-500/30 bg-red-500/20 text-red-300'
+                  : 'border-yellow-500/30 bg-yellow-500/20 text-yellow-300'
+              }`}
+            >
+              {isCritical
+                ? '10 seconds left'
+                : secondsRemaining <= 60
+                ? '1 minute remaining'
+                : '2 minutes left'}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

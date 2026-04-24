@@ -278,7 +278,7 @@ export default function CircuitBuilder({ onComplete, showHints = true }: Circuit
   }, [switchOn, onComplete]);
 
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 0, position: 'relative' }}>
       <Canvas camera={{ position: [0, 3, 6], fov: 50 }}>
         <CircuitScene
           components={defaultComponents}
@@ -291,11 +291,13 @@ export default function CircuitBuilder({ onComplete, showHints = true }: Circuit
       {/* Legend */}
       <div style={{
         position: 'absolute',
-        bottom: 10,
-        left: 10,
+        bottom: 6,
+        left: 6,
+        right: 6,
         display: 'flex',
-        gap: 16,
-        fontSize: 12,
+        flexWrap: 'wrap',
+        gap: 8,
+        fontSize: 10,
         color: 'white',
       }}>
         <span>🔋 Battery</span>

@@ -55,7 +55,7 @@ export default function ClassroomScene() {
 
   return (
     <div style={{
-      minHeight: '100vh', width: '100%',
+      height: '100dvh', width: '100%',
       background: 'linear-gradient(135deg, #0f0c29 0%, #1a1040 50%, #0d1b2a 100%)',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', padding: '40px 16px', position: 'relative', overflow: 'hidden',

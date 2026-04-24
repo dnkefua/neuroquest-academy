@@ -19,7 +19,8 @@ function LoadingFallback() {
   return (
     <div style={{
       width: '100%',
-      height: '400px',
+      height: '100%',
+      minHeight: '0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -39,7 +40,8 @@ function ErrorFallback({ error }: { error: string }) {
   return (
     <div style={{
       width: '100%',
-      height: '400px',
+      height: '100%',
+      minHeight: '0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -98,11 +100,11 @@ function NumberLineVisualization({ startValue, moveValue, showControls }: {
   }
 
   return (
-    <div style={{ width: '100%', padding: '20px 0' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 0, padding: '8px 0', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       {/* Number line */}
       <div style={{
         position: 'relative',
-        height: '80px',
+        height: '72px',
         background: 'linear-gradient(180deg, #1E1B4B 0%, #312E81 100%)',
         borderRadius: '8px',
         overflow: 'hidden',
@@ -185,8 +187,8 @@ function NumberLineVisualization({ startValue, moveValue, showControls }: {
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: '16px',
-          marginTop: '16px',
+          gap: '10px',
+          marginTop: '10px',
         }}>
           <button
             onClick={() => handleMove('left')}
@@ -222,7 +224,7 @@ function NumberLineVisualization({ startValue, moveValue, showControls }: {
       {/* Result display */}
       <div style={{
         textAlign: 'center',
-        marginTop: '16px',
+        marginTop: '8px',
         color: '#A5B4FC',
         fontSize: '14px',
       }}>

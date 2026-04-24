@@ -19,9 +19,12 @@ export interface Question {
   clue: {
     title: string;
     example: string;
+    visual?: 'numberLine' | 'text' | 'diagram' | '3d-simulation';
     startValue?: number;
     moveValue?: number;
     moveValue2?: number;
+    simulationType?: 'water-cycle' | 'circuit' | 'fraction' | 'force' | 'gravity' | 'number-line';
+    simulationParams?: Record<string, unknown>;
   };
 }
 
@@ -91,10 +94,13 @@ function toLocalQuestion(q: GameQuest['questions'][0], index: number): Question 
     clue: {
       title: q.clue.title,
       example: q.clue.example,
+      visual: q.clue.visual,
       // Copy number line values to clue for ClueBox
       startValue: q.clue.startValue,
       moveValue: q.clue.moveValue,
       moveValue2: q.clue.moveValue2,
+      simulationType: q.clue.simulationType,
+      simulationParams: q.clue.simulationParams,
     },
   };
 }

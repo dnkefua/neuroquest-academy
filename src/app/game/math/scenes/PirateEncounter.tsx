@@ -25,12 +25,12 @@ export default function PirateEncounter() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-8"
+    <div className="grid h-dvh w-full grid-rows-[auto_minmax(0,1fr)_auto] items-center overflow-hidden px-3 pb-3 pt-14 sm:px-4 sm:pb-4 sm:pt-14"
       style={{ background: 'linear-gradient(180deg, #1a0a00 0%, #0d0d1a 50%, #0a1a0a 100%)' }}>
 
       {/* TTS toggle */}
       <button onClick={toggleTTS}
-        className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all hover:scale-110"
+        className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full text-lg transition-all hover:scale-110"
         style={{ background: ttsOn ? 'rgba(192,57,43,0.25)' : 'rgba(255,255,255,0.1)', border: `1px solid ${ttsOn ? '#C0392B' : 'rgba(255,255,255,0.2)'}` }}
         title={ttsOn ? 'Turn off read-aloud' : 'Turn on read-aloud'}>
         {ttsOn ? '🔊' : '🔇'}
@@ -45,7 +45,7 @@ export default function PirateEncounter() {
       ))}
 
       {/* Scene counter */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="relative z-10 flex justify-center gap-2">
         {PIRATE_PANELS.map((_, i) => (
           <div key={i} className="w-2.5 h-2.5 rounded-full transition-all"
             style={{ background: i === panelIndex ? panel.color : 'rgba(255,255,255,0.2)' }} />
@@ -59,7 +59,7 @@ export default function PirateEncounter() {
           animate={{ opacity: 1, x: 0, rotateY: 0 }}
           exit={{ opacity: 0, x: -60 }}
           transition={{ duration: 0.4, type: 'spring', damping: 25 }}
-          className="w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl"
+          className="my-3 flex max-h-full min-h-0 w-full max-w-[min(92vw,680px)] flex-col overflow-hidden rounded-3xl shadow-2xl"
           style={{
             background: 'linear-gradient(135deg, rgba(20,15,40,0.97), rgba(10,8,25,0.97))',
             border: `3px solid ${panel.color}`,
@@ -67,32 +67,32 @@ export default function PirateEncounter() {
           }}>
 
           {/* Panel header */}
-          <div className="px-6 py-4 flex items-center gap-4"
+          <div className="flex flex-shrink-0 items-center gap-3 px-4 py-3 sm:px-5"
             style={{ background: `linear-gradient(135deg, ${panel.color}33, transparent)` }}>
-            <span className="text-5xl">{panel.emoji}</span>
+            <span className="text-3xl sm:text-4xl">{panel.emoji}</span>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest opacity-70" style={{ color: panel.color }}>
                 {panel.character}
               </p>
-              <p className="font-black text-white text-lg leading-tight">{panel.title}</p>
+              <p className="text-base font-black leading-tight text-white sm:text-lg">{panel.title}</p>
             </div>
           </div>
 
           {/* Panel body */}
-          <div className="px-6 pb-6">
-            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line mb-4 mt-2">
+          <div className="min-h-0 flex-1 px-4 pb-4 sm:px-5">
+            <p className="mb-3 mt-2 whitespace-pre-line text-xs leading-5 text-gray-300 sm:text-sm sm:leading-6">
               {panel.content}
             </p>
 
             {/* Number line visuals */}
             {panel.visual === 'numberline' && (
-              <div className="rounded-2xl p-3 mb-4"
+              <div className="mb-2 rounded-2xl p-2 sm:p-3"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <NumberLine start={0} move={0} animate={false} />
               </div>
             )}
             {(panel.visual === 'example_pos' || panel.visual === 'example_neg') && (
-              <div className="rounded-2xl p-3 mb-4"
+              <div className="mb-2 rounded-2xl p-2 sm:p-3"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <NumberLine
                   start={(panel as { exampleStart: number }).exampleStart}
@@ -106,17 +106,17 @@ export default function PirateEncounter() {
       </AnimatePresence>
 
       {/* Navigation */}
-      <div className="flex gap-4 mt-6">
+      <div className="relative z-10 flex flex-shrink-0 gap-3">
         {panelIndex > 0 && (
           <button onClick={() => setPanelIndex(i => i - 1)}
-            className="px-6 py-3 rounded-2xl font-bold text-gray-400 border border-gray-600 hover:bg-white/5 transition-all">
+            className="rounded-2xl border border-gray-600 px-5 py-2.5 text-sm font-bold text-gray-400 transition-all hover:bg-white/5 sm:px-6 sm:py-3">
             ← Back
           </button>
         )}
         <motion.button
           onClick={() => { if (isLast) { gameTTS.stop(); setScene('QUIZ'); } else setPanelIndex(i => i + 1); }}
           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 rounded-2xl font-black text-black transition-all"
+          className="rounded-2xl px-7 py-2.5 text-sm font-black text-black transition-all sm:px-8 sm:py-3"
           style={{ background: `linear-gradient(135deg, ${panel.color}, ${panel.color}CC)` }}>
           {isLast ? '⚔️ Face the Quiz!' : 'Next →'}
         </motion.button>

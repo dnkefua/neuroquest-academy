@@ -1,5 +1,7 @@
 // IB Curriculum Framework Engine - Comprehensive G1-G12
-// Based on publicly available IB subject guides and curriculum standards
+// Scaffolded from the school-provided PDFs in textbook-folder and completed for Grade 8.
+import type { CurriculumCompletionStatus, SchoolSourceDocument } from '@/curriculum/data/schoolSources';
+import { getCurriculumCompletionStatus, getSchoolSourceDocuments } from '@/curriculum/data/schoolSources';
 
 export interface IBGradeContext {
   framework: string;
@@ -8,6 +10,8 @@ export interface IBGradeContext {
   ibTopicKey: string;
   priorKnowledge: string;
   sampleProblems?: string[];
+  sourceDocuments?: SchoolSourceDocument[];
+  completionStatus?: CurriculumCompletionStatus;
 }
 
 type IBCurriculumMap = {
@@ -90,24 +94,34 @@ export const IB_CURRICULUM: IBCurriculumMap = {
       },
       8: {
         framework: 'MYP Year 2',
-        unit: 'Number, Algebra, Geometry, Statistics & Probability',
+        unit: 'Pearson Year 8 Mathematics: Number, Equations, Powers, Solids & Graphs',
         topics: [
-          // Number
-          'rational numbers on number line', 'integer operations', 'laws of exponents', 'negative exponents', 'scientific notation', 'square roots and cube roots', 'perfect squares', 'real number system',
-          // Algebra
-          'linear equations with variables on both sides', 'two-step equations', 'multi-step equations', 'equations with fractions', 'formula manipulation', 'patterns and sequences', 'arithmetic sequences', 'geometric sequences',
-          // Geometry
-          'Pythagorean theorem', 'Pythagorean triples', 'distance formula', 'midpoint formula', 'coordinates in all quadrants', 'gradient/slope calculation', 'gradient-intercept form y=mx+c', 'equations of parallel lines', 'equations of perpendicular lines',
-          // Transformations
-          'translation using vectors', 'reflection in x-axis and y-axis', 'rotation about origin', 'dilation and scale factor', 'combined transformations',
-          // Statistics
-          'frequency tables', 'grouped frequency tables', 'histograms', 'cumulative frequency', 'box-and-whisker plots', 'quartiles and interquartile range',
-          // Probability
-          'theoretical probability', 'experimental probability', 'complementary events', 'mutually exclusive events', 'independent events', 'tree diagrams', 'Venn diagrams'
+          'calculating with negative integers',
+          'prime factor decomposition',
+          'using indices',
+          'priority of operations',
+          'solving one-step equations',
+          'solving two-step equations',
+          'more complex equations',
+          'working with formulae',
+          'simplifying expressions',
+          'factorising expressions',
+          'expanding and factorising expressions',
+          'substituting and solving',
+          'area of triangles, parallelograms and trapezia',
+          'area of compound shapes',
+          'properties of 3D solids',
+          'surface area and volume',
+          'plans and elevations',
+          'direct proportion',
+          'interpreting graphs',
+          'distance-time graphs',
+          'rates of change',
+          'misleading graphs'
         ],
         ibTopicKey: 'math-g8-comprehensive',
-        priorKnowledge: 'Students can solve two-step linear equations.',
-        sampleProblems: ['Solve: 3x - 5 = 22', 'Find gradient between (2,3) and (6,15)', 'Calculate: 2³ × 2⁴', 'Find hypotenuse of right triangle with legs 3 and 4'],
+        priorKnowledge: 'Students can work with integers, basic algebra, area, volume, and coordinate graphs from earlier MYP preparation.',
+        sampleProblems: ['Calculate: 5 - 10', 'Solve: 4x - 3 = 21', 'Expand: 4(2y - 3)', 'Find the volume of a 6 cm x 4 cm x 5 cm cuboid', 'Find speed for 90 m in 15 s'],
       },
       9: {
         framework: 'MYP Year 3',
@@ -230,12 +244,20 @@ export function getIBContext(subject: string, grade: number): IBGradeContext | n
   const subjectData = IB_CURRICULUM[subject];
   if (!subjectData) return null;
   const grades = subjectData.grades;
-  if (grades[grade]) return grades[grade];
+  if (grades[grade]) return withSchoolContext(subject, grade, grades[grade]);
   const available = Object.keys(grades).map(Number).sort((a, b) => a - b);
   const nearest = available.reduce((prev, curr) =>
     Math.abs(curr - grade) < Math.abs(prev - grade) ? curr : prev
   );
-  return grades[nearest] ?? null;
+  return grades[nearest] ? withSchoolContext(subject, nearest, grades[nearest]) : null;
+}
+
+function withSchoolContext(subject: string, grade: number, context: IBGradeContext): IBGradeContext {
+  return {
+    ...context,
+    sourceDocuments: getSchoolSourceDocuments(subject, grade),
+    completionStatus: getCurriculumCompletionStatus(grade),
+  };
 }
 
 export function getAllSubjects(): string[] {

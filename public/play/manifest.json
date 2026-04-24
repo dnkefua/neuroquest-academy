@@ -1,5 +1,33 @@
 [
   {
+    "slug": "math-racer-3d",
+    "title": "Velocity Quest 3D",
+    "author": "NeuroQuest",
+    "built": true,
+    "category": "Math",
+    "ageRange": "10-14",
+    "difficulty": "Intermediate",
+    "description": "A Grade 8 math racing game where the correct road-sign answer boosts speed, score, streak, and race momentum.",
+    "tags": ["math", "3d", "racing", "grade-8", "integers", "equations"],
+    "skills": ["Integer Operations", "Equation Solving", "Mental Math", "Fast Decision Making"],
+    "price": 0,
+    "featured": true
+  },
+  {
+    "slug": "maze-pursuit-3d",
+    "title": "Maze Pursuit 3D",
+    "author": "NeuroQuest",
+    "built": true,
+    "category": "Math",
+    "ageRange": "10-14",
+    "difficulty": "Advanced",
+    "description": "A 3D-style learning maze where correct answers unlock blink powers while pursuers drain coins if they catch you.",
+    "tags": ["math", "science", "3d", "maze", "grade-8", "strategy"],
+    "skills": ["Grade 8 Review", "Spatial Reasoning", "Risk Management", "Problem Solving"],
+    "price": 0,
+    "featured": true
+  },
+  {
     "slug": "lightbot",
     "title": "Lightbot",
     "author": "Lightbot Inc.",

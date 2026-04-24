@@ -11,6 +11,8 @@ const GAME_NAMES: Record<string, string> = {
   lightbot: 'Lightbot',
   'memory-match': 'Memory Match',
   'math-runner': 'Math Runner',
+  'math-racer-3d': 'Velocity Quest 3D',
+  'maze-pursuit-3d': 'Maze Pursuit 3D',
   'word-search': 'Word Search',
   'typing-hero': 'Typing Hero',
 };

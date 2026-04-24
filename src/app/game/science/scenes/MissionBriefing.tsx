@@ -1,215 +1,209 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useScienceStore, getQuestById } from '../store/gameStore';
-import { SCIENCE_MISSION_DIALOGUE } from '../data/scienceData';
-import { gameAudio } from '../../shared/audio';
-import { gameTTS, useTTSCleanup } from '../../shared/tts';
+
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import CountdownBar from '../../shared/CountdownBar';
+import { gameAudio } from '../../shared/audio';
+import { gameTTS, useTTSCleanup, useTTSSettings } from '../../shared/tts';
+import { getQuestById, useScienceStore } from '../store/gameStore';
+
+function getScienceDialogue(
+  quest: { title: string; locationName: string; subtitle: string } | null,
+): string[] {
+  const title = quest?.title || 'Science Quest';
+  const location = quest?.locationName || 'the lab';
+  const subtitle = quest?.subtitle || 'today’s concept';
+
+  return [`Welcome to ${location}. We are opening a live lab on ${title} and ${subtitle.toLowerCase()} before your challenge starts.`];
+}
 
 export default function ScienceMissionBriefing() {
-  const setScene = useScienceStore(s => s.setScene);
-  const currentQuestId = useScienceStore(s => s.currentQuestId);
-  const currentGrade = useScienceStore(s => s.currentGrade);
-  const router = useRouter();
+  const currentQuestId = useScienceStore((s) => s.currentQuestId);
+  const currentGrade = useScienceStore((s) => s.currentGrade);
+  const setScene = useScienceStore((s) => s.setScene);
   const quest = getQuestById(currentQuestId, currentGrade);
+  const { enabled: ttsOn } = useTTSSettings();
+
   const [lineIndex, setLineIndex] = useState(0);
   const [showCard, setShowCard] = useState(false);
-  const [titleDone, setTitleDone] = useState(false);
-  const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [musicOn, setMusicOn] = useState(true);
 
-  // Cleanup TTS on unmount
   useTTSCleanup();
 
-  function toggleTTS() { setTtsOn(gameTTS.toggle()); }
-  function toggleMusic() { setMusicOn(gameAudio.toggle()); }
-
-  useEffect(() => { gameAudio.startBackground('desert'); }, []);
-
   useEffect(() => {
-    gameAudio.startBackground('desert');
-    return () => gameAudio.stopBackground(); // Cleanup music on unmount
+    gameAudio.startBackground('adventure');
+    return () => gameAudio.stopBackground();
   }, []);
 
-  // Title screen: wait for TTS to finish before showing dialogue
-  useEffect(() => {
-    const questTitle = quest?.title ?? 'Science Quest';
-    const questSub = quest?.subtitle ?? 'A scientific adventure begins...';
-    gameTTS.afterSpeak(
-      `${questTitle}. ${questSub}`,
-      () => setTitleDone(true),
-      2800,
-    );
-    return () => gameTTS.stop(); // Cleanup on unmount
-  }, [quest?.title, quest?.subtitle]);
+  const missionDialogue = useMemo(
+    () =>
+      getScienceDialogue(
+        quest
+          ? {
+              title: quest.title,
+              locationName: quest.locationName,
+              subtitle: quest.subtitle,
+            }
+          : null,
+      ),
+    [quest],
+  );
 
-  // Dialogue: advance only after TTS fully finishes reading each line
-  useEffect(() => {
-    if (!titleDone) return;
-    if (lineIndex >= SCIENCE_MISSION_DIALOGUE.length) { setShowCard(true); return; }
-    const currentLine = SCIENCE_MISSION_DIALOGUE[lineIndex];
-    gameTTS.afterSpeak(currentLine ?? '', () => setLineIndex(i => i + 1), 3000);
-  }, [lineIndex, titleDone]); // eslint-disable-line react-hooks/exhaustive-deps
+  const activeLine = missionDialogue[Math.min(lineIndex, Math.max(missionDialogue.length - 1, 0))] ?? '';
+  const teacherAvatar = quest?.teacherEmoji || 'Lab';
 
+  useEffect(() => {
+    if (!ttsOn) {
+      setShowCard(true);
+      return;
+    }
+
+    if (lineIndex >= missionDialogue.length) {
+      setShowCard(true);
+      return;
+    }
+
+    gameTTS.afterSpeak(missionDialogue[lineIndex], () => setLineIndex((value) => value + 1), 900);
+    return () => gameTTS.stop();
+  }, [lineIndex, missionDialogue, ttsOn]);
+
+  function toggleMusic() {
+    setMusicOn(gameAudio.toggle());
+  }
 
   return (
-    <div className="w-full min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 py-8"
-      style={{ background: 'linear-gradient(180deg, #1A6FA8 0%, #2196B0 30%, #E8A44A 70%, #C27B2A 100%)' }}>
-
-      {/* Audio controls */}
-      <div className="absolute top-4 right-4 flex gap-2 z-20">
-        <button onClick={toggleMusic}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all hover:scale-110"
-          style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${musicOn ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.2)'}`, color: musicOn ? '#FFD700' : 'rgba(255,255,255,0.3)' }}
-          title={musicOn ? 'Mute music' : 'Unmute music'}>
-          🎵
-        </button>
-        <button onClick={toggleTTS}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all hover:scale-110"
-          style={{ background: 'rgba(0,0,0,0.4)', border: `1px solid ${ttsOn ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.2)'}`, color: ttsOn ? '#38BDF8' : 'rgba(255,255,255,0.3)' }}
-          title={ttsOn ? 'Turn off read-aloud' : 'Turn on read-aloud'}>
-          {ttsOn ? '🔊' : '🔇'}
+    <div
+      className="relative flex h-dvh w-full flex-col items-center justify-center overflow-hidden px-3 py-3 pt-16"
+      style={{ background: 'radial-gradient(circle at top, rgba(56,189,248,0.18), transparent 28%), linear-gradient(180deg, #071421 0%, #0c1f33 55%, #09111d 100%)' }}
+    >
+      <div className="absolute right-3 top-3 z-20 flex gap-2">
+        <button
+          onClick={toggleMusic}
+          className="rounded-full px-3 py-2 text-[11px] font-black tracking-[0.18em] text-white transition-all hover:scale-105"
+          style={{
+            background: musicOn ? 'rgba(56,189,248,0.18)' : 'rgba(255,255,255,0.08)',
+            border: `1px solid ${musicOn ? '#38bdf8' : 'rgba(255,255,255,0.18)'}`,
+          }}
+          title={musicOn ? 'Mute music' : 'Unmute music'}
+        >
+          MUSIC
         </button>
       </div>
 
-      {/* Desert scene elements */}
-      <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ zIndex: 0 }}>
-        {/* Sand dunes */}
-        <svg viewBox="0 0 800 160" className="w-full" preserveAspectRatio="none">
-          <path d="M0,80 Q100,20 200,60 Q300,100 400,40 Q500,0 600,50 Q700,90 800,60 L800,160 L0,160 Z"
-            fill="#E8C99A" />
-          <path d="M0,100 Q150,50 300,80 Q450,110 600,70 Q700,50 800,80 L800,160 L0,160 Z"
-            fill="#D4B07A" opacity={0.7} />
-        </svg>
-        {/* Palm trees */}
-        {[120, 650].map((x, i) => (
-          <div key={i} style={{ position: 'absolute', bottom: 55, left: x, fontSize: 40 }}>🌴</div>
-        ))}
-        {/* Oasis pool */}
-        <div style={{ position: 'absolute', bottom: 70, left: '50%', transform: 'translateX(-50%)' }}>
-          <div style={{
-            width: 80, height: 30, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)',
-            boxShadow: '0 0 20px rgba(56,189,248,0.4)',
-          }} />
-        </div>
-        {/* Dry fountain */}
-        <div style={{ position: 'absolute', bottom: 95, left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
-          <div style={{ fontSize: 32 }}>⛲</div>
-          <div style={{
-            fontSize: 10, color: '#8B4513', fontWeight: 700, background: 'rgba(255,255,255,0.8)',
-            borderRadius: 8, padding: '2px 6px', marginTop: 2, whiteSpace: 'nowrap',
-          }}>
-            Needs: 4 Crystal Vials 💧
-          </div>
+      <div className="pointer-events-none absolute inset-0 opacity-50">
+        <div className="absolute inset-x-0 top-[18%] h-px bg-cyan-300/10" />
+        <div className="absolute inset-x-0 top-[38%] h-px bg-cyan-300/10" />
+        <div className="absolute inset-x-0 top-[58%] h-px bg-cyan-300/10" />
+        <div className="absolute inset-x-0 top-[78%] h-px bg-cyan-300/10" />
+        <div className="absolute bottom-0 left-[18%] top-0 w-px bg-cyan-300/10" />
+        <div className="absolute bottom-0 left-[50%] top-0 w-px bg-cyan-300/10" />
+        <div className="absolute bottom-0 left-[82%] top-0 w-px bg-cyan-300/10" />
+      </div>
+
+      <div className="pointer-events-none absolute bottom-6 left-1/2 w-[min(86vw,860px)] -translate-x-1/2">
+        <div className="grid grid-cols-3 gap-2 opacity-45 sm:gap-4 sm:opacity-60">
+          {['Classroom Pod', 'Lab Bench', 'Experiment Bay'].map((label) => (
+            <div key={label} className="rounded-[20px] border border-cyan-300/10 bg-white/5 px-2 py-3 text-center backdrop-blur-sm sm:rounded-[28px] sm:px-4 sm:py-5">
+              <div className="mx-auto mb-2 h-8 w-8 rounded-xl border border-cyan-300/15 bg-cyan-300/5 sm:mb-3 sm:h-14 sm:w-14 sm:rounded-2xl" />
+              <p className="text-[8px] font-bold uppercase tracking-[0.16em] text-cyan-100/65 sm:text-[11px] sm:tracking-[0.24em]">{label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Clouds with faces (Cloud Spirits) */}
-      <div className="absolute top-8 w-full pointer-events-none" style={{ zIndex: 0 }}>
-        {[
-          { left: '5%', delay: 0, emoji: '😤' },
-          { left: '30%', delay: 1, emoji: '😏' },
-          { left: '60%', delay: 0.5, emoji: '😈' },
-          { left: '82%', delay: 1.5, emoji: '🤨' },
-        ].map((c, i) => (
-          <motion.div key={i}
-            className="absolute text-4xl select-none"
-            style={{ left: c.left }}
-            animate={{ x: [0, -8, 0], y: [0, -5, 0] }}
-            transition={{ duration: 3 + i, delay: c.delay, repeat: Infinity, ease: 'easeInOut' }}>
-            ☁️<span style={{ position: 'absolute', top: 6, left: 8, fontSize: 16 }}>{c.emoji}</span>
+      {!showCard && (
+        <div className="z-10 mx-auto max-w-xl px-3 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring' }}
+            className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full border border-sky-300/25 bg-sky-300/10 text-3xl text-white shadow-[0_0_34px_rgba(56,189,248,0.22)]"
+          >
+            {teacherAvatar}
           </motion.div>
-        ))}
-      </div>
 
-      {/* Title card */}
-      <AnimatePresence>
-        {!titleDone && (
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="text-center z-10">
-            <motion.h1 className="font-black text-4xl md:text-5xl mb-3"
-              style={{ color: '#FFF', textShadow: '0 0 30px rgba(56,189,248,0.6)', fontFamily: 'Georgia, serif' }}>
-              {quest?.emoji ?? '🔬'} {quest?.title ?? 'THE WATER CYCLE EXPEDITION'}
-            </motion.h1>
-            <motion.p className="text-sky-200 text-lg"
-              animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              {quest?.subtitle ?? 'A desert adventure begins...'}
-            </motion.p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-sky-200/70">
+            {quest?.teacherName || 'Science Guide'}
+          </p>
 
-      {/* Dialogue phase */}
-      {titleDone && !showCard && (
-        <div className="z-10 max-w-lg mx-auto text-center px-6">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
-            className="text-7xl mb-5 inline-block"
-            style={{ filter: 'drop-shadow(0 0 16px #14B8A6)' }}>
-            🧙‍♀️
-          </motion.div>
           <AnimatePresence mode="wait">
-            <motion.div key={lineIndex}
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-              className="rounded-3xl p-5 mb-4"
-              style={{ background: 'rgba(14,165,233,0.15)', border: '2px solid rgba(56,189,248,0.35)', backdropFilter: 'blur(8px)' }}>
-              <p className="text-white text-lg font-medium leading-relaxed">
-                {SCIENCE_MISSION_DIALOGUE[lineIndex - 1] ?? ''}
-              </p>
+            <motion.div
+              key={lineIndex}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="rounded-3xl border border-sky-300/20 bg-slate-950/60 p-4 backdrop-blur-sm"
+            >
+              <p className="text-base font-medium leading-7 text-white">{activeLine}</p>
             </motion.div>
           </AnimatePresence>
-          <div className="flex justify-center gap-2 mt-3">
-            {SCIENCE_MISSION_DIALOGUE.map((_, i) => (
-              <div key={i} className="w-2 h-2 rounded-full transition-all duration-300"
-                style={{ background: i < lineIndex ? '#38BDF8' : 'rgba(255,255,255,0.2)' }} />
+
+          <div className="mt-3 flex justify-center gap-2">
+            {missionDialogue.map((_, index) => (
+              <div
+                key={index}
+                className="h-2 w-2 rounded-full transition-all duration-300"
+                style={{ background: index < lineIndex ? '#38bdf8' : 'rgba(255,255,255,0.18)' }}
+              />
             ))}
           </div>
         </div>
       )}
 
-      {/* Mission card */}
       <AnimatePresence>
         {showCard && (
-          <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             transition={{ type: 'spring', damping: 20 }}
-            className="z-10 max-w-md w-full mx-4 rounded-3xl p-7"
+            className="z-10 mx-3 max-h-[calc(100dvh-6rem)] w-full max-w-md overflow-hidden rounded-3xl p-4 sm:p-5"
             style={{
-              background: 'rgba(10,34,64,0.95)',
-              border: '2px solid rgba(56,189,248,0.5)',
-              boxShadow: '0 0 60px rgba(56,189,248,0.2)',
+              background: 'linear-gradient(135deg, rgba(7,20,33,0.96), rgba(8,28,47,0.96))',
+              border: '1px solid rgba(56,189,248,0.34)',
+              boxShadow: '0 0 44px rgba(56,189,248,0.16)',
               backdropFilter: 'blur(12px)',
-            }}>
-            <h2 className="text-center font-black text-2xl text-sky-300 mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-              {quest?.teacherEmoji ?? '🔬'} MISSION: {quest?.title?.toUpperCase() ?? 'THE WATER QUEST'}
-            </h2>
-            <div className="w-full h-px bg-sky-700/40 my-4" />
+            }}
+          >
+            <h2 className="mb-1 line-clamp-2 text-center text-xl font-black text-sky-300 sm:text-2xl">{quest?.title || 'Science Quest'}</h2>
+            <p className="mb-2 line-clamp-2 text-center text-xs text-sky-100/70">
+              {quest?.briefingDescription || 'Step into the lab and master the concept.'}
+            </p>
+
+            <div className="my-3 h-px w-full bg-sky-300/15" />
+
             {[
-              ['🎯 OBJECTIVE', quest?.briefingDescription ?? 'Complete the quest challenges'],
-              ['📚 SUBJECT',   'Science — IB MYP Grade 6'],
-              ['📖 TOPIC',     quest?.subtitle ?? 'The Water Cycle'],
-              ['🏆 REWARD',    `Earn coins + ${quest?.difficulty ?? 'Beginner'} Badge`],
+              ['Objective', quest?.briefingDescription || 'Complete the guided challenge'],
+              ['Programme', `Grade ${currentGrade} science`],
+              ['Topic', quest?.subtitle || quest?.title || 'Science'],
+              ['Mode', '3D classroom, lab, and challenge sequence'],
+              ['Reward', `Coins plus ${quest?.difficulty || 'Intermediate'} badge`],
             ].map(([label, value]) => (
-              <div key={label} className="flex justify-between items-center py-2">
-                <span className="text-sky-600 text-sm font-bold">{label}</span>
-                <span className="text-white text-sm">{value}</span>
+              <div key={label} className="flex items-start justify-between gap-3 py-1.5">
+                <span className="text-xs font-bold text-sky-200/70 sm:text-sm">{label}</span>
+                <span className="line-clamp-2 max-w-[68%] text-right text-xs text-white sm:text-sm">{value}</span>
               </div>
             ))}
-            <div className="w-full h-px bg-sky-700/40 my-4" />
 
-            <CountdownBar seconds={5} color1="#38BDF8" color2="#0EA5E9" active={showCard} />
+            <div className="my-3 h-px w-full bg-sky-300/15" />
 
-            <div className="flex gap-3 mt-2">
-              <button onClick={() => { gameAudio.playTransition(); setScene('CLOUD_TEACHING'); }}
-                className="flex-1 py-4 rounded-2xl font-black text-black text-base transition-all hover:scale-105 active:scale-95"
-                style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)', boxShadow: '0 0 20px rgba(56,189,248,0.5)' }}>
-                🧪 BEGIN EXPEDITION
+            <CountdownBar seconds={2} color1="#38bdf8" color2="#0ea5e9" active={showCard} />
+
+            <div className="mt-2 flex gap-2">
+              <button
+                onClick={() => {
+                  gameAudio.playTransition();
+                  setScene('CLOUD_TEACHING');
+                }}
+                className="flex-1 rounded-2xl py-3 text-sm font-black text-slate-950 transition-all hover:scale-105 active:scale-95 sm:text-base"
+                style={{ background: 'linear-gradient(135deg, #38bdf8, #0ea5e9)', boxShadow: '0 0 18px rgba(56,189,248,0.35)' }}
+              >
+                Open Lab
               </button>
-              <button onClick={() => setScene('QUEST_MAP')}
-                className="px-5 py-4 rounded-2xl font-bold text-gray-400 text-sm border border-gray-600 hover:bg-white/5 transition-all">
-                🗺️ Quests
+              <button
+                onClick={() => setScene('QUEST_MAP')}
+                className="rounded-2xl border border-white/12 px-4 py-3 text-sm font-bold text-slate-300 transition-all hover:bg-white/5"
+              >
+                Quests
               </button>
             </div>
           </motion.div>

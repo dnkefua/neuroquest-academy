@@ -1,11 +1,14 @@
 'use client';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import NumberLine from './NumberLine';
-import type { Question } from '../../store/gameStore';
-import { useGameStore } from '../../store/gameStore';
+
+import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import MathExplainer from '@/components/explainer/MathExplainer';
+import MathClassroomStage from '@/components/lesson-stages/MathClassroomStage';
 import { useEconomyStore } from '@/store/economyStore';
 import { gameTTS } from '../../../shared/tts';
+import type { Question } from '../../store/gameStore';
+import { useGameStore } from '../../store/gameStore';
+import { inferMathExplainer } from '../../utils/explainerMappings';
 
 const CLUE_COST = 10;
 
@@ -21,130 +24,136 @@ export default function ClueBox({ question, questionIndex, questId }: ClueBoxPro
 
   const { clueUsed, openClue } = useGameStore();
   const { walletCoins, buyClue, hasClue } = useEconomyStore();
+  const explainer = useMemo(() => inferMathExplainer(question), [question]);
 
   const alreadyPurchased = hasClue(questId, questionIndex) || clueUsed[questionIndex];
   const canAfford = walletCoins >= CLUE_COST;
+  const prompt = question.clue.example.split('\n').filter(Boolean)[0] || question.narrative;
 
   function handleOpen() {
     if (alreadyPurchased) {
       setOpen(true);
-      gameTTS.speak(`${question.clue.title}. ${question.clue.example}`);
+      gameTTS.speak(question.clue.title);
       return;
     }
+
     const bought = buyClue(questId, questionIndex, CLUE_COST);
     if (bought) {
       openClue(questionIndex);
       setOpen(true);
-      gameTTS.speak(`${question.clue.title}. ${question.clue.example}`);
-    } else {
-      setShowInsufficient(true);
-      setTimeout(() => setShowInsufficient(false), 2500);
+      gameTTS.speak(question.clue.title);
+      return;
     }
+
+    setShowInsufficient(true);
+    setTimeout(() => setShowInsufficient(false), 2500);
   }
 
   return (
     <>
       <div className="relative">
-        {/* Insufficient coins tooltip */}
         <AnimatePresence>
           {showInsufficient && (
             <motion.div
-              initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: -32 }} exit={{ opacity: 0 }}
-              className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-bold z-20"
-              style={{ background: 'rgba(255,68,0,0.9)', color: 'white' }}>
-              💸 Need {CLUE_COST - walletCoins} more coins!
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: -32 }}
+              exit={{ opacity: 0 }}
+              className="absolute left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-bold"
+              style={{ background: 'rgba(255,68,0,0.92)', color: 'white' }}
+            >
+              Need {CLUE_COST - walletCoins} more coins
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Clue button */}
         <motion.button
           onClick={handleOpen}
-          className="relative px-5 py-3 rounded-2xl font-bold text-sm flex items-center gap-2"
+          className="relative flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold sm:rounded-2xl sm:px-4"
           style={{
             background: alreadyPurchased
               ? 'rgba(255,215,0,0.15)'
               : canAfford
-              ? 'rgba(255,215,0,0.2)'
-              : 'rgba(255,255,255,0.06)',
-            border: `2px solid ${alreadyPurchased ? '#FFD700' : canAfford ? '#FFD700' : 'rgba(255,255,255,0.2)'}`,
-            color: alreadyPurchased ? '#FFD700' : canAfford ? '#FFD700' : 'rgba(255,255,255,0.4)',
-            boxShadow: (canAfford && !alreadyPurchased) ? '0 0 15px rgba(255,215,0,0.4)' : 'none',
+                ? 'rgba(255,215,0,0.2)'
+                : 'rgba(255,255,255,0.06)',
+            border: `2px solid ${alreadyPurchased || canAfford ? '#FFD700' : 'rgba(255,255,255,0.2)'}`,
+            color: alreadyPurchased || canAfford ? '#FFD700' : 'rgba(255,255,255,0.4)',
+            boxShadow: canAfford && !alreadyPurchased ? '0 0 15px rgba(255,215,0,0.35)' : 'none',
           }}
-          animate={(canAfford && !alreadyPurchased) ? {
-            boxShadow: [
-              '0 0 10px rgba(255,215,0,0.3)',
-              '0 0 20px rgba(255,215,0,0.6)',
-              '0 0 10px rgba(255,215,0,0.3)',
-            ],
-          } : {}}
+          animate={
+            canAfford && !alreadyPurchased
+              ? {
+                  boxShadow: [
+                    '0 0 10px rgba(255,215,0,0.22)',
+                    '0 0 20px rgba(255,215,0,0.5)',
+                    '0 0 10px rgba(255,215,0,0.22)',
+                  ],
+                }
+              : {}
+          }
           transition={{ duration: 2, repeat: Infinity }}
           whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}>
-          <span className="text-lg">{alreadyPurchased ? '📖' : '💡'}</span>
-          {alreadyPurchased
-            ? 'View Clue'
-            : canAfford
-            ? `Clue — ${CLUE_COST} 💰`
-            : `Need ${CLUE_COST} 💰`}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="text-sm sm:text-base">{alreadyPurchased ? 'Open' : 'Hint'}</span>
+          {alreadyPurchased ? 'View Clue' : canAfford ? `Clue - ${CLUE_COST} coins` : `Need ${CLUE_COST} coins`}
         </motion.button>
       </div>
 
-      {/* Clue Modal */}
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <div className="absolute inset-0 bg-black/70" onClick={() => setOpen(false)} />
 
             <motion.div
-              className="relative max-w-lg w-full z-10 rounded-3xl p-8 shadow-2xl"
+              className="relative z-10 flex h-[calc(100dvh-1rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[24px] p-3 shadow-2xl sm:h-[min(82dvh,700px)] sm:rounded-[32px] sm:p-5"
               style={{
-                background: 'radial-gradient(ellipse at center, #F5DEB3 0%, #DEB887 50%, #C4A35A 100%)',
-                border: '3px solid #8B6914',
-                boxShadow: '0 0 60px rgba(139,105,20,0.5), inset 0 0 40px rgba(0,0,0,0.1)',
+                background: 'linear-gradient(135deg, rgba(20,18,28,0.98), rgba(36,24,18,0.98))',
+                border: '1px solid rgba(250,204,21,0.36)',
+                boxShadow: '0 0 50px rgba(250,204,21,0.16)',
               }}
-              initial={{ scale: 0.3, rotate: -5, opacity: 0 }}
+              initial={{ scale: 0.3, rotate: -4, opacity: 0 }}
               animate={{ scale: 1, rotate: 0, opacity: 1 }}
-              exit={{ scale: 0.3, rotate: 5, opacity: 0 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}>
-
-              <div className="text-center mb-3">
-                <span className="text-3xl">🔏</span>
+              exit={{ scale: 0.3, rotate: 4, opacity: 0 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            >
+              <div className="mb-2 flex-shrink-0 text-center sm:mb-3">
+                <p className="text-xs font-bold uppercase tracking-[0.24em] text-amber-200/70">Math Clue</p>
+                <h3 className="mt-1 line-clamp-1 text-lg font-black text-amber-300 sm:mt-2 sm:text-2xl">{question.clue.title}</h3>
+                <p className="mt-1 line-clamp-2 text-xs leading-5 text-amber-50/85 sm:mt-2 sm:text-sm sm:leading-6">{question.clue.example}</p>
               </div>
 
-              <h3 className="text-center font-black text-xl text-amber-900 mb-1"
-                style={{ fontFamily: 'Georgia, serif' }}>
-                📜 {question.clue.title}
-              </h3>
+              <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,0.45fr)_minmax(0,0.55fr)] gap-2 sm:grid-cols-[0.96fr_1.04fr] sm:grid-rows-1 sm:gap-3">
+                <MathClassroomStage
+                  title={question.clue.title}
+                  prompt={prompt}
+                  equation={question.equation}
+                  accent="#f59e0b"
+                  startValue={question.clue.startValue}
+                  moveValue={question.clue.moveValue}
+                  className="h-full min-h-0"
+                  overlay="none"
+                  showEquation={false}
+                />
 
-              <div className="w-full h-px bg-amber-700/40 my-4" />
-
-              <p className="text-sm font-bold text-amber-800 mb-3 text-center">💡 How to solve it:</p>
-              <p className="text-sm text-amber-900 leading-relaxed whitespace-pre-line mb-5 text-center"
-                style={{ fontFamily: 'Georgia, serif' }}>
-                {question.clue.example}
-              </p>
-
-              {/* Only show NumberLine if we have the required values */}
-              {question.clue.startValue !== undefined && question.clue.moveValue !== undefined && (
-                <div className="rounded-2xl p-3 mb-5"
-                  style={{ background: 'rgba(15,12,41,0.85)', border: '1px solid rgba(255,215,0,0.3)' }}>
-                  <NumberLine
-                    start={question.clue.startValue}
-                    move={question.clue.moveValue}
-                    move2={question.clue.moveValue2}
-                    animate={true}
-                  />
+                <div className="flex min-h-0 flex-col overflow-hidden rounded-[22px] border border-white/10 bg-[#0d1726] p-2 sm:rounded-[28px] sm:p-3">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 sm:mb-2">Step By Step</p>
+                  <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl">
+                    <MathExplainer concept={explainer.concept} values={explainer.values} />
+                  </div>
                 </div>
-              )}
+              </div>
 
               <button
                 onClick={() => setOpen(false)}
-                className="w-full py-3 rounded-2xl font-black text-base transition-all hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #8B6914, #C4A35A)', color: 'white' }}>
-                ✨ Got it! Close Clue
+                className="mt-2 w-full flex-shrink-0 rounded-2xl py-2.5 text-sm font-black text-slate-950 transition-all hover:scale-[1.01] sm:mt-4 sm:py-3 sm:text-base"
+                style={{ background: 'linear-gradient(135deg, #facc15, #f59e0b)' }}
+              >
+                Close Clue
               </button>
             </motion.div>
           </motion.div>

@@ -36,7 +36,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 export default function CurriculumBrowser() {
   const router = useRouter();
   const [selectedSubject, setSelectedSubject] = useState('math');
-  const [selectedGrade, setSelectedGrade] = useState(1);
+  const [selectedGrade, setSelectedGrade] = useState(8);
   const [selectedTopic, setSelectedTopic] = useState<GeneratedTopic | null>(null);
   const [activeTab, setActiveTab] = useState<'topics' | 'explanation' | 'animation' | 'game'>('topics');
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,11 +90,13 @@ export default function CurriculumBrowser() {
             </button>
             <h1 className="text-3xl font-bold mt-1">📖 IB Curriculum Framework</h1>
             <p className="text-sm text-gray-400 mt-1">
-              Browse topics, explanations, animations, and game designs for Grades 1-12
+              Browse the school-aligned IB scaffold. Grade 8 is completed from the supplied textbook PDFs.
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-gray-500">Based on publicly available IB subject guides</p>
+            <p className="text-xs text-gray-500">
+              {ibContext?.completionStatus === 'complete' ? 'Completed track' : 'Scaffolded track'}
+            </p>
             <button onClick={() => router.push('/lesson-planner')}
               className="text-xs text-purple-400 hover:text-purple-300 mt-1">
               📋 Lesson Planner →
@@ -160,6 +162,11 @@ export default function CurriculumBrowser() {
             <div className="text-right text-xs text-gray-400">
               <p className="font-semibold text-white">{ibContext.framework}</p>
               <p>{ibContext.unit}</p>
+              {ibContext.sourceDocuments && ibContext.sourceDocuments.length > 0 && (
+                <p className="max-w-xs truncate text-gray-500">
+                  Source: {ibContext.sourceDocuments.map(doc => doc.title).join(' + ')}
+                </p>
+              )}
             </div>
           )}
         </div>

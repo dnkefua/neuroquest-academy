@@ -1,51 +1,70 @@
 'use client';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useScienceStore } from '../store/gameStore';
+
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import ScienceExplainer from '@/components/explainer/ScienceExplainer';
+import ScienceLabStage from '@/components/lesson-stages/ScienceLabStage';
 import { getGameQuestById } from '@/lib/questData';
+import { gameAudio } from '../../shared/audio';
+import { gameTTS, stripParens, useTTSCleanup, useTTSSettings } from '../../shared/tts';
 import ScienceClueBox from '../components/ui/ClueBox';
 import VialCounter from '../components/ui/VialCounter';
-import ConceptAnimation from '../../shared/ConceptAnimation';
-import { gameAudio } from '../../shared/audio';
-import { gameTTS, useTTSCleanup, stripParens } from '../../shared/tts';
+import TopicVisualizer from '../components/visualizers/TopicVisualizer';
+import { useScienceStore } from '../store/gameStore';
+import { getScienceDetail, inferScienceExplainerConcept, inferScienceLabMode } from '../utils/visualMappings';
 
 export default function ScienceQuizScene() {
-  const { questions, currentQuestion, score, vialsCollected, currentQuestId, currentGrade, answerQuestion, collectVial, nextQuestion } = useScienceStore();
-  const q = questions[currentQuestion];
+  const {
+    answerQuestion,
+    collectVial,
+    currentQuestion,
+    currentQuestId,
+    nextQuestion,
+    questions,
+    score,
+    vialsCollected,
+  } = useScienceStore();
+  const { enabled: ttsOn } = useTTSSettings();
 
+  const q = questions[currentQuestion];
   const quest = useMemo(() => getGameQuestById(currentQuestId), [currentQuestId]);
   const questTitle = quest?.title || 'Science';
+  const detail = getScienceDetail(q);
+  const labMode = inferScienceLabMode(questTitle, q);
+  const explainerConcept = inferScienceExplainerConcept(questTitle, q);
+
   const [selected, setSelected] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [shaking, setShaking] = useState(false);
   const [justFilledVial, setJustFilledVial] = useState<number | null>(null);
+  const [visualTab, setVisualTab] = useState<'explainer' | 'diagram'>('explainer');
   const filledRef = useRef(vialsCollected);
-  const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
 
   useTTSCleanup();
-
-  function toggleTTS() { setTtsOn(gameTTS.toggle()); }
 
   useEffect(() => {
     setSelected(null);
     setAnswered(false);
     setFeedback(null);
     setJustFilledVial(null);
+    setVisualTab('explainer');
   }, [currentQuestion]);
 
   useEffect(() => {
     if (!ttsOn || !q) return;
-    gameTTS.speak(`${q.spirit} says: ${stripParens(q.narrative)}. Question: ${stripParens(q.question)}`);
+    gameTTS.speak(`Question ${currentQuestion + 1}. ${stripParens(q.question)}`);
     return () => gameTTS.stop();
-  }, [currentQuestion, ttsOn]);
+  }, [currentQuestion, q, ttsOn]);
 
   function handleConfirm() {
-    if (selected === null) return;
+    if (selected === null || !q) return;
+
     const correct = selected === q.correct;
     setAnswered(true);
     setFeedback(correct ? 'correct' : 'wrong');
     answerQuestion(correct);
+
     if (correct) {
       gameAudio.playCorrect();
       if (currentQuestion < 4) {
@@ -54,163 +73,244 @@ export default function ScienceQuizScene() {
         filledRef.current += 1;
         gameAudio.playCollect();
       }
-      gameTTS.afterSpeak('Correct! Crystal Vial collected! The Cloud Spirits cheer!', () => nextQuestion(), 2600);
-    } else {
-      gameAudio.playWrong();
-      gameTTS.speak('Not quite, explorer! Try again or open a clue for help.');
-      setShaking(true);
-      setTimeout(() => setShaking(false), 500);
+      gameTTS.speak('Correct.');
+      return;
     }
+
+    gameAudio.playWrong();
+    gameTTS.speak('Not quite. Try again or open the clue.');
+    setShaking(true);
+    setTimeout(() => setShaking(false), 500);
   }
 
   function handleTryAgain() {
-    setAnswered(false); setFeedback(null); setSelected(null);
+    setAnswered(false);
+    setFeedback(null);
+    setSelected(null);
+  }
+
+  if (!q) {
+    return (
+      <div className="flex h-dvh items-center justify-center bg-[#08131f]">
+        <p className="text-white">Loading...</p>
+      </div>
+    );
   }
 
   return (
-    <div className={`w-full h-dvh overflow-hidden flex flex-col items-center px-3 py-2 relative ${shaking ? 'shake' : ''}`}
-      style={{ background: 'linear-gradient(180deg, #0c1a2e 0%, #0d2137 60%, #091a10 100%)' }}>
-
-      {/* TTS toggle */}
-      <button onClick={toggleTTS}
-        className="absolute top-2 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all hover:scale-110"
-        style={{ background: ttsOn ? 'rgba(20,184,166,0.25)' : 'rgba(255,255,255,0.1)', border: `1px solid ${ttsOn ? '#14B8A6' : 'rgba(255,255,255,0.2)'}` }}
-        title={ttsOn ? 'Turn off read-aloud' : 'Turn on read-aloud'}>
-        {ttsOn ? '🔊' : '🔇'}
-      </button>
-
-      {/* HUD */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-xl flex-shrink-0 mb-1.5 flex items-center justify-between px-3 py-1.5 rounded-2xl"
-        style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(56,189,248,0.2)' }}>
+    <div
+      className={`relative flex h-dvh w-full flex-col items-center overflow-hidden px-2 pb-2 pt-14 sm:px-3 sm:pb-3 sm:pt-16 ${shaking ? 'shake' : ''}`}
+      style={{ background: 'linear-gradient(180deg, #08131f 0%, #0a1f33 58%, #08111b 100%)' }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-2 flex w-full max-w-6xl flex-shrink-0 items-center justify-between rounded-2xl px-3 py-2"
+        style={{ background: 'rgba(0,0,0,0.46)', border: '1px solid rgba(56,189,248,0.16)' }}
+      >
         <VialCounter collected={vialsCollected} total={4} justCollectedIndex={justFilledVial} />
         <div className="text-center">
-          <p className="text-[10px] text-gray-400">Question</p>
-          <p className="font-black text-white text-sm">{currentQuestion + 1} / {questions.length}</p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-gray-400">Question</p>
+          <p className="text-sm font-black text-white">
+            {currentQuestion + 1} / {questions.length}
+          </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] text-gray-400">Score</p>
-          <p className="font-black text-teal-400 text-sm">💧 {score}/{questions.length}</p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-gray-400">Score</p>
+          <p className="text-sm font-black text-teal-300">
+            {score} / {questions.length}
+          </p>
         </div>
       </motion.div>
 
-      {/* Question card */}
       <AnimatePresence mode="wait">
-        <motion.div key={currentQuestion}
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        <motion.div
+          key={currentQuestion}
+          initial={{ opacity: 0, scale: 0.96, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          className="w-full max-w-xl flex-1 min-h-0 flex flex-col rounded-3xl overflow-hidden shadow-2xl"
-          style={{ background: 'rgba(12,26,46,0.97)', border: `2px solid ${q.spiritColor}44` }}>
+          exit={{ opacity: 0, scale: 0.96, y: -20 }}
+          className="grid min-h-0 w-full max-w-6xl flex-1 grid-rows-[minmax(0,0.46fr)_minmax(0,0.54fr)] gap-2 sm:grid-cols-[1.12fr_0.88fr] sm:grid-rows-1"
+        >
+          <div className="grid min-h-0 gap-2 grid-rows-[minmax(0,0.52fr)_minmax(0,0.48fr)] sm:grid-rows-[minmax(0,0.56fr)_minmax(0,0.44fr)]">
+            <ScienceLabStage
+              title={questTitle}
+              detail={q.clue.title}
+              mode={labMode}
+              accent={q.spiritColor}
+              className="h-full min-h-0"
+              overlay="none"
+            />
 
-          {/* Scrollable inner */}
-          <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+            <div className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#0d1726] p-3">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">Visual Support</p>
+                <div className="flex rounded-2xl border border-white/10 bg-white/5 p-1 text-[10px] font-bold uppercase tracking-[0.18em]">
+                  {(['explainer', 'diagram'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setVisualTab(tab)}
+                      className="rounded-xl px-3 py-1.5 transition-all"
+                      style={{
+                        background: visualTab === tab ? q.spiritColor : 'transparent',
+                        color: visualTab === tab ? '#03131d' : 'rgba(255,255,255,0.65)',
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            {/* Topic animation */}
-            <div className="px-3 pt-3 flex-shrink-0">
-              <ConceptAnimation subject="science" questTitle={questTitle} color1={q.spiritColor} color2="#0EA5E9" />
+              <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-[#101b2a]">
+                {visualTab === 'explainer' ? (
+                  explainerConcept ? (
+                    <ScienceExplainer concept={explainerConcept} autoPlay showLabels={false} />
+                  ) : (
+                    <div className="flex h-full items-center justify-center px-6 text-center text-sm leading-6 text-slate-300">
+                      This topic is anchored by the lab model and the reference diagram.
+                    </div>
+                  )
+                ) : (
+                  <div className="flex h-full items-center justify-center overflow-hidden p-3">
+                    <TopicVisualizer questTitle={questTitle} highlightStage={q.clue.highlightStage} />
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
 
-            {/* Spirit narrator */}
-            <div className="px-4 pb-2 flex items-start gap-2.5 flex-shrink-0"
-              style={{ background: `linear-gradient(135deg, ${q.spiritColor}15, transparent)` }}>
-              <motion.span className="text-3xl flex-shrink-0"
-                animate={{ y: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-                {q.spiritEmoji}
+          <div
+            className="flex min-h-0 flex-col overflow-hidden rounded-[28px] shadow-2xl"
+            style={{ background: 'rgba(8,19,31,0.97)', border: `1px solid ${q.spiritColor}33` }}
+          >
+            <div
+              className="flex items-start gap-2 px-3 py-2"
+              style={{ background: `linear-gradient(135deg, ${q.spiritColor}18, transparent)` }}
+            >
+              <motion.span
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[9px] font-black uppercase tracking-[0.12em] text-white sm:h-10 sm:w-10 sm:rounded-2xl sm:text-[10px]"
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                Guide
               </motion.span>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: q.spiritColor }}>
-                  {q.spirit} says:
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: q.spiritColor }}>
+                  {q.spirit}
                 </p>
-                <p className="text-gray-200 text-xs leading-snug mt-0.5 line-clamp-2">{q.narrative}</p>
+                <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-gray-200 sm:line-clamp-3">{detail}</p>
               </div>
             </div>
 
-            <div className="px-4 pb-2 flex-1">
-              {/* Question */}
-              <div className="mb-2 p-2.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                <p className="text-white font-bold text-sm">❓ {q.question}</p>
+            <div className="flex min-h-0 flex-1 flex-col px-3 pb-2 pt-2 sm:px-4 sm:pb-3">
+              <div className="mb-1.5 rounded-2xl bg-white/5 p-2 sm:p-3">
+                <p className="line-clamp-2 text-xs font-bold leading-5 text-white sm:text-sm sm:leading-6">{q.question}</p>
               </div>
 
-              {/* Options — 2 column on science to save space */}
-              <div className="grid grid-cols-1 gap-1.5 mb-2">
-                {q.options.map((opt, i) => {
-                  const isSelected = selected === i, isCorrect = i === q.correct;
-                  let bg = 'rgba(255,255,255,0.05)', border = 'rgba(255,255,255,0.12)', textColor = 'rgba(255,255,255,0.9)';
+              <div className="grid flex-1 auto-rows-fr grid-cols-2 gap-1.5 sm:gap-2">
+                {q.options.map((option, index) => {
+                  const isSelected = selected === index;
+                  const isCorrect = index === q.correct;
+                  let background = 'rgba(255,255,255,0.05)';
+                  let border = 'rgba(255,255,255,0.12)';
+                  let textColor = 'rgba(255,255,255,0.92)';
+
                   if (answered) {
-                    if (isCorrect)                    { bg = 'rgba(0,200,80,0.2)';   border = '#00C851'; textColor = '#00FF6A'; }
-                    else if (isSelected && !isCorrect){ bg = 'rgba(255,68,68,0.2)';  border = '#FF4444'; textColor = '#FF8888'; }
-                    else                             { bg = 'rgba(255,255,255,0.02)'; border = 'transparent'; textColor = 'rgba(255,255,255,0.25)'; }
-                  } else if (isSelected) { bg = `${q.spiritColor}22`; border = q.spiritColor; }
+                    if (isCorrect) {
+                      background = 'rgba(0,200,80,0.18)';
+                      border = '#00C851';
+                      textColor = '#00FF6A';
+                    } else if (isSelected) {
+                      background = 'rgba(255,68,68,0.18)';
+                      border = '#FF4444';
+                      textColor = '#FF9A9A';
+                    } else {
+                      background = 'rgba(255,255,255,0.02)';
+                      border = 'transparent';
+                      textColor = 'rgba(255,255,255,0.25)';
+                    }
+                  } else if (isSelected) {
+                    background = `${q.spiritColor}22`;
+                    border = q.spiritColor;
+                  }
+
                   return (
-                    <motion.button key={i}
-                      onClick={() => !answered && setSelected(i)}
+                    <motion.button
+                      key={index}
+                      onClick={() => !answered && setSelected(index)}
                       whileHover={!answered ? { scale: 1.01, x: 3 } : {}}
                       whileTap={!answered ? { scale: 0.98 } : {}}
                       animate={answered && isSelected && !isCorrect ? { x: [-5, 5, -4, 4, 0] } : {}}
                       transition={{ duration: 0.4 }}
-                      className="py-2 px-3 rounded-2xl font-semibold text-xs text-left transition-all"
-                      style={{ background: bg, border: `1.5px solid ${border}`, color: textColor }}>
-                      <span className="mr-2 opacity-50">{['A', 'B', 'C', 'D'][i]}.</span>{opt}
+                      className="rounded-xl px-2 py-1.5 text-left text-xs font-semibold leading-4 transition-all sm:rounded-2xl sm:px-3 sm:py-2 sm:text-sm sm:leading-5"
+                      style={{ background, border: `1.5px solid ${border}`, color: textColor }}
+                    >
+                      <span className="mr-2 opacity-50">{['A', 'B', 'C', 'D'][index]}.</span>
+                      {option}
                     </motion.button>
                   );
                 })}
               </div>
             </div>
-          </div>
 
-          {/* Pinned footer */}
-          <div className="flex-shrink-0 px-4 pb-3 pt-2"
-            style={{ borderTop: '1px solid rgba(56,189,248,0.1)' }}>
-            <AnimatePresence>
-              {feedback && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                  className="rounded-xl px-3 py-1.5 mb-2 text-center font-bold text-xs overflow-hidden"
-                  style={{
-                    background: feedback === 'correct' ? 'rgba(0,200,80,0.15)' : 'rgba(255,100,0,0.15)',
-                    border: `1px solid ${feedback === 'correct' ? '#00C851' : '#FF6400'}`,
-                    color: feedback === 'correct' ? '#00FF6A' : '#FFA040',
-                  }}>
-                  {feedback === 'correct' ? `☁️ CORRECT! ${q.reward} 🎉` : `🌩️ Not quite — try again or move on!`}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className="flex-shrink-0 border-t border-sky-300/10 px-3 pb-2 pt-2 sm:px-4 sm:pb-3">
+              <AnimatePresence>
+                {feedback && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mb-1.5 line-clamp-1 overflow-hidden rounded-xl px-3 py-1.5 text-center text-[11px] font-bold sm:text-xs"
+                    style={{
+                      background: feedback === 'correct' ? 'rgba(0,200,80,0.15)' : 'rgba(255,100,0,0.15)',
+                      border: `1px solid ${feedback === 'correct' ? '#00C851' : '#FF6400'}`,
+                      color: feedback === 'correct' ? '#00FF6A' : '#FFA040',
+                    }}
+                  >
+                    {feedback === 'correct' ? `Correct. ${q.reward}` : 'Not quite. Retry or use the clue.'}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <div className="flex items-center justify-between gap-2">
-              <ScienceClueBox question={q} questionIndex={currentQuestion} />
-              {!answered ? (
-                <motion.button onClick={handleConfirm} disabled={selected === null}
-                  whileHover={selected !== null ? { scale: 1.05 } : {}}
-                  whileTap={selected !== null ? { scale: 0.95 } : {}}
-                  className="px-5 py-2 rounded-2xl font-black text-black text-xs disabled:opacity-40"
-                  style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}>
-                  🧪 Confirm!
-                </motion.button>
-              ) : (
-                <div className="flex gap-1.5">
-                  {feedback === 'wrong' && (
-                    <button onClick={handleTryAgain}
-                      className="px-3 py-2 rounded-2xl font-black text-xs"
-                      style={{ background: 'rgba(255,100,0,0.2)', border: '1px solid #FF6400', color: '#FFA040' }}>
-                      💪 Retry
-                    </button>
-                  )}
-                  <motion.button onClick={() => nextQuestion()}
-                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    className="px-5 py-2 rounded-2xl font-black text-black text-xs"
-                    style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}>
-                    Next →
+              <div className="flex items-center justify-between gap-2">
+                <ScienceClueBox question={q} questionIndex={currentQuestion} />
+                {!answered ? (
+                  <motion.button
+                    onClick={handleConfirm}
+                    disabled={selected === null}
+                    whileHover={selected !== null ? { scale: 1.05 } : {}}
+                    whileTap={selected !== null ? { scale: 0.95 } : {}}
+                    className="rounded-xl px-4 py-2 text-xs font-black text-slate-950 disabled:opacity-40 sm:rounded-2xl sm:px-5"
+                    style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}
+                  >
+                    Confirm
                   </motion.button>
-                </div>
-              )}
+                ) : (
+                  <div className="flex gap-1.5">
+                    {feedback === 'wrong' && (
+                      <button
+                        onClick={handleTryAgain}
+                        className="rounded-xl px-3 py-2 text-xs font-black sm:rounded-2xl"
+                        style={{ background: 'rgba(255,100,0,0.2)', border: '1px solid #FF6400', color: '#FFA040' }}
+                      >
+                        Retry
+                      </button>
+                    )}
+                    <motion.button
+                      onClick={() => nextQuestion()}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="rounded-xl px-4 py-2 text-xs font-black text-slate-950 sm:rounded-2xl sm:px-5"
+                      style={{ background: 'linear-gradient(135deg, #38BDF8, #0EA5E9)' }}
+                    >
+                      Next
+                    </motion.button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
-
-      <style jsx>{`
-        @keyframes flicker { 0%{transform:scale(1) rotate(-3deg)} 100%{transform:scale(1.1) rotate(3deg)} }
-      `}</style>
     </div>
   );
 }

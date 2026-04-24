@@ -144,6 +144,8 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
     startValue: undefined as number | undefined,
     moveValue: undefined as number | undefined,
     moveValue2: undefined as number | undefined,
+    simulationType: undefined as GameQuestion['clue']['simulationType'] | undefined,
+    simulationParams: undefined as Record<string, unknown> | undefined,
   };
   const clueData = q.clue || defaultClue;
 
@@ -163,7 +165,57 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
       startValue: clueData.startValue,
       moveValue: clueData.moveValue,
       moveValue2: clueData.moveValue2,
+      simulationType: clueData.simulationType,
+      simulationParams: clueData.simulationParams,
     },
+  };
+}
+
+function inferClueExperience(
+  subject: CurriculumSubject,
+  questTitle: string,
+  q: CurriculumQuest['questions'][0],
+): Pick<GameQuestion['clue'], 'visual' | 'simulationType' | 'simulationParams'> {
+  const text = `${questTitle} ${q.question} ${q.narrative} ${q.clue?.title || ''} ${q.clue?.explanation || ''}`.toLowerCase();
+
+  if (subject === 'math' && q.clue?.startValue !== undefined && q.clue?.moveValue !== undefined) {
+    return {
+      visual: 'numberLine',
+      simulationType: 'number-line',
+      simulationParams: {
+        startValue: q.clue.startValue,
+        moveValue: q.clue.moveValue,
+      },
+    };
+  }
+
+  if (subject === 'science') {
+    if (text.includes('water cycle') || text.includes('evaporation') || text.includes('condensation') || text.includes('precipitation')) {
+      return { visual: '3d-simulation', simulationType: 'water-cycle', simulationParams: { activeStage: 'all' } };
+    }
+    if (text.includes('circuit') || text.includes('current') || text.includes('voltage') || text.includes('electric')) {
+      return { visual: '3d-simulation', simulationType: 'circuit', simulationParams: {} };
+    }
+    if (text.includes('gravity')) {
+      return { visual: '3d-simulation', simulationType: 'gravity', simulationParams: { mass: 2 } };
+    }
+    if (text.includes('force') || text.includes('motion') || text.includes('f = ma') || text.includes('speed') || text.includes('acceleration')) {
+      return { visual: '3d-simulation', simulationType: 'force', simulationParams: { force: 12, mass: 4 } };
+    }
+  }
+
+  if (subject === 'math' && (text.includes('fraction') || text.includes('ratio') || text.includes('percent'))) {
+    return {
+      visual: '3d-simulation',
+      simulationType: 'fraction',
+      simulationParams: { numerator: 3, denominator: 4 },
+    };
+  }
+
+  return {
+    visual: q.clue?.visual || 'text',
+    simulationType: q.clue?.simulationType,
+    simulationParams: q.clue?.simulationParams,
   };
 }
 
@@ -173,7 +225,24 @@ function toGameQuestion(q: CurriculumQuest['questions'][0], index: number): Game
  */
 export function toGameQuests(quest: CurriculumQuest): GameQuest[] {
   const theme = SUBJECT_THEMES[quest.subject];
-  const questions = quest.questions;
+  const questions = quest.questions.map((question, index) => {
+    const clueExperience = inferClueExperience(quest.subject, quest.title, question);
+    const nextQuestion: CurriculumQuest['questions'][0] = {
+      ...question,
+      clue: {
+        title: question.clue?.title || 'Hint',
+        explanation: question.clue?.explanation || 'Think carefully about the question.',
+        visual: clueExperience.visual || 'text',
+        cost: question.clue?.cost ?? 10,
+        startValue: question.clue?.startValue,
+        moveValue: question.clue?.moveValue,
+        moveValue2: question.clue?.moveValue2,
+        simulationType: clueExperience.simulationType,
+        simulationParams: clueExperience.simulationParams,
+      },
+    };
+    return toGameQuestion(nextQuestion, index);
+  });
 
   const locationNames: Record<CurriculumSubject, string[]> = {
     math: ['Number Caves', 'Equation Village', 'Calculus City', 'Infinity Tower', "Final Boss Arena"],
@@ -205,7 +274,7 @@ export function toGameQuests(quest: CurriculumQuest): GameQuest[] {
     briefingDescription: quest.narrativeWorld.slice(0, 100) + '...',
     teacherName: quest.characterTeacher,
     teacherEmoji: quest.teacherEmoji,
-    questions: questions.map((q, idx) => toGameQuestion(q, idx)),
+    questions,
   }];
 }
 

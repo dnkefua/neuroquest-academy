@@ -34,6 +34,8 @@ export default function QuestMapScene() {
   const searchParams = useSearchParams();
   const [ttsOn, setTtsOn] = useState(gameTTS.enabled);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(4);
 
   // Get grade from URL or use store's current grade
   const urlGrade = parseInt(searchParams?.get('grade') || '6', 10);
@@ -49,6 +51,30 @@ export default function QuestMapScene() {
   const activeGrade = hasQuestsForGrade(urlGrade) ? urlGrade : currentGrade;
   const quests = getQuestsForGrade(activeGrade);
   const gradeInfo = GRADE_NAMES[activeGrade] || { programme: 'IB', topic: 'Mathematics' };
+
+  useEffect(() => {
+    setPageIndex(0);
+  }, [activeGrade]);
+
+  useEffect(() => {
+    const updatePageSize = () => {
+      const height = window.innerHeight;
+      const width = window.innerWidth;
+      if (height < 620) {
+        setPageSize(2);
+        return;
+      }
+      setPageSize(width < 640 ? 3 : 4);
+    };
+
+    updatePageSize();
+    window.addEventListener('resize', updatePageSize);
+    window.addEventListener('orientationchange', updatePageSize);
+    return () => {
+      window.removeEventListener('resize', updatePageSize);
+      window.removeEventListener('orientationchange', updatePageSize);
+    };
+  }, []);
 
   // A quest is unlocked if it's the first one, the previous one is completed, or a parent approved it
   function isUnlocked(index: number) {
@@ -71,9 +97,13 @@ export default function QuestMapScene() {
   }
 
   const completedCount = quests.filter(q => isCompleted(q.id)).length;
+  const pageCount = Math.max(1, Math.ceil(quests.length / pageSize));
+  const safePageIndex = Math.min(pageIndex, pageCount - 1);
+  const pageStart = safePageIndex * pageSize;
+  const visibleQuests = quests.slice(pageStart, pageStart + pageSize);
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center px-4 py-8 relative overflow-hidden"
+    <div className="relative grid h-dvh w-full grid-rows-[auto_auto_minmax(0,1fr)_auto] items-stretch overflow-hidden px-3 pb-3 pt-14 sm:px-4 sm:pb-4 sm:pt-14"
       style={{ background: 'linear-gradient(180deg, #0f0c29 0%, #1a1040 50%, #0d1b2a 100%)' }}>
 
       {/* Starfield */}
@@ -90,16 +120,16 @@ export default function QuestMapScene() {
       </div>
 
       {/* Header */}
-      <div className="relative z-10 w-full max-w-lg flex items-center justify-between mb-6">
+      <div className="relative z-10 mx-auto mb-2 flex w-full max-w-5xl items-center justify-between gap-3">
         <button onClick={() => router.push('/world-map')}
           className="text-sm font-bold text-gray-400 hover:text-white transition-all flex items-center gap-1">
           ← Back
         </button>
         <div className="text-center">
-          <h1 className="font-black text-2xl text-white" style={{ fontFamily: 'Georgia, serif', textShadow: '0 0 20px rgba(139,92,246,0.6)' }}>
+          <h1 className="text-xl font-black text-white sm:text-2xl" style={{ fontFamily: 'Georgia, serif', textShadow: '0 0 20px rgba(139,92,246,0.6)' }}>
             ⚔️ Math Arena
           </h1>
-          <p className="text-purple-300 text-xs mt-0.5">Grade {currentGrade} · {gradeInfo.programme} · {gradeInfo.topic}</p>
+          <p className="mt-0.5 text-[11px] text-purple-300 sm:text-xs">Grade {activeGrade} · {gradeInfo.programme} · {gradeInfo.topic}</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setTtsOn(gameTTS.toggle())}
@@ -112,11 +142,11 @@ export default function QuestMapScene() {
 
       {/* Progress summary */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-lg mb-6 px-5 py-3 rounded-2xl flex items-center gap-4"
+        className="relative z-10 mx-auto mb-2 flex w-full max-w-5xl items-center gap-3 rounded-2xl px-4 py-2"
         style={{ background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.3)' }}>
         <div className="text-2xl">🗺️</div>
         <div className="flex-1">
-          <p className="text-white font-bold text-sm">Quest Progress</p>
+          <p className="text-xs font-bold text-white sm:text-sm">Quest Progress</p>
           <div className="flex items-center gap-2 mt-1">
             <div className="flex-1 h-2 rounded-full bg-white/10">
               <motion.div className="h-full rounded-full"
@@ -131,20 +161,15 @@ export default function QuestMapScene() {
       </motion.div>
 
       {/* Quest path */}
-      <div className="relative z-10 w-full max-w-lg space-y-4">
-        {quests.map((quest, index) => {
+      <div className="relative z-10 mx-auto grid min-h-0 w-full max-w-5xl grid-cols-1 gap-2 overflow-hidden md:grid-cols-2">
+        {visibleQuests.map((quest, localIndex) => {
+          const index = pageStart + localIndex;
           const unlocked = isUnlocked(index);
           const completed = isCompleted(quest.id);
           const isCurrent = currentQuestId === quest.id;
 
           return (
             <div key={quest.id} className="relative">
-              {/* Connector path line */}
-              {index < quests.length - 1 && (
-                <div className="absolute left-[52px] top-full w-0.5 h-4 z-0"
-                  style={{ background: completed ? quest.color : 'rgba(255,255,255,0.1)' }} />
-              )}
-
               <motion.div
                 initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -155,7 +180,7 @@ export default function QuestMapScene() {
                 <button
                   onClick={() => handleQuestClick(quest, index)}
                   disabled={!unlocked}
-                  className="w-full text-left flex items-center gap-4 p-4 rounded-2xl transition-all"
+                  className="flex h-full min-h-0 w-full items-center gap-3 rounded-2xl p-3 text-left transition-all"
                   style={{
                     background: completed
                       ? `linear-gradient(135deg, ${quest.color}18, rgba(0,0,0,0.3))`
@@ -173,7 +198,7 @@ export default function QuestMapScene() {
                   }}>
 
                   {/* Location icon */}
-                  <div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 relative"
+                  <div className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl text-2xl sm:h-12 sm:w-12"
                     style={{
                       background: unlocked ? `${quest.color}20` : 'rgba(255,255,255,0.05)',
                       border: `2px solid ${unlocked ? quest.color + '50' : 'rgba(255,255,255,0.1)'}`,
@@ -195,7 +220,7 @@ export default function QuestMapScene() {
 
                   {/* Quest info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
+                    <div className="mb-0.5 flex items-center gap-2">
                       <span className="text-xs font-bold px-2 py-0.5 rounded-full"
                         style={{
                           background: `${quest.color}22`,
@@ -211,15 +236,15 @@ export default function QuestMapScene() {
                         <span className="text-xs text-gray-500">🔒 Locked</span>
                       )}
                     </div>
-                    <p className="font-black text-white text-base leading-tight"
+                    <p className="line-clamp-1 text-sm font-black leading-tight text-white sm:text-base"
                       style={{ color: unlocked ? 'white' : 'rgba(255,255,255,0.3)' }}>
                       {LOCATION_ICONS[quest.locationType]} {quest.title}
                     </p>
-                    <p className="text-xs mt-0.5 truncate"
+                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-4 sm:text-xs"
                       style={{ color: unlocked ? quest.color : 'rgba(255,255,255,0.2)' }}>
                       {quest.subtitle}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">{quest.questions.length} questions</p>
+                    <p className="mt-0.5 text-[11px] text-gray-500">{quest.questions.length} questions</p>
                   </div>
 
                   {/* Arrow */}
@@ -238,10 +263,40 @@ export default function QuestMapScene() {
         })}
       </div>
 
+      <div className="relative z-10 mx-auto mt-2 flex w-full max-w-5xl flex-shrink-0 items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 px-3 py-2 backdrop-blur-sm">
+        <button
+          onClick={() => setPageIndex((value) => Math.max(0, value - 1))}
+          disabled={safePageIndex === 0}
+          className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-white transition-all disabled:opacity-35"
+        >
+          Back
+        </button>
+
+        <div className="min-w-0 text-center">
+          {quests.length > 0 && completedCount === quests.length ? (
+            <p className="truncate text-xs font-black text-yellow-300 sm:text-sm">Math arena conquered</p>
+          ) : (
+            <p className="truncate text-xs font-bold text-purple-200 sm:text-sm">
+              Quests {pageStart + 1}-{Math.min(pageStart + visibleQuests.length, quests.length)} of {quests.length}
+            </p>
+          )}
+          <p className="text-[10px] text-white/45">Page {safePageIndex + 1} of {pageCount}</p>
+        </div>
+
+        <button
+          onClick={() => setPageIndex((value) => Math.min(pageCount - 1, value + 1))}
+          disabled={safePageIndex >= pageCount - 1}
+          className="rounded-xl px-3 py-2 text-xs font-black text-slate-950 transition-all disabled:opacity-35"
+          style={{ background: 'linear-gradient(135deg, #8B5CF6, #14B8A6)' }}
+        >
+          Next
+        </button>
+      </div>
+
       {/* All done celebration */}
       {quests.length > 0 && completedCount === quests.length && (
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 w-full max-w-lg mt-6 p-5 rounded-2xl text-center"
+          className="pointer-events-none absolute bottom-16 left-1/2 z-20 w-[min(92vw,420px)] -translate-x-1/2 rounded-2xl p-3 text-center"
           style={{ background: 'rgba(255,215,0,0.12)', border: '2px solid rgba(255,215,0,0.5)' }}>
           <div className="text-4xl mb-2">🏆</div>
           <p className="font-black text-yellow-400 text-lg">MATH ARENA CONQUERED!</p>

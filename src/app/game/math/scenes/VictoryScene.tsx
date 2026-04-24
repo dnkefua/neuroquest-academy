@@ -39,7 +39,7 @@ export default function VictoryScene() {
   const currentQuest = MATH_QUESTS.find(q => q.id === currentQuestId);
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center px-4 py-8 relative"
+    <div className="relative flex h-dvh w-full items-center justify-center overflow-hidden px-3 pb-3 pt-14"
       style={{ background: 'radial-gradient(ellipse at center, #1a0a3a 0%, #0a0a1a 100%)' }}>
 
       {/* Audio controls */}
@@ -65,7 +65,7 @@ export default function VictoryScene() {
 
       <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', damping: 15 }}
-        className="relative max-w-md w-full rounded-3xl p-8 shadow-2xl text-center z-10"
+        className="relative z-10 max-h-[calc(100dvh-4.5rem)] w-full max-w-md overflow-hidden rounded-3xl p-4 text-center shadow-2xl sm:p-5"
         style={{
           background: 'linear-gradient(135deg, rgba(15,12,41,0.97), rgba(26,5,51,0.97))',
           border: `2px solid ${questPassed ? 'rgba(255,215,0,0.6)' : 'rgba(139,92,246,0.5)'}`,
@@ -73,14 +73,14 @@ export default function VictoryScene() {
         }}>
 
         {/* Trophy */}
-        <motion.div className="text-8xl mb-4 inline-block"
+        <motion.div className="mb-2 inline-block text-5xl sm:text-6xl"
           animate={{ rotate: [-5, 5, -3, 3, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 1, delay: 0.5 }}
           style={{ filter: `drop-shadow(0 0 20px ${pct === 100 ? '#FFD700' : questPassed ? '#22C55E' : '#8B5CF6'})` }}>
           {pct === 100 ? '🏆' : questPassed ? '🌟' : '💪'}
         </motion.div>
 
-        <h1 className="font-black text-3xl mb-1"
+        <h1 className="mb-1 text-2xl font-black sm:text-3xl"
           style={{ fontFamily: 'Georgia, serif', color: pct === 100 ? '#FFD700' : questPassed ? '#4ADE80' : '#C4B5FD' }}>
           {pct === 100 ? 'PERFECT QUEST!' : questPassed ? 'QUEST COMPLETE!' : 'GOOD EFFORT!'}
         </h1>
@@ -95,7 +95,7 @@ export default function VictoryScene() {
         )}
 
         {/* Stats */}
-        <div className="rounded-2xl p-5 mb-5 text-left space-y-3"
+        <div className="mb-3 space-y-2 rounded-2xl p-3 text-left"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
           {[
             ['✅', 'Correct Answers', `${score}/${questions.length}`],
@@ -114,13 +114,13 @@ export default function VictoryScene() {
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {/* Next Quest button — only if passed and there's a next quest */}
           {questPassed && nextQuest && (
             <motion.button
               onClick={() => loadQuest(nextQuest.id)}
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              className="w-full py-3 rounded-2xl font-black text-black text-base"
+              className="w-full rounded-2xl py-2.5 text-sm font-black text-black sm:text-base"
               style={{ background: `linear-gradient(135deg, ${nextQuest.color}, ${nextQuest.color}CC)` }}>
               {nextQuest.emoji} Next: {nextQuest.title} →
             </motion.button>
@@ -128,15 +128,15 @@ export default function VictoryScene() {
 
           <div className="flex gap-3">
             <button onClick={() => reset()}
-              className="flex-1 py-3 rounded-2xl font-black text-sm border border-purple-500 text-purple-400 hover:bg-purple-500/20 transition-all">
+              className="flex-1 rounded-2xl border border-purple-500 py-2.5 text-xs font-black text-purple-400 transition-all hover:bg-purple-500/20 sm:text-sm">
               🔄 Try Again
             </button>
             <button onClick={() => reset()}
-              className="flex-1 py-3 rounded-2xl font-black text-sm border border-gray-600 text-gray-400 hover:bg-white/5 transition-all">
+              className="flex-1 rounded-2xl border border-gray-600 py-2.5 text-xs font-black text-gray-400 transition-all hover:bg-white/5 sm:text-sm">
               🗺️ Quest Map
             </button>
             <button onClick={() => window.location.href = '/dashboard'}
-              className="flex-1 py-3 rounded-2xl font-black text-sm text-black transition-all hover:scale-105"
+              className="flex-1 rounded-2xl py-2.5 text-xs font-black text-black transition-all hover:scale-105 sm:text-sm"
               style={{ background: 'linear-gradient(135deg, #FFD700, #FFA500)' }}>
               🏠 Home
             </button>

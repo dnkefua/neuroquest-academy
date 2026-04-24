@@ -288,7 +288,7 @@ export default function PhysicsLab({
   const [friction, setFriction] = useState(0.3);
 
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 0, position: 'relative' }}>
       <Canvas camera={{ position: [0, 3, 8], fov: 50 }}>
         <PhysicsLabScene
           simulationType={simulationType}
@@ -303,13 +303,13 @@ export default function PhysicsLab({
       {showControls && simulationType === 'force' && (
         <div style={{
           position: 'absolute',
-          bottom: 10,
+          bottom: 6,
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
-          gap: 16,
+          gap: 8,
           background: 'rgba(0,0,0,0.7)',
-          padding: '8px 16px',
+          padding: '6px 10px',
           borderRadius: 8,
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -324,7 +324,7 @@ export default function PhysicsLab({
                 setForce(newForce);
                 onForceChange?.(newForce);
               }}
-              style={{ width: 100 }}
+              style={{ width: 78 }}
             />
             <span style={{ color: 'white', fontSize: 14 }}>{force}N</span>
           </div>
@@ -336,7 +336,7 @@ export default function PhysicsLab({
               max={10}
               value={mass}
               onChange={(e) => setMass(parseInt(e.target.value))}
-              style={{ width: 100 }}
+              style={{ width: 78 }}
             />
             <span style={{ color: 'white', fontSize: 14 }}>{mass}kg</span>
           </div>
@@ -349,7 +349,7 @@ export default function PhysicsLab({
               step={0.1}
               value={friction}
               onChange={(e) => setFriction(parseFloat(e.target.value))}
-              style={{ width: 100 }}
+              style={{ width: 78 }}
             />
             <span style={{ color: 'white', fontSize: 14 }}>{friction.toFixed(1)}</span>
           </div>

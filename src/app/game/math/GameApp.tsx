@@ -7,6 +7,8 @@ import MissionBriefing    from './scenes/MissionBriefing';
 import PirateEncounter    from './scenes/PirateEncounter';
 import QuizScene          from './scenes/QuizScene';
 import VictoryScene       from './scenes/VictoryScene';
+import ReaderControls     from '../shared/ReaderControls';
+import { gameTTS }        from '../shared/tts';
 
 const SCENES = {
   QUEST_MAP:        QuestMapScene,
@@ -24,9 +26,16 @@ export default function GameApp() {
   useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) {
-    return <div style={{ background: '#0f0c29', width: '100vw', height: '100vh' }} />;
+    return <div style={{ background: '#0f0c29', width: '100vw', height: '100dvh' }} />;
   }
 
   const Scene = SCENES[scene];
-  return <Scene />;
+  return (
+    <div className="fixed inset-0 h-screen min-h-dvh w-screen overflow-hidden bg-[#0b1220]" onPointerDownCapture={() => gameTTS.prime()}>
+      <div className="h-full w-full overflow-hidden [&>*]:!h-full">
+        <Scene />
+      </div>
+      <ReaderControls accent="#8B5CF6" />
+    </div>
+  );
 }

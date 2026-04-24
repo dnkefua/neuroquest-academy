@@ -16,7 +16,7 @@ function WaterCycleAnimation({ currentStage, showLabels }: { currentStage: numbe
   const stages = ['evaporation', 'condensation', 'precipitation', 'collection'];
 
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%' }}>
         {/* Background sky */}
         <defs>
@@ -184,7 +184,7 @@ function WaterCycleAnimation({ currentStage, showLabels }: { currentStage: numbe
 // Circuit animation
 function CircuitAnimation({ currentStage, showLabels }: { currentStage: number; showLabels: boolean }) {
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%' }}>
         {/* Background */}
         <rect width="400" height="300" fill="#1E1B4B" />
@@ -306,7 +306,7 @@ function CircuitAnimation({ currentStage, showLabels }: { currentStage: number; 
 // Force/motion animation
 function ForceAnimation({ currentStage, showLabels }: { currentStage: number; showLabels: boolean }) {
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%' }}>
         <rect width="400" height="300" fill="#1E1B4B" />
 
@@ -374,7 +374,7 @@ function GravityAnimation({ currentStage, showLabels }: { currentStage: number; 
   const objectY = currentStage >= 1 ? 200 : 50;
 
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <svg viewBox="0 0 400 300" style={{ width: '100%', height: '100%' }}>
         <rect width="400" height="300" fill="#1E1B4B" />
 

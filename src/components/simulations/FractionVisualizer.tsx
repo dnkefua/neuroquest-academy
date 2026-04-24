@@ -196,7 +196,7 @@ export default function FractionVisualizer({
   const [num, setNum] = useState(numerator);
 
   return (
-    <div style={{ width: '100%', height: '400px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', minHeight: 0, position: 'relative' }}>
       <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
         <FractionScene
           numerator={num}
@@ -211,7 +211,7 @@ export default function FractionVisualizer({
       {interactive && (
         <div style={{
           position: 'absolute',
-          bottom: 10,
+          bottom: 6,
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
@@ -220,7 +220,7 @@ export default function FractionVisualizer({
           <button
             onClick={() => setNum(Math.max(0, num - 1))}
             style={{
-              padding: '8px 16px',
+              padding: '6px 12px',
               background: '#374151',
               border: 'none',
               borderRadius: 8,
@@ -233,7 +233,7 @@ export default function FractionVisualizer({
           <button
             onClick={() => setNum(Math.min(denominator, num + 1))}
             style={{
-              padding: '8px 16px',
+              padding: '6px 12px',
               background: '#22C55E',
               border: 'none',
               borderRadius: 8,

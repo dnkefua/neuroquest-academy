@@ -20,9 +20,11 @@ export interface ScienceQuestion {
   clue: {
     title: string;
     example: string;
+    visual?: 'numberLine' | 'text' | 'diagram' | '3d-simulation';
     highlightStage?: string; // Optional topic-specific stage
     explanation?: string;
     simulationType?: 'water-cycle' | 'circuit' | 'fraction' | 'force' | 'gravity' | 'number-line';
+    simulationParams?: Record<string, unknown>;
   };
 }
 
@@ -86,7 +88,11 @@ function toScienceQuestion(q: GameQuest['questions'][0], index: number): Science
     clue: {
       title: q.clue.title,
       example: q.clue.example,
+      visual: q.clue.visual,
       highlightStage: 'all', // Generic, can be topic-specific
+      explanation: q.clue.example,
+      simulationType: q.clue.simulationType,
+      simulationParams: q.clue.simulationParams,
     },
   };
 }
