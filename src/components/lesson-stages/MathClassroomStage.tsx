@@ -1,8 +1,8 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, OrbitControls } from '@react-three/drei';
-import { useMemo, useRef } from 'react';
+import { Float, OrbitControls, useGLTF } from '@react-three/drei';
+import { Suspense, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 type MathClassroomStageProps = {
@@ -16,6 +16,13 @@ type MathClassroomStageProps = {
   overlay?: 'none' | 'minimal' | 'full';
   showEquation?: boolean;
 };
+
+function BlenderClassroom() {
+  const gltf = useGLTF('/models/neuroquest/grade8-math-classroom.glb');
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
+
+  return <primitive object={scene} position={[0, -0.92, 0.28]} scale={0.58} />;
+}
 
 function ClassroomScene({
   accent,
@@ -66,20 +73,9 @@ function ClassroomScene({
       <directionalLight position={[3, 4, 5]} intensity={1.9} />
       <pointLight position={[-2, 2, 1]} intensity={2.5} color={accent} />
 
-      <mesh position={[0, -0.85, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[8, 8]} />
-        <meshStandardMaterial color="#1a2435" />
-      </mesh>
-      <gridHelper args={[8, 12, '#29415d', '#172131']} position={[0, -0.84, 0]} />
-
-      <mesh position={[0, 1.2, -2.2]}>
-        <boxGeometry args={[5.2, 3.4, 0.15]} />
-        <meshStandardMaterial color="#111b28" />
-      </mesh>
-      <mesh position={[0, 1.55, -2.05]}>
-        <boxGeometry args={[3.9, 1.8, 0.08]} />
-        <meshStandardMaterial color="#12352d" emissive="#0f766e" emissiveIntensity={0.12} />
-      </mesh>
+      <Suspense fallback={null}>
+        <BlenderClassroom />
+      </Suspense>
 
       {markerPositions.map((x, index) => (
         <mesh key={index} position={[x, 1.2, -1.99]}>
@@ -100,31 +96,6 @@ function ClassroomScene({
         </mesh>
       </Float>
 
-      {[[-1.4, -0.15], [0, 0.1], [1.4, -0.05]].map(([x, z], index) => (
-        <group key={index} position={[x, -0.35, z]}>
-          <mesh position={[0, 0.2, 0]}>
-            <boxGeometry args={[1.15, 0.09, 0.58]} />
-            <meshStandardMaterial color="#9a6b38" />
-          </mesh>
-          <mesh position={[-0.42, -0.06, -0.2]}>
-            <boxGeometry args={[0.08, 0.5, 0.08]} />
-            <meshStandardMaterial color="#334155" />
-          </mesh>
-          <mesh position={[0.42, -0.06, -0.2]}>
-            <boxGeometry args={[0.08, 0.5, 0.08]} />
-            <meshStandardMaterial color="#334155" />
-          </mesh>
-          <mesh position={[-0.42, -0.06, 0.2]}>
-            <boxGeometry args={[0.08, 0.5, 0.08]} />
-            <meshStandardMaterial color="#334155" />
-          </mesh>
-          <mesh position={[0.42, -0.06, 0.2]}>
-            <boxGeometry args={[0.08, 0.5, 0.08]} />
-            <meshStandardMaterial color="#334155" />
-          </mesh>
-        </group>
-      ))}
-
       {[0, 1, 2].map((index) => (
         <mesh
           key={index}
@@ -142,6 +113,8 @@ function ClassroomScene({
     </>
   );
 }
+
+useGLTF.preload('/models/neuroquest/grade8-math-classroom.glb');
 
 export default function MathClassroomStage({
   title,

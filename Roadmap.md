@@ -112,6 +112,23 @@ Build warnings still present:
 
 ## Known Risks And Follow-Ups
 
+- Blender/UPBGE is connected through the local bridge at `127.0.0.1:9876`.
+- Added local Blender automation:
+  - `tools/blender-bridge.js`
+  - `tools/blender-create-neuroquest-assets.py`
+- Generated real Blender-exported GLB assets in `public/models/neuroquest/`:
+  - `grade8-math-classroom.glb`
+  - `grade8-science-lab.glb`
+  - `learning-maze-pursuit.glb`
+- Wired Grade 8 math and science 3D stages to load the Blender classroom/lab GLB assets while preserving live concept animations.
+- Verification after Blender integration:
+  - `npx.cmd tsc --noEmit` passed.
+  - `npm.cmd run build:firebase` passed after elevated worker permission.
+  - Localhost restarted on `http://localhost:3004`.
+  - `/game/math?grade=8` returned `200 OK`.
+  - `/game/science?grade=8` returned `200 OK`.
+  - `/models/neuroquest/grade8-math-classroom.glb` returned `200 OK`.
+  - `/models/neuroquest/learning-maze-pursuit.glb` returned `200 OK`.
 - Review iframe sandbox warning on `/games/[slug]`. Decide whether `allow-same-origin` is required for the game iframe or can be removed.
 - Add browser tests for the deployed Grade 8 math/science flows, especially:
   - iPad landscape `1024x768`

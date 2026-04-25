@@ -2,6 +2,7 @@
 node_modules/
 /.pnp
 .pnp.js
+.tooling/
 
 # next.js
 /.next/
@@ -25,6 +26,15 @@ ui-debug.log
 
 # gcp
 gcp-service-account.json
+
+# mobile signing and store credentials
+*.jks
+*.keystore
+*.p8
+*.p12
+*.mobileprovision
+play-service-account*.json
+app-store-connect*.json
 
 # misc
 .DS_Store

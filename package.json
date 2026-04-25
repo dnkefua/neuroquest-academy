@@ -13,10 +13,21 @@
     "export": "next build",
     "deploy:firebase": "npm run build:firebase && firebase deploy --only hosting",
     "deploy:cloud-run": "npm run build:cloud-run && gcloud builds submit --config cloudbuild.yaml .",
+    "build:mobile": "npm run build:firebase",
+    "mobile:assets": "node tools/generate-mobile-assets.mjs && capacitor-assets generate --ios --android",
+    "mobile:sync": "npm run build:mobile && cap sync",
+    "mobile:android": "npm run build:mobile && cap sync android",
+    "mobile:ios": "npm run build:mobile && cap sync ios",
+    "mobile:android:release": "powershell -ExecutionPolicy Bypass -File tools/build-android-release.ps1",
+    "mobile:play:internal": "node tools/upload-play-internal.mjs",
+    "mobile:play:share": "node tools/upload-play-internal-sharing.mjs",
     "test": "vitest",
     "test:ui": "vitest --ui"
   },
   "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1",
     "@google-cloud/aiplatform": "^6.5.0",
     "@google-cloud/text-to-speech": "^6.4.0",
     "@google/generative-ai": "^0.24.1",
@@ -45,6 +56,8 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.3.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

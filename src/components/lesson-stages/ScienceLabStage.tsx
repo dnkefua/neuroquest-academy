@@ -1,8 +1,8 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, OrbitControls } from '@react-three/drei';
-import { useMemo, useRef } from 'react';
+import { Float, OrbitControls, useGLTF } from '@react-three/drei';
+import { Suspense, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 type ScienceLabMode = 'water-cycle' | 'circuit' | 'force' | 'gravity' | 'atom' | 'waves' | 'lab';
@@ -15,6 +15,13 @@ type ScienceLabStageProps = {
   className?: string;
   overlay?: 'none' | 'minimal' | 'full';
 };
+
+function BlenderLab() {
+  const gltf = useGLTF('/models/neuroquest/grade8-science-lab.glb');
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
+
+  return <primitive object={scene} position={[0, -0.92, 0.22]} scale={0.58} />;
+}
 
 function LabScene({ mode, accent }: { mode: ScienceLabMode; accent: string }) {
   const coreRef = useRef<THREE.Group>(null);
@@ -56,27 +63,9 @@ function LabScene({ mode, accent }: { mode: ScienceLabMode; accent: string }) {
       <directionalLight position={[3, 5, 4]} intensity={1.7} />
       <pointLight position={[-2, 2.5, 2]} intensity={2.4} color={accent} />
 
-      <mesh position={[0, -0.9, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[8, 8]} />
-        <meshStandardMaterial color="#131f2d" />
-      </mesh>
-      <mesh position={[0, -0.15, 0]}>
-        <boxGeometry args={[4.8, 0.14, 1.6]} />
-        <meshStandardMaterial color="#213449" />
-      </mesh>
-      <mesh position={[0, 1.45, -1.75]}>
-        <boxGeometry args={[5.3, 2.9, 0.12]} />
-        <meshStandardMaterial color="#10202e" />
-      </mesh>
-
-      <mesh position={[-1.6, 0.18, 0.1]}>
-        <cylinderGeometry args={[0.2, 0.26, 0.75, 24]} />
-        <meshStandardMaterial color="#67e8f9" emissive="#0891b2" emissiveIntensity={0.3} transparent opacity={0.8} />
-      </mesh>
-      <mesh position={[1.55, 0.24, 0]}>
-        <coneGeometry args={[0.28, 0.72, 24]} />
-        <meshStandardMaterial color="#c084fc" emissive="#9333ea" emissiveIntensity={0.2} transparent opacity={0.78} />
-      </mesh>
+      <Suspense fallback={null}>
+        <BlenderLab />
+      </Suspense>
 
       <Float speed={1.7} floatIntensity={0.16}>
         <mesh position={[-1.6, 0.86, 0.08]}>
@@ -185,6 +174,8 @@ function LabScene({ mode, accent }: { mode: ScienceLabMode; accent: string }) {
     </>
   );
 }
+
+useGLTF.preload('/models/neuroquest/grade8-science-lab.glb');
 
 export default function ScienceLabStage({
   title,
