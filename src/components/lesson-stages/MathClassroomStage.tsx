@@ -59,11 +59,27 @@ function ClassroomScene({
       return boardMin + ((clamped + 10) / 20) * (boardMax - boardMin);
     };
 
-    const sourceX = normalize(from);
-    const targetX = normalize(to);
-    const travel = moveValue !== undefined ? (Math.sin(elapsed * 1.5) * 0.5 + 0.5) : 0;
-    tokenRef.current.position.x = THREE.MathUtils.lerp(sourceX, targetX, travel);
-    tokenRef.current.position.y = 1.62 + Math.sin(elapsed * 3) * 0.06;
+    // Step-by-step hopping: bird hops one integer at a time
+    if (moveValue === undefined || moveValue === 0) {
+      tokenRef.current.position.x = normalize(from);
+      tokenRef.current.position.y = 1.62;
+    } else {
+      const dir = moveValue > 0 ? 1 : -1;
+      const stepCount = Math.abs(moveValue);
+      const hopDuration = 0.3; // seconds per hop
+      const totalHopTime = stepCount * hopDuration;
+      const loopTime = elapsed % (totalHopTime + 0.5); // 0.5s pause at end
+      const currentStep = Math.min(Math.floor(loopTime / hopDuration), stepCount);
+      const progressInStep = (loopTime - currentStep * hopDuration) / hopDuration;
+      const prevValue = from + dir * Math.max(0, currentStep);
+      const nextValue = from + dir * Math.min(stepCount, currentStep + 1);
+      const eased = progressInStep < 0 ? 0 : progressInStep > 1 ? 1 : progressInStep * progressInStep * (3 - 2 * progressInStep);
+
+      tokenRef.current.position.x = THREE.MathUtils.lerp(normalize(prevValue), normalize(nextValue), eased);
+      // Hop arc: rise then fall within each step
+      const hopHeight = Math.sin(Math.min(1, Math.max(0, progressInStep)) * Math.PI) * 0.18;
+      tokenRef.current.position.y = 1.62 + hopHeight;
+    }
   });
 
   return (

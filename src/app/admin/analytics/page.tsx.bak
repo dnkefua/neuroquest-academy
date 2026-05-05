@@ -1,0 +1,140 @@
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Download, Calendar, TrendingUp, Users, BookOpen, Brain } from 'lucide-react';
+import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import styles from '../admin.module.css';
+
+const engagementData = [
+  { month: 'Jan', students: 420, sessions: 1240, completion: 72 },
+  { month: 'Feb', students: 480, sessions: 1480, completion: 75 },
+  { month: 'Mar', students: 520, sessions: 1620, completion: 78 },
+  { month: 'Apr', students: 580, sessions: 1800, completion: 80 },
+  { month: 'May', students: 620, sessions: 1940, completion: 82 },
+  { month: 'Jun', students: 680, sessions: 2100, completion: 85 },
+];
+
+const gradeDistribution = [
+  { name: 'Grade 6', value: 180, color: '#8B5CF6' },
+  { name: 'Grade 7', value: 240, color: '#6366F1' },
+  { name: 'Grade 8', value: 280, color: '#3B82F6' },
+  { name: 'Grade 9', value: 120, color: '#0EA5E9' },
+  { name: 'Grade 10', value: 80, color: '#06B6D4' },
+];
+
+const subjectEngagement = [
+  { subject: 'Math', avgTime: 24, completion: 85, mastery: 72 },
+  { subject: 'Science', avgTime: 28, completion: 78, mastery: 68 },
+  { subject: 'English', avgTime: 20, completion: 92, mastery: 81 },
+  { subject: 'Arabic', avgTime: 22, completion: 70, mastery: 65 },
+];
+
+const aiUsage = [
+  { day: 'Mon', lessons: 45, tutoring: 78, explanations: 120 },
+  { day: 'Tue', lessons: 52, tutoring: 85, explanations: 135 },
+  { day: 'Wed', lessons: 48, tutoring: 92, explanations: 142 },
+  { day: 'Thu', lessons: 55, tutoring: 88, explanations: 148 },
+  { day: 'Fri', lessons: 60, tutoring: 95, explanations: 160 },
+  { day: 'Sat', lessons: 35, tutoring: 55, explanations: 90 },
+  { day: 'Sun', lessons: 28, tutoring: 42, explanations: 75 },
+];
+
+export default function AnalyticsPage() {
+  const [dateRange, setDateRange] = useState('30d');
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <p style={{ color: '#64748B', fontSize: '0.9rem' }}>Platform analytics and insights</p>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <select className={styles.formSelect} value={dateRange} onChange={(e) => setDateRange(e.target.value)} style={{ width: '140px' }}>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="1y">Last year</option>
+          </select>
+          <button className={`${styles.btn} ${styles.btnPrimary}`}><Download size={16} /> Export Report</button>
+        </div>
+      </div>
+
+      {/* Top Metrics */}
+      <div className={styles.statsGrid} style={{ marginBottom: '24px' }}>
+        <div className={`${styles.statCard} ${styles.purple}`}><div className={styles.statIcon}><Users size={24} /></div><div className={styles.statValue}>2,847</div><div className={styles.statLabel}>Active Students</div><div className={`${styles.statChange} ${styles.positive}`}>+12% vs last period</div></div>
+        <div className={`${styles.statCard} ${styles.blue}`}><div className={styles.statIcon}><BookOpen size={24} /></div><div className={styles.statValue}>14,280</div><div className={styles.statLabel}>Quest Completions</div><div className={`${styles.statChange} ${styles.positive}`}>+18% vs last period</div></div>
+        <div className={`${styles.statCard} ${styles.green}`}><div className={styles.statIcon}><TrendingUp size={24} /></div><div className={styles.statValue}>78%</div><div className={styles.statLabel}>Avg. Completion Rate</div><div className={`${styles.statChange} ${styles.positive}`}>+5% vs last period</div></div>
+        <div className={`${styles.statCard} ${styles.orange}`}><div className={styles.statIcon}><Brain size={24} /></div><div className={styles.statValue}>89%</div><div className={styles.statLabel}>AI Satisfaction</div><div className={`${styles.statChange} ${styles.positive}`}>+3% vs last period</div></div>
+      </div>
+
+      {/* Charts Row 1 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '24px' }}>
+        <motion.div className={styles.chartContainer} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <h3 className={styles.chartTitle}>Student Growth & Engagement</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={engagementData}>
+              <defs><linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366F1" stopOpacity={0.3}/><stop offset="95%" stopColor="#6366F1" stopOpacity={0}/></linearGradient></defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+              <XAxis dataKey="month" stroke="#94A3B8" fontSize={12} />
+              <YAxis stroke="#94A3B8" fontSize={12} />
+              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+              <Area type="monotone" dataKey="students" stroke="#6366F1" strokeWidth={2} fillOpacity={1} fill="url(#colorStudents)" name="Active Students" />
+              <Area type="monotone" dataKey="sessions" stroke="#10B981" strokeWidth={2} fillOpacity={0.3} fill="#10B981" name="Sessions" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div className={styles.chartContainer} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <h3 className={styles.chartTitle}>Grade Distribution</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <PieChart>
+              <Pie data={gradeDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
+                {gradeDistribution.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginTop: '12px' }}>
+            {gradeDistribution.map((item) => (
+              <div key={item.name} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: item.color }} />
+                <span style={{ color: '#64748B' }}>{item.name}: {item.value}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Charts Row 2 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        <motion.div className={styles.chartContainer} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <h3 className={styles.chartTitle}>Subject Performance</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={subjectEngagement} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" horizontal={false} />
+              <XAxis type="number" domain={[0, 100]} stroke="#94A3B8" fontSize={12} />
+              <YAxis dataKey="subject" type="category" stroke="#94A3B8" fontSize={12} width={80} />
+              <Tooltip formatter={(value: number) => [`${value}%`]} />
+              <Bar dataKey="mastery" fill="url(#barGrad)" radius={[0, 8, 8, 0]} barSize={28} name="Mastery" />
+              <defs><linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#6366F1" /><stop offset="100%" stopColor="#A855F7" /></linearGradient></defs>
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div className={styles.chartContainer} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+          <h3 className={styles.chartTitle}>AI Feature Usage (Weekly)</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={aiUsage}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+              <XAxis dataKey="day" stroke="#94A3B8" fontSize={12} />
+              <YAxis stroke="#94A3B8" fontSize={12} />
+              <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
+              <Line type="monotone" dataKey="lessons" stroke="#6366F1" strokeWidth={2} dot={{ r: 4 }} name="AI Lessons" />
+              <Line type="monotone" dataKey="tutoring" stroke="#10B981" strokeWidth={2} dot={{ r: 4 }} name="AI Tutoring" />
+              <Line type="monotone" dataKey="explanations" stroke="#F97316" strokeWidth={2} dot={{ r: 4 }} name="Explanations" />
+            </LineChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </div>
+    </div>
+  );
+}

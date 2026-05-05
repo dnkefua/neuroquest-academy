@@ -4,7 +4,7 @@ Last updated: 2026-04-25 04:30 GST
 
 ## Current Deployment State
 
-- Repository: `https://github.com/dnkefua/neuroquest-academy`
+- Repository: `https://github.com/dnkefua/neuroquest-academy` /
 - Branch: `master`
 - Latest pushed commit: `8899ce5 Upgrade Grade 8 3D learning experience`
 - Firebase project: `neuroquest-academy-2026`

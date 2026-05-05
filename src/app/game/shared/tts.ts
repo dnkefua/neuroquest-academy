@@ -1,4 +1,4 @@
-﻿// Enhanced TTS engine for NeuroQuest
+// Enhanced TTS engine for NeuroQuest
 // Supports Google Cloud TTS with grade-appropriate voices
 // Falls back to browser TTS when Cloud TTS unavailable
 // v2: Fixed race conditions, echo, and added LRU cache
@@ -440,7 +440,7 @@ class TTSEngine {
     }
   }
 
-  // Chrome stops speech after ~15s â€” use gentle keepalive to prevent cutoff
+  // Chrome stops speech after ~15s — use gentle keepalive to prevent cutoff
   // Instead of pause/resume (which causes artifacts), we use a gentler approach
   private startKeepAlive() {
     this.stopKeepAlive();
@@ -520,14 +520,28 @@ export function useTTSSettings() {
   };
 }
 
-export function sanitizeForTTS(text: string): string {
+/**
+ * Replace math expressions with TTS-friendly text so "5 - 10" is read as
+ * "five minus ten" not "five to ten", and "-6 + 4" reads as
+ * "negative six plus four".
+ */
+function replaceMathForTTS(text: string): string {
   return text
+    // Subtraction between digits: "5-10" or "5 - 10" → "5 minus 10"
+    .replace(/(\d)\s*-\s*(\d)/g, '$1 minus $2')
+    // Negative numbers after word boundary, (, =, +, *, /, etc.
+    // eslint-disable-next-line
+    .replace(/((?:^|[\s(,;:!?=+\/*×])\s*-)\s*(\d+)/g, '$1negative $2');
+}
+
+export function sanitizeForTTS(text: string): string {
+  return replaceMathForTTS(text)
     .replace(/\s*\([^)]*\)/g, ' ')
     .replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g, ' ')
-    .replace(/[\u2600-\u27BF]/g, ' ')
+    .replace(/[☀-➿]/g, ' ')
     .replace(/[<>[\]{}]/g, ' ')
     .replace(/[â€¢Â·]/g, ', ')
-    .replace(/[â†’â†â†”â†‘â†“]/g, ' ')
+    .replace(/[←-⇿]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -536,4 +550,3 @@ export function sanitizeForTTS(text: string): string {
 export function stripParens(text: string): string {
   return sanitizeForTTS(text);
 }
-

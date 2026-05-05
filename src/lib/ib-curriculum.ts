@@ -94,7 +94,7 @@ export const IB_CURRICULUM: IBCurriculumMap = {
       },
       8: {
         framework: 'MYP Year 2',
-        unit: 'Pearson Year 8 Mathematics: Number, Equations, Powers, Solids & Graphs',
+        unit: 'Year 8 Mathematics: Number, Equations, Powers, Solids & Graphs',
         topics: [
           'calculating with negative integers',
           'prime factor decomposition',

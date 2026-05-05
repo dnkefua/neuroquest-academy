@@ -220,7 +220,7 @@ export default function Home() {
             <ShieldCheck className="mb-5 h-8 w-8 text-emerald-600" />
             <h2 className="font-nunito text-2xl font-black">School-Sourced</h2>
             <p className="mt-3 leading-7 text-slate-600">
-              Curriculum metadata now points to the supplied EIS IB and Pearson documents in `textbook-folder`.
+              Curriculum metadata now points to the supplied EIS IB documents in `textbook-folder`.
             </p>
           </div>
           <div className="border border-slate-200 p-6">

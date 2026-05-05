@@ -58,7 +58,7 @@ function mathQuest({
     programme: 'MYP',
     subject: 'math',
     title,
-    realmName: 'Pearson Nexus Grade 8',
+    realmName: 'EIS Nexus Grade 8',
     narrativeWorld,
     characterTeacher: 'Professor Vector',
     teacherEmoji: '8',
@@ -135,9 +135,9 @@ const CORE_GRADE_8_COMPLETE_QUESTS: CurriculumQuest[] = [
   mathQuest({
     id: 'g8-school-math-number',
     title: 'Unit 1 Number',
-    theme: 'Pearson Year 8 Unit 1: negative integers, prime factors, indices, and order of operations',
+    theme: 'EIS Year 8 Unit 1: negative integers, prime factors, indices, and order of operations',
     narrativeWorld:
-      'A high-speed number arena where every gate is powered by the Year 8 number rules from the school Pearson text.',
+      'A high-speed number arena where every gate is powered by the Year 8 number rules from the EIS curriculum.',
     bossQuestion:
       'Calculate -6 + 4 x 3^2, then write 84 as a product of prime factors.',
     bossAnswer:
@@ -193,7 +193,7 @@ const CORE_GRADE_8_COMPLETE_QUESTS: CurriculumQuest[] = [
   mathQuest({
     id: 'g8-school-math-equations',
     title: 'Unit 2 Equations and Formulae',
-    theme: 'Pearson Year 8 Unit 2: one-step, two-step, complex equations, and formulae',
+    theme: 'EIS Year 8 Unit 2: one-step, two-step, complex equations, and formulae',
     narrativeWorld:
       'A formula control room where every door unlocks only when both sides of an equation stay balanced.',
     bossQuestion:
@@ -247,7 +247,7 @@ const CORE_GRADE_8_COMPLETE_QUESTS: CurriculumQuest[] = [
   mathQuest({
     id: 'g8-school-math-powers-algebra',
     title: 'Unit 3 Working with Powers',
-    theme: 'Pearson Year 8 Unit 3: simplifying, factorising, expanding, substituting, and solving',
+    theme: 'EIS Year 8 Unit 3: simplifying, factorising, expanding, substituting, and solving',
     narrativeWorld:
       'An algebra forge where expressions are expanded, factorised, and tested under pressure.',
     bossQuestion:
@@ -301,7 +301,7 @@ const CORE_GRADE_8_COMPLETE_QUESTS: CurriculumQuest[] = [
   mathQuest({
     id: 'g8-school-math-geometry-solids',
     title: 'Unit 4 2D Shapes and 3D Solids',
-    theme: 'Pearson Year 8 Unit 4: area, surface area, volume, plans, and elevations',
+    theme: 'EIS Year 8 Unit 4: area, surface area, volume, plans, and elevations',
     narrativeWorld:
       'A design lab where every blueprint becomes a 3D object only when its measurements are correct.',
     bossQuestion:
@@ -358,7 +358,7 @@ const CORE_GRADE_8_COMPLETE_QUESTS: CurriculumQuest[] = [
   mathQuest({
     id: 'g8-school-math-graphs',
     title: 'Unit 5 Graphs',
-    theme: 'Pearson Year 8 Unit 5: direct proportion, interpreting graphs, distance-time graphs, rates, and misleading graphs',
+    theme: 'EIS Year 8 Unit 5: direct proportion, interpreting graphs, distance-time graphs, rates, and misleading graphs',
     narrativeWorld:
       'A graph command deck where motion, proportion, and data displays control the route through the academy.',
     bossQuestion:

@@ -5,38 +5,35 @@
  * for interactive learning experiences.
  *
  * Components:
+ * - AnimatedTutor: Full lesson component with AI-generated content
  * - AnimatedDiagram: Base component for step-by-step animations
- * - MathExplainer: Math concept visualizations (number line, fractions, operations)
- * - ScienceExplainer: Science concept visualizations (water cycle, circuits, forces)
+ * - MathExplainer: Math concept visualizations
+ * - ScienceExplainer: Science concept visualizations
  * - DiagramSequencer: Syncs diagrams with TTS narration
  *
  * Usage:
  * ```typescript
- * import { MathExplainer, ScienceExplainer, DiagramSequencer } from '@/components/explainer';
- * import { useTTS } from '@/app/game/shared/tts';
+ * import { AnimatedTutor } from '@/components/explainer';
  *
- * function LessonComponent() {
- *   const { speak } = useTTS();
- *
+ * function LessonPage() {
  *   return (
- *     <DiagramSequencer
- *       steps={[
- *         { id: 'intro', narration: 'Let us explore fractions', duration: 2000 },
- *         { id: 'divide', narration: 'First, we divide the whole', duration: 2500 },
- *       ]}
- *       onNarration={(text) => speak(text)}
- *     >
- *       <MathExplainer concept="fraction" values={{ numerator: 3, denominator: 4 }} />
- *     </DiagramSequencer>
+ *     <AnimatedTutor
+ *       topic="Fractions"
+ *       subject="math"
+ *       grade={8}
+ *       studentName="Kai"
+ *       onComplete={(lesson) => console.log(lesson)}
+ *     />
  *   );
  * }
  * ```
  */
 
+export { default as AnimatedTutor } from './AnimatedTutor';
 export { default as AnimatedDiagram } from './AnimatedDiagram';
 export { default as MathExplainer } from './MathExplainer';
 export { default as ScienceExplainer } from './ScienceExplainer';
 export { default as DiagramSequencer, useDiagramSequencer } from './DiagramSequencer';
 
-export type { AnimationStep } from './AnimatedDiagram';
+export type { AnimationStep, AnimatedLesson, TutorExplanation } from '@/lib/gemma4';
 export type { SequencerStep } from './DiagramSequencer';

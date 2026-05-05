@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { CSSProperties } from 'react';
 
@@ -86,15 +86,54 @@ function NumberLineAnimation({
 }) {
   const firstEnd = startValue + moveValue;
   const finalValue = firstEnd + (moveValue2 ?? 0);
+
+  // Build step-by-step positions for hopping
+  const steps = useMemo(() => {
+    if (moveValue === 0) return [startValue];
+    const dir = moveValue > 0 ? 1 : -1;
+    const count = Math.abs(moveValue);
+    return Array.from({ length: count + 1 }, (_, i) => startValue + dir * i);
+  }, [startValue, moveValue]);
+
+  // Bird hopping state
+  const [hopIndex, setHopIndex] = useState(0);
+  const [isAirborne, setIsAirborne] = useState(false);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    setHopIndex(0);
+    setIsAirborne(false);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    if (currentStep >= 1 && steps.length > 1) {
+      let index = 0;
+      intervalRef.current = setInterval(() => {
+        index++;
+        setIsAirborne(true);
+        setTimeout(() => setIsAirborne(false), 180);
+        if (index < steps.length) {
+          setHopIndex(index);
+        } else {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+        }
+      }, 320);
+    }
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [currentStep, startValue, moveValue]);
+
   const rawMin = Math.min(-10, startValue, firstEnd, finalValue, 0);
   const rawMax = Math.max(10, startValue, firstEnd, finalValue, 0);
   const tickStep = Math.max(1, Math.ceil((rawMax - rawMin) / 10));
   const min = Math.floor(rawMin / tickStep) * tickStep;
   const max = Math.ceil(rawMax / tickStep) * tickStep;
-  const toX = (value: number) => 62 + ((value - min) / (max - min || 1)) * 516;
-  const activeValue = currentStep <= 1 ? startValue : currentStep === 2 || moveValue2 === undefined ? firstEnd : finalValue;
-  const ticks = Array.from({ length: Math.floor((max - min) / tickStep) + 1 }, (_, index) => min + tickStep * index);
+  const toX = (value) => 62 + ((value - min) / (max - min || 1)) * 516;
+  const birdValue = (currentStep >= 1 && steps[hopIndex] !== undefined) ? steps[hopIndex] : startValue;
+  const birdX = toX(birdValue);
   const moveColor = moveValue >= 0 ? '#34d399' : '#fb7185';
+
+  const ticks = Array.from({ length: Math.floor((max - min) / tickStep) + 1 }, (_, i) => min + tickStep * i);
+
+  const birdY = isAirborne ? 108 : 130;
 
   return (
     <div style={scenePadding}>
@@ -115,13 +154,8 @@ function NumberLineAnimation({
         </defs>
 
         <motion.line
-          x1="62"
-          y1="136"
-          x2="578"
-          y2="136"
-          stroke="url(#lineGlow)"
-          strokeWidth="5"
-          strokeLinecap="round"
+          x1="62" y1="136" x2="578" y2="136"
+          stroke="url(#lineGlow)" strokeWidth="5" strokeLinecap="round"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -133,12 +167,10 @@ function NumberLineAnimation({
           const value = Math.round(tick);
           const x = toX(tick);
           return (
-            <g key={`${value}-${index}`}>
+            <g key={value + '-' + index}>
               <motion.line
-                x1={x}
-                y1={value === 0 ? 112 : 120}
-                x2={x}
-                y2={value === 0 ? 160 : 152}
+                x1={x} y1={value === 0 ? 112 : 120}
+                x2={x} y2={value === 0 ? 160 : 152}
                 stroke={value === 0 ? '#facc15' : 'rgba(226,232,240,0.62)'}
                 strokeWidth={value === 0 ? 3 : 1.5}
                 initial={{ opacity: 0, y1: 136, y2: 136 }}
@@ -152,12 +184,10 @@ function NumberLineAnimation({
           );
         })}
 
+        {/* Move arrow */}
         <motion.path
-          d={`M ${toX(startValue)} 102 C ${(toX(startValue) + toX(firstEnd)) / 2} 42, ${(toX(startValue) + toX(firstEnd)) / 2} 42, ${toX(firstEnd)} 102`}
-          fill="none"
-          stroke={moveColor}
-          strokeWidth="6"
-          strokeLinecap="round"
+          d={'M ' + toX(startValue) + ' 102 C ' + ((toX(startValue) + toX(firstEnd)) / 2) + ' 42, ' + ((toX(startValue) + toX(firstEnd)) / 2) + ' 42, ' + toX(firstEnd) + ' 102'}
+          fill="none" stroke={moveColor} strokeWidth="6" strokeLinecap="round"
           strokeDasharray="9 8"
           initial={{ opacity: 0, pathLength: 0 }}
           animate={{ opacity: currentStep >= 1 ? 1 : 0, pathLength: currentStep >= 1 ? 1 : 0 }}
@@ -166,11 +196,8 @@ function NumberLineAnimation({
 
         {moveValue2 !== undefined && (
           <motion.path
-            d={`M ${toX(firstEnd)} 82 C ${(toX(firstEnd) + toX(finalValue)) / 2} 20, ${(toX(firstEnd) + toX(finalValue)) / 2} 20, ${toX(finalValue)} 82`}
-            fill="none"
-            stroke={moveValue2 >= 0 ? '#a3e635' : '#f97316'}
-            strokeWidth="5"
-            strokeLinecap="round"
+            d={'M ' + toX(firstEnd) + ' 82 C ' + ((toX(firstEnd) + toX(finalValue)) / 2) + ' 20, ' + ((toX(firstEnd) + toX(finalValue)) / 2) + ' 20, ' + toX(finalValue) + ' 82'}
+            fill="none" stroke={moveValue2 >= 0 ? '#a3e635' : '#f97316'} strokeWidth="5" strokeLinecap="round"
             strokeDasharray="7 8"
             initial={{ opacity: 0, pathLength: 0 }}
             animate={{ opacity: currentStep >= 3 ? 1 : 0, pathLength: currentStep >= 3 ? 1 : 0 }}
@@ -178,32 +205,51 @@ function NumberLineAnimation({
           />
         )}
 
-        <motion.circle
-          cx={toX(startValue)}
-          cy="136"
-          r="17"
-          fill="#0f172a"
-          stroke="#e2e8f0"
-          strokeWidth="3"
-          filter="url(#softGlow)"
-          animate={{ cx: toX(activeValue), scale: currentStep >= 2 ? 1.08 : 1 }}
-          transition={{ duration: 0.85, ease: 'easeInOut' }}
-        />
-        <motion.text
-          x={toX(activeValue)}
-          y="141"
-          textAnchor="middle"
-          fill="#ffffff"
-          fontSize="12"
-          fontWeight="900"
-          animate={{ x: toX(activeValue) }}
-          transition={{ duration: 0.85, ease: 'easeInOut' }}
+        {/* Bird group */}
+        <motion.g
+          animate={{ x: birdX, y: birdY }}
+          transition={{ type: 'spring', stiffness: birdY < 125 ? 180 : 300, damping: 12, mass: 0.6 }}
         >
-          {formatNumber(activeValue)}
+          {/* Body */}
+          <ellipse cx={0} cy={0} rx={14} ry={9} fill="#FFD700" stroke="#E6B800" strokeWidth={1} />
+          {/* Head */}
+          <circle cx={11} cy={-5} r={8} fill="#FFD700" stroke="#E6B800" strokeWidth={1} />
+          {/* Wing */}
+          <motion.path
+            d={isAirborne ? 'M -4,-6 Q 4,-18 12,-8 Q 6,0 -4,-6 Z' : 'M -4,-2 Q 4,-14 12,-4 Q 6,2 -4,-2 Z'}
+            fill="#E6B800"
+            transition={{ duration: 0.15 }}
+          />
+          {/* Eye */}
+          <circle cx={14} cy={-6} r={2.5} fill="#1a1a2e" />
+          <circle cx={14.8} cy={-6.8} r={1} fill="white" />
+          {/* Beak */}
+          <path d="M 18,-4 L 24,-2.5 L 18,-1 Z" fill="#FF8C00" />
+          {/* Tail */}
+          <path d="M -12,0 L -20,-8 L -18,4 Z" fill="#E6B800" />
+          {/* Feet */}
+          <motion.g animate={{ y: isAirborne ? 4 : 0 }}>
+            <line x1={-3} y1={9} x2={-6} y2={15} stroke="#FF8C00" strokeWidth={1.5} />
+            <line x1={3} y1={9} x2={6} y2={15} stroke="#FF8C00" strokeWidth={1.5} />
+          </motion.g>
+        </motion.g>
+
+        {/* Number label above bird */}
+        <motion.text
+          x={birdX} y={birdY - 24}
+          textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="900"
+          animate={{ x: birdX }}
+          transition={{ duration: 0.2 }}
+        >
+          {birdValue}
         </motion.text>
 
-        <motion.g initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: currentStep >= 2 ? 1 : 0, scale: currentStep >= 2 ? 1 : 0.85 }}>
-          <circle cx={toX(finalValue)} cy="136" r="25" fill="none" stroke="#facc15" strokeWidth="3" />
+        {/* Result banner */}
+        <motion.g
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: currentStep >= 2 ? 1 : 0, scale: currentStep >= 2 ? 1 : 0.85 }}
+        >
+          <circle cx={toX(finalValue)} cy={136} r="25" fill="none" stroke="#facc15" strokeWidth="3" />
           <text x={toX(finalValue)} y="220" textAnchor="middle" fill="#facc15" fontSize="22" fontWeight="900">
             {formatNumber(startValue)} {moveValue >= 0 ? '+' : '-'} {formatNumber(Math.abs(moveValue))} = {formatNumber(firstEnd)}
           </text>
