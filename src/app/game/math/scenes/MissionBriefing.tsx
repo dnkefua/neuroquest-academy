@@ -199,7 +199,7 @@ export default function MissionBriefing() {
               <button
                 onClick={() => {
                   gameTTS.stop();
-                  setScene(currentGrade === 6 ? 'PIRATE_ENCOUNTER' : 'QUIZ');
+                  setScene('CONCEPT_INTRO');
                 }}
                 className="flex-1 rounded-2xl py-3 text-sm font-black text-slate-950 transition-all hover:scale-105 active:scale-95 sm:text-base"
                 style={{
@@ -207,7 +207,7 @@ export default function MissionBriefing() {
                   boxShadow: '0 0 18px rgba(250,204,21,0.35)',
                 }}
               >
-                Begin Quest
+                Preview Concept
               </button>
               <button
                 onClick={() => {

@@ -4,7 +4,7 @@ import { MATH_QUESTS, type MathQuest } from '../data/questData';
 import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
-export type Scene = 'QUEST_MAP' | 'CLASSROOM' | 'MISSION_BRIEFING' | 'PIRATE_ENCOUNTER' | 'QUIZ' | 'VICTORY';
+export type Scene = 'QUEST_MAP' | 'CLASSROOM' | 'MISSION_BRIEFING' | 'CONCEPT_INTRO' | 'PIRATE_ENCOUNTER' | 'QUIZ' | 'VICTORY';
 
 export interface Question {
   id: number;

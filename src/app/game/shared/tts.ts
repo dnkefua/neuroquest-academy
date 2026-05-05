@@ -534,8 +534,92 @@ function replaceMathForTTS(text: string): string {
     .replace(/((?:^|[\s(,;:!?=+\/*×])\s*-)\s*(\d+)/g, '$1negative $2');
 }
 
+const SMALL_NUMBER_WORDS = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
+];
+
+const TENS_WORDS: Record<number, string> = {
+  20: 'twenty',
+  30: 'thirty',
+  40: 'forty',
+  50: 'fifty',
+  60: 'sixty',
+  70: 'seventy',
+  80: 'eighty',
+  90: 'ninety',
+};
+
+function integerToWords(value: number): string {
+  if (!Number.isInteger(value) || Math.abs(value) > 999) return String(value);
+  if (value < 0) return `negative ${integerToWords(Math.abs(value))}`;
+  if (value < 20) return SMALL_NUMBER_WORDS[value];
+  if (value < 100) {
+    const tens = Math.floor(value / 10) * 10;
+    const ones = value % 10;
+    return ones === 0 ? TENS_WORDS[tens] : `${TENS_WORDS[tens]} ${SMALL_NUMBER_WORDS[ones]}`;
+  }
+  const hundreds = Math.floor(value / 100);
+  const remainder = value % 100;
+  return remainder === 0
+    ? `${SMALL_NUMBER_WORDS[hundreds]} hundred`
+    : `${SMALL_NUMBER_WORDS[hundreds]} hundred ${integerToWords(remainder)}`;
+}
+
+function speakNumber(raw: string): string {
+  if (raw.includes('.')) return raw;
+  const value = Number(raw);
+  return Number.isFinite(value) ? integerToWords(value) : raw;
+}
+
+function normalizeMathCommands(text: string): string {
+  return text.replace(/\b(ADD|SUBTRACT|MULTIPLY|DIVIDE|SOLVE|SIMPLIFY|CALCULATE)\b/g, (match) =>
+    match.charAt(0) + match.slice(1).toLowerCase(),
+  );
+}
+
+function replaceMathForTTSV2(text: string): string {
+  let output = normalizeMathCommands(text);
+
+  output = output
+    .replace(/(\d+(?:\.\d+)?)\s*\^\s*2\b/g, '$1 squared')
+    .replace(/(\d+(?:\.\d+)?)\s*\^\s*3\b/g, '$1 cubed')
+    .replace(/(\d+(?:\.\d+)?)\s*\^\s*(-?\d+(?:\.\d+)?)/g, '$1 to the power of $2')
+    .replace(/(\d+(?:\.\d+)?)\s*%/g, '$1 percent')
+    .replace(/(\d+(?:\.\d+)?)\s*([xX*×])\s*(-?\d+(?:\.\d+)?)/g, '$1 times $3')
+    .replace(/(\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)/g, '$1 divided by $2')
+    .replace(/(\d+(?:\.\d+)?)\s*\+\s*(-?\d+(?:\.\d+)?)/g, '$1 plus $2')
+    .replace(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/g, '$1 minus $2')
+    .replace(/(^|[\s(,;:!?=+*/])-\s*(\d+(?:\.\d+)?)/g, '$1negative $2')
+    .replace(/=/g, ' equals ')
+    .replace(/≤/g, ' is less than or equal to ')
+    .replace(/≥/g, ' is greater than or equal to ')
+    .replace(/</g, ' is less than ')
+    .replace(/>/g, ' is greater than ');
+
+  return output.replace(/\b-?\d+\b/g, (match) => speakNumber(match));
+}
+
 export function sanitizeForTTS(text: string): string {
-  return replaceMathForTTS(text)
+  return replaceMathForTTSV2(text)
     .replace(/\s*\([^)]*\)/g, ' ')
     .replace(/[\uD83C-\uDBFF][\uDC00-\uDFFF]/g, ' ')
     .replace(/[☀-➿]/g, ' ')

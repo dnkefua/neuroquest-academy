@@ -192,12 +192,12 @@ export default function ScienceMissionBriefing() {
               <button
                 onClick={() => {
                   gameAudio.playTransition();
-                  setScene('CLOUD_TEACHING');
+                  setScene('CONCEPT_INTRO');
                 }}
                 className="flex-1 rounded-2xl py-3 text-sm font-black text-slate-950 transition-all hover:scale-105 active:scale-95 sm:text-base"
                 style={{ background: 'linear-gradient(135deg, #38bdf8, #0ea5e9)', boxShadow: '0 0 18px rgba(56,189,248,0.35)' }}
               >
-                Open Lab
+                Preview Concept
               </button>
               <button
                 onClick={() => setScene('QUEST_MAP')}

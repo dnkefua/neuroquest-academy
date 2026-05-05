@@ -4,6 +4,7 @@ import { useGameStore } from './store/gameStore';
 import QuestMapScene      from './scenes/QuestMapScene';
 import ClassroomScene     from './scenes/ClassroomScene';
 import MissionBriefing    from './scenes/MissionBriefing';
+import ConceptIntro       from './scenes/ConceptIntro';
 import PirateEncounter    from './scenes/PirateEncounter';
 import QuizScene          from './scenes/QuizScene';
 import VictoryScene       from './scenes/VictoryScene';
@@ -14,6 +15,7 @@ const SCENES = {
   QUEST_MAP:        QuestMapScene,
   CLASSROOM:        ClassroomScene,
   MISSION_BRIEFING: MissionBriefing,
+  CONCEPT_INTRO:    ConceptIntro,
   PIRATE_ENCOUNTER: PirateEncounter,
   QUIZ:             QuizScene,
   VICTORY:          VictoryScene,

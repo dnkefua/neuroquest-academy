@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useScienceStore } from './store/gameStore';
 import QuestMapScene         from './scenes/QuestMapScene';
 import ScienceMissionBriefing from './scenes/MissionBriefing';
+import ScienceConceptIntro    from './scenes/ConceptIntro';
 import CloudSpiritTeaching    from './scenes/CloudSpiritTeaching';
 import ScienceSimulationScene from './scenes/SimulationScene';
 import ScienceQuizScene       from './scenes/QuizScene';
@@ -13,6 +14,7 @@ import { gameTTS }           from '../shared/tts';
 const SCENES = {
   QUEST_MAP:        QuestMapScene,
   MISSION_BRIEFING: ScienceMissionBriefing,
+  CONCEPT_INTRO:    ScienceConceptIntro,
   CLOUD_TEACHING:   CloudSpiritTeaching,
   SIMULATION:       ScienceSimulationScene,
   QUIZ:             ScienceQuizScene,

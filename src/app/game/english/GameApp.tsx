@@ -7,6 +7,7 @@ import { useProgressStore } from '@/store/progressStore';
 import ClassroomScene from './scenes/ClassroomScene';
 import QuestMapScene from './scenes/QuestMapScene';
 import MissionBriefing from './scenes/MissionBriefing';
+import ConceptIntro from './scenes/ConceptIntro';
 import QuizScene from './scenes/QuizScene';
 import VictoryScene from './scenes/VictoryScene';
 import dynamic from 'next/dynamic';
@@ -49,6 +50,8 @@ export default function EnglishGameApp() {
       return <QuestMapScene />;
     case 'MISSION_BRIEFING':
       return <MissionBriefing />;
+    case 'CONCEPT_INTRO':
+      return <ConceptIntro />;
     case 'QUIZ':
       return <QuizScene />;
     case 'VICTORY':

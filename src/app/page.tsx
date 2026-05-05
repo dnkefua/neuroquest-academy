@@ -90,6 +90,7 @@ export default function Home() {
           </Link>
           <nav className="hidden items-center gap-2 text-sm text-slate-300 md:flex">
             <Link href="/curriculum" className="px-3 py-2 transition hover:text-white">Curriculum</Link>
+            <Link href="/grade-8-studio" className="px-3 py-2 transition hover:text-white">Grade 8 Studio</Link>
             <Link href="/game-market" className="px-3 py-2 transition hover:text-white">Game Market</Link>
             <Link href="/auth" className="border border-white/[0.18] px-4 py-2 font-bold text-white transition hover:border-cyan-300 hover:text-cyan-200">
               Sign in
@@ -110,8 +111,8 @@ export default function Home() {
               A premium 3D learning platform where IB curriculum, adaptive AI, and game mechanics turn Grade 8 mastery into classroom labs, racing challenges, and pursuit worlds.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/auth" className="inline-flex items-center justify-center gap-2 bg-white px-5 py-3 font-black text-slate-950 transition hover:bg-cyan-100">
-                Enter Academy <ArrowRight className="h-5 w-5" />
+              <Link href="/grade-8-studio" className="inline-flex items-center justify-center gap-2 bg-white px-5 py-3 font-black text-slate-950 transition hover:bg-cyan-100">
+                Open Grade 8 Studio <ArrowRight className="h-5 w-5" />
               </Link>
               <Link href="/games/math-racer-3d" className="inline-flex items-center justify-center gap-2 border border-white/[0.24] bg-white/[0.08] px-5 py-3 font-black text-white backdrop-blur transition hover:border-amber-300 hover:text-amber-100">
                 Play 3D Racer <Zap className="h-5 w-5" />
@@ -127,8 +128,8 @@ export default function Home() {
                 New core questions
               </div>
               <div>
-                <div className="font-nunito text-2xl font-black text-white">2</div>
-                Playable 3D concepts
+                <div className="font-nunito text-2xl font-black text-white">9</div>
+                Animated studio concepts
               </div>
             </div>
           </div>

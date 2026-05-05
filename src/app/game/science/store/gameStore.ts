@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { getGameQuests, type GameQuest } from '@/lib/questData';
 import type { CurriculumSubject } from '@/types';
 
-export type ScienceScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'CLOUD_TEACHING' | 'SIMULATION' | 'QUIZ' | 'VICTORY';
+export type ScienceScene = 'QUEST_MAP' | 'MISSION_BRIEFING' | 'CONCEPT_INTRO' | 'CLOUD_TEACHING' | 'SIMULATION' | 'QUIZ' | 'VICTORY';
 export type WaterStage = 'evaporation' | 'condensation' | 'precipitation' | 'collection' | 'all';
 
 export interface ScienceQuestion {

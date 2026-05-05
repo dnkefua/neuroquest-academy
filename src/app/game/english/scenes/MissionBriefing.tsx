@@ -38,7 +38,7 @@ export default function MissionBriefing() {
   const handleStart = () => {
     gameAudio.playClick();
     gameTTS.stop();
-    setScene('QUIZ');
+    setScene('CONCEPT_INTRO');
   };
 
   return (
@@ -116,7 +116,7 @@ export default function MissionBriefing() {
             style={{ background: `linear-gradient(135deg, ${quest.color}, #EF4444)` }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}>
-            <span className="relative z-10">📖 Start Reading Quest</span>
+            <span className="relative z-10">Preview Concept</span>
           </motion.button>
         </motion.div>
       </div>
