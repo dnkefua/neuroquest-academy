@@ -8,27 +8,36 @@ import {
   Activity,
   ArrowRight,
   Atom,
+  Award,
   BookOpenText,
   Brain,
   Check,
+  CheckCircle2,
   ChevronLeft,
+  ClipboardList,
   Eye,
+  ExternalLink,
   FlaskConical,
   Gamepad2,
   Gauge,
   Languages,
+  Layers3,
   Lightbulb,
+  MousePointerClick,
   Pause,
   Play,
+  RotateCcw,
   ScanSearch,
   Sparkles,
   Target,
   Volume2,
   Wand2,
+  XCircle,
 } from 'lucide-react';
-import { getCurriculumQuestsByGradeSubject } from '@/lib/questData';
-import type { CurriculumQuest, CurriculumSubject } from '@/types';
+import { getCurriculumQuestsByGradeSubject, getRouteForSubject } from '@/lib/questData';
+import type { CurriculumQuest, CurriculumQuestion, CurriculumSubject } from '@/types';
 import type { MathExplainerConcept } from '@/components/explainer/MathExplainer';
+import { inferMathExplainer } from '@/app/game/math/utils/explainerMappings';
 
 const MathExplainer = dynamic(() => import('@/components/explainer/MathExplainer'), {
   ssr: false,
@@ -42,6 +51,7 @@ const ScienceExplainer = dynamic(() => import('@/components/explainer/ScienceExp
 
 type StudioSubject = Extract<CurriculumSubject, 'math' | 'science' | 'english'>;
 type SupportMode = 'clarity' | 'focus' | 'sensory' | 'challenge';
+type StudioPanel = 'explainer' | 'quest' | 'teacher';
 type MathValues = {
   startValue?: number;
   moveValue?: number;
@@ -260,6 +270,16 @@ const ANIMATION_FRONTIER = [
   'Multilingual bridge moments for Emirates international classrooms.',
 ];
 
+const PANEL_OPTIONS: Array<{
+  id: StudioPanel;
+  label: string;
+  icon: typeof Layers3;
+}> = [
+  { id: 'explainer', label: 'Concept Lab', icon: Layers3 },
+  { id: 'quest', label: 'Playable Quest', icon: Gamepad2 },
+  { id: 'teacher', label: 'Teacher Demo', icon: ClipboardList },
+];
+
 function ExplainerFallback({ label }: { label: string }) {
   return (
     <div className="grid h-full min-h-[320px] place-items-center bg-slate-950 text-slate-200">
@@ -379,14 +399,339 @@ function ConceptStage({
   );
 }
 
+function toMathQuestion(question: CurriculumQuestion) {
+  return {
+    id: Number(question.id.replace(/\D/g, '')) || 1,
+    narrative: question.narrative,
+    question: question.question,
+    equation: question.equation,
+    options: question.options,
+    correct: question.correctIndex,
+    clue: {
+      title: question.clue?.title ?? 'Concept clue',
+      example: question.clue?.explanation ?? 'Use the visual model to reason before choosing.',
+      visual: question.clue?.visual,
+      startValue: question.clue?.startValue,
+      moveValue: question.clue?.moveValue,
+      moveValue2: question.clue?.moveValue2,
+      simulationType: question.clue?.simulationType,
+      simulationParams: question.clue?.simulationParams,
+    },
+  };
+}
+
+function inferScienceConcept(question: CurriculumQuestion, fallback: StudioConcept): 'water-cycle' | 'circuit' | 'force' | 'gravity' | 'states-of-matter' {
+  const direct = question.clue?.simulationType;
+  if (direct === 'water-cycle' || direct === 'circuit' || direct === 'force' || direct === 'gravity') return direct;
+  const source = `${question.question} ${question.narrative} ${question.clue?.explanation ?? ''}`.toLowerCase();
+  if (source.includes('circuit') || source.includes('current') || source.includes('electric')) return 'circuit';
+  if (source.includes('gravity')) return 'gravity';
+  if (source.includes('force') || source.includes('acceleration') || source.includes('motion')) return 'force';
+  if (source.includes('evaporation') || source.includes('condensation') || source.includes('precipitation') || source.includes('water')) return 'water-cycle';
+  return fallback.science?.concept ?? 'force';
+}
+
+function QuestionVisual({
+  subject,
+  concept,
+  question,
+  motionEnabled,
+  captionsEnabled,
+}: {
+  subject: StudioSubject;
+  concept: StudioConcept;
+  question: CurriculumQuestion;
+  motionEnabled: boolean;
+  captionsEnabled: boolean;
+}) {
+  if (subject === 'math') {
+    const explainer = inferMathExplainer(toMathQuestion(question));
+    return (
+      <MathExplainer
+        concept={explainer.concept}
+        values={explainer.values}
+        autoPlay={motionEnabled}
+      />
+    );
+  }
+
+  if (subject === 'science') {
+    return (
+      <ScienceExplainer
+        concept={inferScienceConcept(question, concept)}
+        autoPlay={motionEnabled}
+        showLabels={captionsEnabled}
+      />
+    );
+  }
+
+  return <EnglishVisualizer concept={concept} motionEnabled={motionEnabled} />;
+}
+
+function MiniQuestPlayer({
+  subject,
+  concept,
+  quest,
+  selectedQuestionIndex,
+  selectedAnswerIndex,
+  motionEnabled,
+  captionsEnabled,
+  onQuestionIndexChange,
+  onAnswer,
+  onReset,
+}: {
+  subject: StudioSubject;
+  concept: StudioConcept;
+  quest: CurriculumQuest;
+  selectedQuestionIndex: number;
+  selectedAnswerIndex: number | null;
+  motionEnabled: boolean;
+  captionsEnabled: boolean;
+  onQuestionIndexChange: (index: number) => void;
+  onAnswer: (index: number) => void;
+  onReset: () => void;
+}) {
+  const question = quest.questions[selectedQuestionIndex] ?? quest.questions[0];
+  const isAnswered = selectedAnswerIndex !== null;
+  const isCorrect = selectedAnswerIndex === question.correctIndex;
+  const scorePreview = isCorrect ? 100 : isAnswered ? 40 : 0;
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
+      <div className="min-h-[440px] overflow-hidden border border-slate-800 bg-slate-950">
+        <QuestionVisual
+          subject={subject}
+          concept={concept}
+          question={question}
+          motionEnabled={motionEnabled}
+          captionsEnabled={captionsEnabled}
+        />
+      </div>
+
+      <div className="border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-700">Live mini-check</div>
+            <h3 className="mt-1 font-nunito text-xl font-black text-slate-950">{quest.title}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex h-10 w-10 items-center justify-center border border-slate-200 text-slate-600 transition hover:border-cyan-300 hover:text-cyan-700"
+            title="Reset answer"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="mb-4 grid grid-cols-5 gap-2">
+          {quest.questions.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onQuestionIndexChange(index)}
+              className={`h-10 border text-sm font-black transition ${
+                index === selectedQuestionIndex
+                  ? 'border-slate-950 bg-slate-950 text-white'
+                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-cyan-300'
+              }`}
+              title={`Question ${index + 1}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+
+        <div className="border border-slate-200 bg-slate-50 p-4">
+          <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+            <MousePointerClick className="h-4 w-4" />
+            Tap an answer
+          </div>
+          <p className="text-base font-black leading-7 text-slate-950">{question.question}</p>
+          {question.equation && (
+            <div className="mt-3 inline-flex border border-cyan-200 bg-cyan-50 px-3 py-2 font-mono text-sm font-black text-cyan-900">
+              {question.equation}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-3 grid gap-2">
+          {question.options.map((option, index) => {
+            const selected = selectedAnswerIndex === index;
+            const correct = index === question.correctIndex;
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => onAnswer(index)}
+                className={`flex items-center gap-3 border p-3 text-left text-sm font-bold leading-6 transition ${
+                  selected && correct
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-950'
+                    : selected
+                      ? 'border-rose-500 bg-rose-50 text-rose-950'
+                      : isAnswered && correct
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-950'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-cyan-300'
+                }`}
+              >
+                <span className="grid h-7 w-7 flex-none place-items-center border border-current text-xs font-black">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span>{option}</span>
+                {isAnswered && correct && <CheckCircle2 className="ml-auto h-5 w-5 text-emerald-600" />}
+                {selected && !correct && <XCircle className="ml-auto h-5 w-5 text-rose-600" />}
+              </button>
+            );
+          })}
+        </div>
+
+        <AnimatePresence>
+          {isAnswered && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className={`mt-4 border p-4 ${
+                isCorrect ? 'border-emerald-200 bg-emerald-50 text-emerald-950' : 'border-amber-200 bg-amber-50 text-amber-950'
+              }`}
+            >
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <div className="font-nunito text-lg font-black">
+                  {isCorrect ? 'Mastery evidence captured' : 'Diagnostic replay ready'}
+                </div>
+                <div className="text-sm font-black">{scorePreview}%</div>
+              </div>
+              <p className="text-sm font-bold leading-6">
+                {question.clue?.explanation ?? 'Use the model to explain the reasoning, then try the next step.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => onQuestionIndexChange(Math.min(quest.questions.length - 1, selectedQuestionIndex + 1))}
+                className="mt-3 inline-flex items-center gap-2 bg-slate-950 px-4 py-2 text-sm font-black text-white transition hover:bg-cyan-700"
+              >
+                Next check <ArrowRight className="h-4 w-4" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+function TeacherDemoPanel({
+  subject,
+  concept,
+  quest,
+}: {
+  subject: StudioSubject;
+  concept: StudioConcept;
+  quest: CurriculumQuest;
+}) {
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const demoSteps = [
+    'Open the concept lab and ask students what they notice before naming the rule.',
+    'Switch to the playable quest and let one student choose an answer publicly.',
+    'Use the replay explanation to discuss why the answer works or how to recover.',
+    'Launch the full game route for independent practice or group rotation.',
+  ];
+  const completed = demoSteps.filter((step) => checked[step]).length;
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center gap-2">
+          <Award className="h-6 w-6 text-amber-600" />
+          <div>
+            <div className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">Teacher evaluation mode</div>
+            <h3 className="font-nunito text-2xl font-black text-slate-950">5-minute classroom demo script</h3>
+          </div>
+        </div>
+        <div className="grid gap-3">
+          {demoSteps.map((step, index) => {
+            const active = checked[step];
+            return (
+              <button
+                key={step}
+                type="button"
+                onClick={() => setChecked((value) => ({ ...value, [step]: !active }))}
+                className={`flex items-start gap-3 border p-4 text-left transition ${
+                  active ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-slate-50 hover:border-cyan-300'
+                }`}
+              >
+                <span className={`grid h-8 w-8 flex-none place-items-center border text-sm font-black ${
+                  active ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 text-slate-600'
+                }`}>
+                  {active ? <Check className="h-4 w-4" /> : index + 1}
+                </span>
+                <span>
+                  <span className="block text-sm font-black uppercase tracking-[0.08em] text-slate-500">
+                    Step {index + 1}
+                  </span>
+                  <span className="mt-1 block text-sm font-bold leading-6 text-slate-800">{step}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="grid gap-4">
+        <div className="border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+          <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">Readiness</div>
+          <div className="mt-3 font-nunito text-4xl font-black">{completed}/4</div>
+          <div className="mt-3 h-3 bg-white/10">
+            <div className="h-full bg-gradient-to-r from-cyan-300 to-emerald-300" style={{ width: `${(completed / demoSteps.length) * 100}%` }} />
+          </div>
+          <p className="mt-4 text-sm font-bold leading-6 text-slate-300">
+            Current focus: {concept.title}. Evidence target: {concept.evidenceMove}
+          </p>
+        </div>
+
+        <div className="border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Launch paths</div>
+          <div className="grid gap-2">
+            <Link
+              href={getRouteForSubject(subject, 8)}
+              className="inline-flex items-center justify-center gap-2 bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-cyan-700"
+            >
+              Launch full {subject} game <ExternalLink className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/world-map"
+              className="inline-flex items-center justify-center gap-2 border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-800 transition hover:border-cyan-300"
+            >
+              Open student world map <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="border border-cyan-200 bg-cyan-50 p-5 shadow-sm">
+          <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-800">Teacher talk track</div>
+          <p className="mt-2 text-sm font-bold leading-6 text-cyan-950">
+            “This is not a worksheet skin. The student must predict, choose, see the model move, and explain the evidence before the quest advances.”
+          </p>
+          <p className="mt-3 text-sm leading-6 text-cyan-900">
+            Selected quest: <span className="font-black">{quest.title}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Grade8StudioPage() {
   const [activeSubject, setActiveSubject] = useState<StudioSubject>('math');
   const [activeConceptId, setActiveConceptId] = useState('integer-racer');
   const [activeMode, setActiveMode] = useState<SupportMode>('clarity');
+  const [activePanel, setActivePanel] = useState<StudioPanel>('explainer');
   const [motionEnabled, setMotionEnabled] = useState(true);
   const [captionsEnabled, setCaptionsEnabled] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
 
   const subjectConcepts = useMemo(
     () => CONCEPTS.filter((concept) => concept.subject === activeSubject),
@@ -399,6 +744,10 @@ export default function Grade8StudioPage() {
   );
 
   const quests = useMemo(() => getCurriculumQuestsByGradeSubject(8, activeSubject), [activeSubject]);
+  const selectedQuest = useMemo(
+    () => quests.find((quest) => quest.id === selectedQuestId) ?? quests[0],
+    [quests, selectedQuestId],
+  );
   const stats = useMemo(() => getQuestStats(quests), [quests]);
   const selectedSupport = SUPPORT_MODES.find((mode) => mode.id === activeMode) ?? SUPPORT_MODES[0];
   const SupportIcon = selectedSupport.icon;
@@ -407,6 +756,22 @@ export default function Grade8StudioPage() {
     setActiveSubject(subject);
     const firstConcept = CONCEPTS.find((concept) => concept.subject === subject);
     if (firstConcept) setActiveConceptId(firstConcept.id);
+    const firstQuest = getCurriculumQuestsByGradeSubject(8, subject)[0];
+    setSelectedQuestId(firstQuest?.id ?? null);
+    setSelectedQuestionIndex(0);
+    setSelectedAnswerIndex(null);
+  }
+
+  function selectQuest(quest: CurriculumQuest) {
+    setSelectedQuestId(quest.id);
+    setSelectedQuestionIndex(0);
+    setSelectedAnswerIndex(null);
+    setActivePanel('quest');
+  }
+
+  function selectQuestion(index: number) {
+    setSelectedQuestionIndex(index);
+    setSelectedAnswerIndex(null);
   }
 
   return (
@@ -427,10 +792,10 @@ export default function Grade8StudioPage() {
             <h1 className="truncate font-nunito text-xl font-black text-slate-950 sm:text-2xl">Grade 8 Animated Learning Studio</h1>
           </div>
           <Link
-            href="/game-market"
+            href={getRouteForSubject(activeSubject, 8)}
             className="ml-auto hidden items-center gap-2 bg-slate-950 px-4 py-2 text-sm font-black text-white transition hover:bg-cyan-700 sm:inline-flex"
           >
-            Game Market <ArrowRight className="h-4 w-4" />
+            Launch Grade 8 Game <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </header>
@@ -509,7 +874,7 @@ export default function Grade8StudioPage() {
         </aside>
 
         <div className="space-y-5">
-          <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
+          <section className={`grid gap-5 ${activePanel === 'explainer' ? 'xl:grid-cols-[minmax(0,1fr)_330px]' : ''}`}>
             <div className="relative overflow-hidden border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
               <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${activeConcept.gradient}`} />
               <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -533,14 +898,61 @@ export default function Grade8StudioPage() {
                 </div>
               </div>
 
-              <ConceptStage
-                concept={activeConcept}
-                motionEnabled={motionEnabled}
-                captionsEnabled={captionsEnabled}
-              />
+              <div className="mb-4 grid gap-2 sm:grid-cols-3">
+                {PANEL_OPTIONS.map((panel) => {
+                  const Icon = panel.icon;
+                  const selected = activePanel === panel.id;
+                  return (
+                    <button
+                      key={panel.id}
+                      type="button"
+                      onClick={() => setActivePanel(panel.id)}
+                      className={`flex items-center justify-center gap-2 border px-3 py-3 text-sm font-black transition ${
+                        selected
+                          ? 'border-slate-950 bg-slate-950 text-white'
+                          : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-cyan-300'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {panel.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {activePanel === 'explainer' && (
+                <ConceptStage
+                  concept={activeConcept}
+                  motionEnabled={motionEnabled}
+                  captionsEnabled={captionsEnabled}
+                />
+              )}
+
+              {activePanel === 'quest' && selectedQuest && (
+                <MiniQuestPlayer
+                  subject={activeSubject}
+                  concept={activeConcept}
+                  quest={selectedQuest}
+                  selectedQuestionIndex={Math.min(selectedQuestionIndex, selectedQuest.questions.length - 1)}
+                  selectedAnswerIndex={selectedAnswerIndex}
+                  motionEnabled={motionEnabled}
+                  captionsEnabled={captionsEnabled}
+                  onQuestionIndexChange={selectQuestion}
+                  onAnswer={setSelectedAnswerIndex}
+                  onReset={() => setSelectedAnswerIndex(null)}
+                />
+              )}
+
+              {activePanel === 'teacher' && selectedQuest && (
+                <TeacherDemoPanel
+                  subject={activeSubject}
+                  concept={activeConcept}
+                  quest={selectedQuest}
+                />
+              )}
             </div>
 
-            <aside className={`${focusMode ? 'hidden xl:block' : ''} grid gap-4`}>
+            <aside className={`${activePanel !== 'explainer' ? 'hidden' : focusMode ? 'hidden xl:block' : ''} grid gap-4`}>
               <div className="border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-3 flex items-center gap-2">
                   <Gamepad2 className="h-5 w-5 text-amber-600" />
@@ -626,8 +1038,17 @@ export default function Grade8StudioPage() {
                 <h3 className="font-nunito text-xl font-black">Grade 8 Quest Feed</h3>
               </div>
               <div className="grid max-h-[390px] gap-3 overflow-auto pr-1">
-                {quests.slice(0, 8).map((quest) => (
-                  <div key={quest.id} className="border border-white/12 bg-white/[0.04] p-4">
+                {quests.slice(0, 8).map((quest) => {
+                  const selected = selectedQuest?.id === quest.id;
+                  return (
+                  <button
+                    key={quest.id}
+                    type="button"
+                    onClick={() => selectQuest(quest)}
+                    className={`border p-4 text-left transition hover:border-cyan-300 hover:bg-white/[0.08] ${
+                      selected ? 'border-cyan-300 bg-cyan-300/10' : 'border-white/12 bg-white/[0.04]'
+                    }`}
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h4 className="font-nunito text-lg font-black">{quest.title}</h4>
@@ -640,9 +1061,11 @@ export default function Grade8StudioPage() {
                     <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold text-slate-300">
                       <span className="bg-white/[0.08] px-2 py-1">{quest.programme}</span>
                       <span className="bg-white/[0.08] px-2 py-1">{quest.realmName}</span>
+                      <span className="bg-cyan-300/15 px-2 py-1 text-cyan-100">Open mini-check</span>
                     </div>
-                  </div>
-                ))}
+                  </button>
+                  );
+                })}
               </div>
             </div>
           </section>
