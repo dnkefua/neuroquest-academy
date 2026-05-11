@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node tools/prepare-standalone.mjs",
     "build:cloud-run": "next build",
     "build:firebase": "cross-env NEXT_OUTPUT=static next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "start:standalone": "node .next/standalone/server.js",
     "lint": "next lint",
     "export": "next build",
