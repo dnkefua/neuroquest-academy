@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NPCReactionSchema } from '@/lib/schemas';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 const FALLBACKS: Record<string, { correct: string; incorrect: string }> = {
   Omar: {
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     wasCorrect = parsedWasCorrect;
     const numGrade = typeof grade === 'string' ? parseInt(grade, 10) : grade;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
     const prompt = `You are ${npcName}, a child character in a social skills learning scenario for grade ${numGrade} students.
 

@@ -32,6 +32,7 @@ const demoProfile: UserProfile = {
   createdAt: new Date().toISOString(),
   studentClass: 'math',
   approvedQuestIds: ['g8-math-1', 'g8-math-2', 'g8-science-1'],
+  pendingApprovals: [],
   completedQuests: ['g8-math-1', 'g8-math-2'],
 };
 

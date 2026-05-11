@@ -47,11 +47,12 @@ export async function deleteSchool(schoolId: string): Promise<void> {
 // USER OPERATIONS
 // ============================================
 
-export async function createUser(data: Omit<AdminUser, 'createdAt'>): Promise<string> {
+export async function createUser(data: Omit<AdminUser, 'createdAt' | 'uid'> & { uid?: string }): Promise<string> {
   const docRef = doc(collection(db, 'users'));
   await setDoc(docRef, {
     ...data,
     id: docRef.id,
+    uid: data.uid ?? docRef.id,
     createdAt: new Date().toISOString(),
   });
   return docRef.id;
@@ -59,19 +60,19 @@ export async function createUser(data: Omit<AdminUser, 'createdAt'>): Promise<st
 
 export async function getUser(userId: string): Promise<AdminUser | null> {
   const snap = await getDoc(doc(db, 'users', userId));
-  return snap.exists() ? { id: snap.id, ...snap.data() } as AdminUser : null;
+  return snap.exists() ? ({ id: snap.id, uid: snap.id, ...snap.data() } as unknown as AdminUser) : null;
 }
 
 export async function getUsersByRole(role: string): Promise<AdminUser[]> {
   const q = query(collection(db, 'users'), where('role', '==', role));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as AdminUser);
+  return snap.docs.map((d) => ({ id: d.id, uid: d.id, ...d.data() } as unknown as AdminUser));
 }
 
 export async function getUsersBySchool(schoolId: string): Promise<AdminUser[]> {
   const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as AdminUser);
+  return snap.docs.map((d) => ({ id: d.id, uid: d.id, ...d.data() } as unknown as AdminUser));
 }
 
 export async function updateUser(userId: string, data: Partial<AdminUser>): Promise<void> {
@@ -228,7 +229,7 @@ export async function getClassStats(classId: string): Promise<ClassStats> {
     for (const studentId of studentIds.slice(0, 10)) {
       const studentSnap = await getDoc(doc(db, 'users', studentId));
       if (studentSnap.exists()) {
-        const student = studentSnap.data() as Student;
+        const student = { id: studentSnap.id, uid: studentSnap.id, ...studentSnap.data() } as unknown as Student;
         const progress = (student.xp || 0) / 100; // Simplified progress calculation
         totalProgress += progress;
 

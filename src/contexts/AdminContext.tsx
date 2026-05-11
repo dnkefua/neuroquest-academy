@@ -81,8 +81,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         getStats(),
       ]);
       
-      setSchools(schoolsSnap.docs.map(d => ({ id: d.id, ...d.data() }) as School[]));
-      setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() }) as AdminUser[]));
+      setSchools(schoolsSnap.docs.map(d => ({ id: d.id, ...d.data() }) as School));
+      setUsers(usersSnap.docs.map(d => ({ uid: d.id, ...d.data() }) as AdminUser));
       setStats(statsData);
     } catch (err) {
       console.warn('Firebase not available, using demo data:', err);
@@ -160,11 +160,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         refreshStats,
-        createSchool: handleCreateSchool as any,
-        updateSchool: handleUpdateSchool as any,
-        deleteSchool: handleDeleteSchool as any,
-        inviteUser: handleInviteUser as any,
-        createClass: handleCreateClass as any,
+        createSchool,
+        updateSchool,
+        deleteSchool,
+        inviteUser,
+        createClass,
         isDemoMode,
         setDemoMode: handleSetDemoMode,
       }}

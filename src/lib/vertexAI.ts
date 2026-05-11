@@ -1,12 +1,12 @@
 /**
  * GCP Vertex AI client for NeuroQuest.
- * Uses Vertex AI endpoint for Gemini 2.0 Flash with full GCP auth.
+ * Uses Vertex AI endpoint for Gemini Flash with full GCP auth.
  * Falls back to @google/generative-ai SDK if Vertex is unavailable.
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 function getGenAI() {
   return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -28,7 +28,7 @@ export async function callVertexAI(prompt: string): Promise<string> {
 
   const url =
     `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}` +
-    `/publishers/google/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    `/publishers/google/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -64,7 +64,7 @@ export async function callVertexAI(prompt: string): Promise<string> {
 
 /**
  * Generate lesson content with fallback chain:
- * 1. Vertex AI Gemini 2.0 Flash
+ * 1. Vertex AI Gemini Flash
  * 2. @google/generative-ai SDK Gemini
  * 3. Structured fallback (no external call)
  */

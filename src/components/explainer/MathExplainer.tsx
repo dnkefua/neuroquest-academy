@@ -98,7 +98,7 @@ function NumberLineAnimation({
   // Bird hopping state
   const [hopIndex, setHopIndex] = useState(0);
   const [isAirborne, setIsAirborne] = useState(false);
-  const intervalRef = useRef(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setHopIndex(0);
@@ -126,7 +126,7 @@ function NumberLineAnimation({
   const tickStep = Math.max(1, Math.ceil((rawMax - rawMin) / 10));
   const min = Math.floor(rawMin / tickStep) * tickStep;
   const max = Math.ceil(rawMax / tickStep) * tickStep;
-  const toX = (value) => 62 + ((value - min) / (max - min || 1)) * 516;
+  const toX = (value: number) => 62 + ((value - min) / (max - min || 1)) * 516;
   const birdValue = (currentStep >= 1 && steps[hopIndex] !== undefined) ? steps[hopIndex] : startValue;
   const birdX = toX(birdValue);
   const moveColor = moveValue >= 0 ? '#34d399' : '#fb7185';

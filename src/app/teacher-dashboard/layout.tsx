@@ -20,7 +20,7 @@ const navItems = [
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
 
   const isActive = (path: string) => 
     pathname === path || (path !== '/teacher-dashboard' && pathname.startsWith(path));

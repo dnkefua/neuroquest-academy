@@ -3,11 +3,13 @@
 export type UserRole = 'student' | 'parent' | 'teacher' | 'admin';
 
 export interface AdminUser {
+  id?: string;
   uid: string;
   name: string;
   email: string;
   role: UserRole;
   schoolId?: string;
+  grade?: number;
   createdAt: string;
   lastActiveAt?: string;
   status: 'active' | 'inactive' | 'pending';

@@ -50,6 +50,8 @@ export interface LessonGenerationOptions {
   studentClass: 'math' | 'science' | 'english' | 'arabic';
 }
 
+const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+
 // ============================================
 // ANIMATED EXPLAINER TYPES
 // ============================================
@@ -157,17 +159,17 @@ function getAIConfig(): AIConfig {
     };
   }
 
-  if (process.env.GCP_PROJECT_ID && process.env.GCP_LOCATION) {
+  if (process.env.AI_PROVIDER === 'vertex-gemma' && process.env.GCP_PROJECT_ID && process.env.GCP_LOCATION) {
     return {
       provider: 'vertex-gemma',
-      model: 'gemma-4-2b-it',
+      model: process.env.VERTEX_GEMMA_MODEL || 'gemma3-4b-it',
       temperature: 0.7,
       maxTokens: 4096,
       topP: 0.95,
     };
   }
 
-  return { provider: 'gemini', model: 'gemini-2.0-flash' };
+  return { provider: 'gemini', model: DEFAULT_GEMINI_MODEL };
 }
 
 // ============================================
@@ -177,7 +179,7 @@ function getAIConfig(): AIConfig {
 async function callVertexGemma(prompt: string, config: AIConfig): Promise<string> {
   const projectId = process.env.GCP_PROJECT_ID;
   const location = process.env.GCP_LOCATION || 'us-central1';
-  const model = config.model || 'gemma-4-2b-it';
+  const model = config.model || process.env.VERTEX_GEMMA_MODEL || 'gemma3-4b-it';
 
   const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:predict`;
 
@@ -236,7 +238,7 @@ async function callOllama(prompt: string, config: AIConfig): Promise<string> {
 async function callGemini(prompt: string, config: AIConfig): Promise<string> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const model = genAI.getGenerativeModel({ 
-    model: config.model || 'gemini-2.0-flash',
+    model: config.model || DEFAULT_GEMINI_MODEL,
     systemInstruction: EDUCATIONAL_SYSTEM_PROMPT,
   });
 
@@ -354,7 +356,11 @@ export async function generateWithAI(
           text = await callVertexGemma(prompt, config);
         } catch (err) {
           console.warn('[Gemma4] Vertex unavailable, falling back to Gemini:', err);
-          text = await callGemini(prompt, config);
+          text = await callGemini(prompt, {
+            ...config,
+            provider: 'gemini',
+            model: DEFAULT_GEMINI_MODEL,
+          });
         }
         break;
       case 'gemini':

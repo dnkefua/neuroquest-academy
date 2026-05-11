@@ -10,10 +10,10 @@
  * pilots, and sales presentations.
  */
 
-import type { UserProfile, StudentClass } from '@/types';
+import type { UserProfile } from '@/types';
 
 // Demo user profiles for different personas
-export const DEMO_PROFILES: Record<string, UserProfile> = {
+export const DEMO_PROFILES: Record<'student' | 'parent', UserProfile> = {
   student: {
     uid: 'demo-student-001',
     name: 'Demo Student',
@@ -27,6 +27,7 @@ export const DEMO_PROFILES: Record<string, UserProfile> = {
     createdAt: new Date().toISOString(),
     studentClass: 'math',
     approvedQuestIds: ['g8-math-1', 'g8-math-2', 'g8-science-1'],
+    pendingApprovals: [],
     completedQuests: ['g8-math-1'],
   },
   parent: {
@@ -41,18 +42,8 @@ export const DEMO_PROFILES: Record<string, UserProfile> = {
     currentEmotion: 'neutral',
     createdAt: new Date().toISOString(),
     childUids: ['demo-student-001'],
-  },
-  teacher: {
-    uid: 'demo-teacher-001',
-    name: 'Demo Teacher',
-    email: 'teacher@demo.local',
-    role: 'teacher',
-    grade: 8,
-    language: 'EN',
-    xp: 0,
-    streak: 0,
-    currentEmotion: 'neutral',
-    createdAt: new Date().toISOString(),
+    approvedQuestIds: [],
+    pendingApprovals: [],
   },
 };
 
@@ -172,7 +163,7 @@ export function isDemoMode(): boolean {
 }
 
 // Get demo profile by role
-export function getDemoProfile(role: 'student' | 'parent' | 'teacher' = 'student'): UserProfile {
+export function getDemoProfile(role: 'student' | 'parent' = 'student'): UserProfile {
   return DEMO_PROFILES[role] || DEMO_PROFILES.student;
 }
 

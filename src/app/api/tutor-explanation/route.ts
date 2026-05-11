@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { TutorExplanationSchema } from '@/lib/schemas';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     const { question, studentAnswer, correctAnswer, studentName, grade, language } = parsed.data;
     const numGrade = typeof grade === 'string' ? parseInt(grade, 10) : grade;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
     const prompt = `You are a gentle, kind AI tutor for a ${numGrade}-grade neurodiverse student.
 ${studentName ?? 'The student'} answered "${studentAnswer}" to this question: "${question}"

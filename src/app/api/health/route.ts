@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { checkAIAvailability } from '@/lib/gemma4';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const aiStatus = await checkAIAvailability();
   
