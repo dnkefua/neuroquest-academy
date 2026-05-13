@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server';
 import { checkAIAvailability } from '@/lib/gemma4';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
+  if (process.env.NEXT_OUTPUT === 'static') {
+    return NextResponse.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      aiProvider: 'static-mobile',
+      aiAvailable: false,
+      aiLatency: 0,
+      demoMode: true,
+    });
+  }
+
   const aiStatus = await checkAIAvailability();
   
   return NextResponse.json({
