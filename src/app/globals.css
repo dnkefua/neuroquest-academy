@@ -16,10 +16,33 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     font-family: 'DM Sans', sans-serif;
     background-color: var(--bg);
     color: var(--text);
+  }
+  img,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+  svg {
+    flex-shrink: 0;
   }
   h1, h2, h3, h4 { font-family: 'Nunito', sans-serif; }
   [dir="rtl"] { direction: rtl; text-align: right; }

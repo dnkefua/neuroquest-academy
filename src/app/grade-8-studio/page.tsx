@@ -302,7 +302,7 @@ function EnglishVisualizer({ concept, motionEnabled }: { concept: StudioConcept;
   const words = concept.english?.source.split(' ') ?? [];
 
   return (
-    <div className="relative h-full min-h-[320px] overflow-hidden bg-[#10131b] p-5 text-white">
+    <div className="relative h-full min-h-[300px] min-w-0 overflow-hidden bg-[#10131b] p-4 text-white sm:min-h-[320px] sm:p-5">
       <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(255,255,255,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.08)_1px,transparent_1px)] [background-size:34px_34px]" />
       <div className="relative grid h-full min-h-[300px] grid-rows-[auto_1fr_auto] gap-4">
         <div className="flex items-center justify-between gap-3">
@@ -314,21 +314,21 @@ function EnglishVisualizer({ concept, motionEnabled }: { concept: StudioConcept;
         </div>
 
         <div className="grid content-center gap-5">
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex min-w-0 flex-wrap justify-center gap-2">
             {words.map((word, index) => (
               <motion.span
                 key={`${word}-${index}`}
                 initial={{ opacity: 0, y: 18, rotateX: 25 }}
                 animate={{ opacity: 1, y: 0, rotateX: 0 }}
                 transition={{ delay: motionEnabled ? index * 0.08 : 0, duration: motionEnabled ? 0.35 : 0 }}
-                className="border border-white/15 bg-white/10 px-3 py-2 text-lg font-black text-white shadow-[0_12px_35px_rgba(0,0,0,.24)]"
+                className="max-w-full border border-white/15 bg-white/10 px-3 py-2 text-base font-black text-white shadow-[0_12px_35px_rgba(0,0,0,.24)] sm:text-lg"
               >
                 {word}
               </motion.span>
             ))}
           </div>
 
-          <div className="mx-auto grid w-full max-w-2xl grid-cols-3 gap-3">
+          <div className="mx-auto grid w-full min-w-0 max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
             {['image', 'idea', 'effect'].map((layer, index) => (
               <motion.div
                 key={layer}
@@ -367,7 +367,7 @@ function ConceptStage({
   captionsEnabled: boolean;
 }) {
   return (
-    <div className="relative min-h-[420px] overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/30">
+    <div className="relative min-h-[340px] min-w-0 overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl shadow-slate-950/30 sm:min-h-[420px]">
       <div className={`absolute left-0 top-0 h-1 w-full bg-gradient-to-r ${concept.gradient}`} />
       <AnimatePresence mode="wait">
         <motion.div
@@ -376,7 +376,7 @@ function ConceptStage({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: motionEnabled ? 0.28 : 0 }}
-          className="h-full"
+          className="h-full min-w-0"
         >
           {concept.math && (
             <MathExplainer
@@ -497,8 +497,8 @@ function MiniQuestPlayer({
   const scorePreview = isCorrect ? 100 : isAnswered ? 40 : 0;
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
-      <div className="min-h-[440px] overflow-hidden border border-slate-800 bg-slate-950">
+    <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1fr)_390px]">
+      <div className="min-h-[340px] min-w-0 overflow-hidden border border-slate-800 bg-slate-950 sm:min-h-[440px]">
         <QuestionVisual
           subject={subject}
           concept={concept}
@@ -508,11 +508,11 @@ function MiniQuestPlayer({
         />
       </div>
 
-      <div className="border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="min-w-0 border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-700">Live mini-check</div>
-            <h3 className="mt-1 font-nunito text-xl font-black text-slate-950">{quest.title}</h3>
+            <h3 className="mt-1 font-nunito text-lg font-black text-slate-950 [overflow-wrap:anywhere] sm:text-xl">{quest.title}</h3>
           </div>
           <button
             type="button"
@@ -524,7 +524,7 @@ function MiniQuestPlayer({
           </button>
         </div>
 
-        <div className="mb-4 grid grid-cols-5 gap-2">
+        <div className="mb-4 grid grid-cols-5 gap-1.5 sm:gap-2">
           {quest.questions.map((item, index) => (
             <button
               key={item.id}
@@ -549,7 +549,7 @@ function MiniQuestPlayer({
           </div>
           <p className="text-base font-black leading-7 text-slate-950">{question.question}</p>
           {question.equation && (
-            <div className="mt-3 inline-flex border border-cyan-200 bg-cyan-50 px-3 py-2 font-mono text-sm font-black text-cyan-900">
+            <div className="mt-3 inline-flex max-w-full overflow-x-auto whitespace-nowrap border border-cyan-200 bg-cyan-50 px-3 py-2 font-mono text-sm font-black text-cyan-900">
               {question.equation}
             </div>
           )}
@@ -564,7 +564,7 @@ function MiniQuestPlayer({
                 key={option}
                 type="button"
                 onClick={() => onAnswer(index)}
-                className={`flex items-center gap-3 border p-3 text-left text-sm font-bold leading-6 transition ${
+                className={`flex min-w-0 items-start gap-3 border p-3 text-left text-sm font-bold leading-6 transition ${
                   selected && correct
                     ? 'border-emerald-500 bg-emerald-50 text-emerald-950'
                     : selected
@@ -577,9 +577,9 @@ function MiniQuestPlayer({
                 <span className="grid h-7 w-7 flex-none place-items-center border border-current text-xs font-black">
                   {String.fromCharCode(65 + index)}
                 </span>
-                <span>{option}</span>
-                {isAnswered && correct && <CheckCircle2 className="ml-auto h-5 w-5 text-emerald-600" />}
-                {selected && !correct && <XCircle className="ml-auto h-5 w-5 text-rose-600" />}
+                <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{option}</span>
+                {isAnswered && correct && <CheckCircle2 className="ml-auto h-5 w-5 flex-none text-emerald-600" />}
+                {selected && !correct && <XCircle className="ml-auto h-5 w-5 flex-none text-rose-600" />}
               </button>
             );
           })}
@@ -638,8 +638,8 @@ function TeacherDemoPanel({
   const completed = demoSteps.filter((step) => checked[step]).length;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="min-w-0 border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="mb-4 flex items-center gap-2">
           <Award className="h-6 w-6 text-amber-600" />
           <div>
@@ -676,8 +676,8 @@ function TeacherDemoPanel({
         </div>
       </div>
 
-      <div className="grid gap-4">
-        <div className="border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+      <div className="grid min-w-0 gap-4">
+        <div className="min-w-0 border border-slate-200 bg-slate-950 p-4 text-white shadow-sm sm:p-5">
           <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-200">Readiness</div>
           <div className="mt-3 font-nunito text-4xl font-black">{completed}/4</div>
           <div className="mt-3 h-3 bg-white/10">
@@ -688,25 +688,25 @@ function TeacherDemoPanel({
           </p>
         </div>
 
-        <div className="border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="min-w-0 border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Launch paths</div>
           <div className="grid gap-2">
             <Link
               href={getRouteForSubject(subject, 8)}
-              className="inline-flex items-center justify-center gap-2 bg-slate-950 px-4 py-3 text-sm font-black text-white transition hover:bg-cyan-700"
+              className="inline-flex min-w-0 items-center justify-center gap-2 bg-slate-950 px-4 py-3 text-center text-sm font-black text-white transition hover:bg-cyan-700"
             >
               Launch full {subject} game <ExternalLink className="h-4 w-4" />
             </Link>
             <Link
               href="/world-map"
-              className="inline-flex items-center justify-center gap-2 border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-800 transition hover:border-cyan-300"
+              className="inline-flex min-w-0 items-center justify-center gap-2 border border-slate-200 bg-white px-4 py-3 text-center text-sm font-black text-slate-800 transition hover:border-cyan-300"
             >
               Open student world map <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
-        <div className="border border-cyan-200 bg-cyan-50 p-5 shadow-sm">
+        <div className="min-w-0 border border-cyan-200 bg-cyan-50 p-4 shadow-sm sm:p-5">
           <div className="text-xs font-black uppercase tracking-[0.14em] text-cyan-800">Teacher talk track</div>
           <p className="mt-2 text-sm font-bold leading-6 text-cyan-950">
             “This is not a worksheet skin. The student must predict, choose, see the model move, and explain the evidence before the quest advances.”
@@ -776,19 +776,19 @@ export default function Grade8StudioPage() {
 
   return (
     <main
-      className={`min-h-screen ${
+      className={`min-h-screen overflow-x-hidden ${
         highContrast
           ? 'bg-black text-white'
           : 'bg-[linear-gradient(180deg,#f8fafc_0%,#ecfeff_42%,#fff7ed_100%)] text-slate-950'
       }`}
     >
       <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/88 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:px-6">
           <Link href="/" className="inline-flex h-10 w-10 items-center justify-center border border-slate-200 bg-white text-slate-700 transition hover:border-cyan-300 hover:text-cyan-700">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <div className="min-w-0">
-            <div className="text-xs font-black uppercase tracking-[0.18em] text-cyan-700">Emirates International Students</div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[10px] font-black uppercase tracking-[0.14em] text-cyan-700 sm:text-xs sm:tracking-[0.18em]">Emirates International Students</div>
             <h1 className="truncate font-nunito text-xl font-black text-slate-950 sm:text-2xl">Grade 8 Animated Learning Studio</h1>
           </div>
           <Link
@@ -800,8 +800,8 @@ export default function Grade8StudioPage() {
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className={`${focusMode ? 'hidden lg:block' : ''} space-y-4`}>
+      <section className="mx-auto grid max-w-7xl min-w-0 gap-4 px-3 py-4 sm:gap-5 sm:px-6 sm:py-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className={`${focusMode ? 'hidden lg:block' : ''} min-w-0 space-y-4`}>
           <div className="border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-3 flex items-center gap-2">
               <Brain className="h-5 w-5 text-cyan-700" />
@@ -819,7 +819,7 @@ export default function Grade8StudioPage() {
                   <button
                     key={control.label}
                     onClick={control.action}
-                    className={`flex min-h-20 flex-col items-center justify-center gap-2 border px-3 py-2 text-sm font-black transition ${
+                    className={`flex min-h-16 flex-col items-center justify-center gap-2 border px-2 py-2 text-xs font-black transition sm:min-h-20 sm:px-3 sm:text-sm ${
                       control.active
                         ? 'border-slate-950 bg-slate-950 text-white'
                         : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-cyan-300'
@@ -873,20 +873,20 @@ export default function Grade8StudioPage() {
           </div>
         </aside>
 
-        <div className="space-y-5">
-          <section className={`grid gap-5 ${activePanel === 'explainer' ? 'xl:grid-cols-[minmax(0,1fr)_330px]' : ''}`}>
-            <div className="relative overflow-hidden border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="min-w-0 space-y-5">
+          <section className={`grid min-w-0 gap-5 ${activePanel === 'explainer' ? 'xl:grid-cols-[minmax(0,1fr)_330px]' : ''}`}>
+            <div className="relative min-w-0 overflow-hidden border border-slate-200 bg-white p-3 shadow-sm sm:p-5">
               <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${activeConcept.gradient}`} />
-              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <div className="mb-2 inline-flex items-center gap-2 border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-cyan-800">
+              <div className="mb-4 flex min-w-0 flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="min-w-0">
+                  <div className="mb-2 inline-flex max-w-full items-center gap-2 border border-cyan-200 bg-cyan-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.1em] text-cyan-800 sm:text-xs sm:tracking-[0.14em]">
                     <Sparkles className="h-4 w-4" />
-                    Animated explainer and game loop
+                    <span className="min-w-0 truncate">Animated explainer and game loop</span>
                   </div>
-                  <h2 className="font-nunito text-3xl font-black leading-tight text-slate-950 sm:text-5xl">{activeConcept.title}</h2>
+                  <h2 className="font-nunito text-3xl font-black leading-tight text-slate-950 [overflow-wrap:anywhere] sm:text-5xl">{activeConcept.title}</h2>
                   <p className="mt-3 max-w-3xl text-base leading-7 text-slate-600">{activeConcept.subtitle}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="grid min-w-0 grid-cols-1 gap-2 text-sm sm:grid-cols-2 md:w-[280px] md:flex-none">
                   <div className="border border-slate-200 bg-slate-50 p-3">
                     <div className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">Skill</div>
                     <div className="mt-1 font-black text-slate-950">{activeConcept.skill}</div>
@@ -898,7 +898,7 @@ export default function Grade8StudioPage() {
                 </div>
               </div>
 
-              <div className="mb-4 grid gap-2 sm:grid-cols-3">
+              <div className="mb-4 grid min-w-0 gap-2 sm:grid-cols-3">
                 {PANEL_OPTIONS.map((panel) => {
                   const Icon = panel.icon;
                   const selected = activePanel === panel.id;
@@ -907,14 +907,14 @@ export default function Grade8StudioPage() {
                       key={panel.id}
                       type="button"
                       onClick={() => setActivePanel(panel.id)}
-                      className={`flex items-center justify-center gap-2 border px-3 py-3 text-sm font-black transition ${
+                      className={`flex min-w-0 items-center justify-center gap-2 border px-3 py-3 text-center text-sm font-black transition ${
                         selected
                           ? 'border-slate-950 bg-slate-950 text-white'
                           : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-cyan-300'
                       }`}
                     >
                       <Icon className="h-4 w-4" />
-                      {panel.label}
+                      <span className="min-w-0 truncate">{panel.label}</span>
                     </button>
                   );
                 })}
@@ -952,8 +952,8 @@ export default function Grade8StudioPage() {
               )}
             </div>
 
-            <aside className={`${activePanel !== 'explainer' ? 'hidden' : focusMode ? 'hidden xl:block' : ''} grid gap-4`}>
-              <div className="border border-slate-200 bg-white p-4 shadow-sm">
+            <aside className={`${activePanel !== 'explainer' ? 'hidden' : focusMode ? 'hidden xl:block' : ''} grid min-w-0 gap-4`}>
+              <div className="min-w-0 border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-3 flex items-center gap-2">
                   <Gamepad2 className="h-5 w-5 text-amber-600" />
                   <h3 className="font-nunito text-lg font-black">Game Learning Loop</h3>
@@ -964,7 +964,7 @@ export default function Grade8StudioPage() {
                 </div>
               </div>
 
-              <div className="border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="min-w-0 border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-3 flex items-center gap-2">
                   <SupportIcon className="h-5 w-5 text-cyan-700" />
                   <h3 className="font-nunito text-lg font-black">{selectedSupport.title}</h3>
@@ -992,21 +992,21 @@ export default function Grade8StudioPage() {
             </aside>
           </section>
 
-          <section className={`${focusMode ? 'hidden' : ''} grid gap-3 md:grid-cols-2 xl:grid-cols-3`}>
+          <section className={`${focusMode ? 'hidden' : ''} grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-3`}>
             {subjectConcepts.map((concept) => {
               const selected = concept.id === activeConcept.id;
               return (
                 <button
                   key={concept.id}
                   onClick={() => setActiveConceptId(concept.id)}
-                  className={`group overflow-hidden border bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 ${
+                  className={`group min-w-0 overflow-hidden border bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 ${
                     selected ? 'border-slate-950 ring-2 ring-slate-950/10' : 'border-slate-200 hover:border-cyan-300'
                   }`}
                 >
                   <div className={`mb-4 h-1.5 bg-gradient-to-r ${concept.gradient}`} />
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-nunito text-lg font-black text-slate-950">{concept.title}</h3>
+                    <div className="min-w-0">
+                      <h3 className="font-nunito text-lg font-black text-slate-950 [overflow-wrap:anywhere]">{concept.title}</h3>
                       <p className="mt-2 text-sm leading-6 text-slate-600">{concept.subtitle}</p>
                     </div>
                     <Lightbulb className="h-5 w-5 flex-none text-slate-400 transition group-hover:text-cyan-600" />
@@ -1016,8 +1016,8 @@ export default function Grade8StudioPage() {
             })}
           </section>
 
-          <section className={`${focusMode ? 'hidden' : ''} grid gap-5 lg:grid-cols-[.8fr_1.2fr]`}>
-            <div className="border border-slate-200 bg-white p-5 shadow-sm">
+          <section className={`${focusMode ? 'hidden' : ''} grid min-w-0 gap-5 lg:grid-cols-[.8fr_1.2fr]`}>
+            <div className="min-w-0 border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
               <div className="mb-4 flex items-center gap-2">
                 <Wand2 className="h-5 w-5 text-purple-600" />
                 <h3 className="font-nunito text-xl font-black">Frontier Animation System</h3>
@@ -1032,7 +1032,7 @@ export default function Grade8StudioPage() {
               </div>
             </div>
 
-            <div className="border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+            <div className="min-w-0 border border-slate-200 bg-slate-950 p-4 text-white shadow-sm sm:p-5">
               <div className="mb-4 flex items-center gap-2">
                 <Brain className="h-5 w-5 text-emerald-300" />
                 <h3 className="font-nunito text-xl font-black">Grade 8 Quest Feed</h3>
@@ -1045,13 +1045,13 @@ export default function Grade8StudioPage() {
                     key={quest.id}
                     type="button"
                     onClick={() => selectQuest(quest)}
-                    className={`border p-4 text-left transition hover:border-cyan-300 hover:bg-white/[0.08] ${
+                    className={`min-w-0 border p-4 text-left transition hover:border-cyan-300 hover:bg-white/[0.08] ${
                       selected ? 'border-cyan-300 bg-cyan-300/10' : 'border-white/12 bg-white/[0.04]'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h4 className="font-nunito text-lg font-black">{quest.title}</h4>
+                    <div className="flex min-w-0 items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h4 className="font-nunito text-lg font-black [overflow-wrap:anywhere]">{quest.title}</h4>
                         <p className="mt-1 text-sm leading-6 text-slate-300">{quest.theme}</p>
                       </div>
                       <span className="border border-white/12 bg-white/[0.06] px-2 py-1 text-xs font-black text-cyan-100">
